@@ -5,3 +5,6 @@
 .idea/workspace.xml
 mysite/db.sqlite3
 mysite/mysite/__pycache__/
+mysite/polls/__pycache__/
+mysite/polls/migrations/__pycache__/
+

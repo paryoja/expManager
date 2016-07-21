@@ -1,0 +1,16 @@
+<h1>{{ project.project_text }}</h1>
+
+{% if error_message %}<p><strong>{{ error_message }}</strong></p>
+{% endif %}
+
+<ul>
+	{% for todo in project.todoitem_set.all %}
+	<li>{{ todo.todo_text }} (level: {{ todo.level }})</li>
+	{% endfor %}
+</ul>
+
+<form action="{% url 'project:detail' project.id %}" method="post">
+	{% csrf_token %}
+	Todo: <input type="text" name="todo_text"/> 
+	<input type="submit" value="Add" />
+</form>

@@ -1,9 +1,31 @@
-Add new project <br />
+<h1>List of Projects</h1>
 
 {% if project_list %}
 	<ul>
 	{% for project in project_list %}
 	<li><a href="{% url 'project:detail' project.id %}">{{ project.project_text }}</a></li>
+	{% endfor %}
+	</ul>
+{% else %}
+	<p>No polls are available.</p>
+{% endif %}
+
+Add new project <br />
+
+<form action="{% url 'project:projectForm' %}">
+	<input type="submit" value="Add" />
+</form>
+
+<h1>List of Urgent Todos</h1> 
+
+List todos by urgency <br />
+
+
+<h1>List of Experimental Results</h1>
+
+{% if project_list %}
+	<ul>
+	{% for project in project_list %}
 	<li><a href="{% url 'project:exp' project.id %}">{{ project.project_text }} experiments</a></li>
 	{% endfor %}
 	</ul>
@@ -12,5 +34,7 @@ Add new project <br />
 {% endif %}
 
 
-List todos <br />
-List experimental results <br />
+<h1>List of Servers</h1>
+
+
+<a href="{% url 'project:servers' %}">Server details</a><br />

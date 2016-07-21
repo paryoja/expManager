@@ -1,10 +1,6 @@
-from django.http import HttpResponse, Http404, HttpResponseRedirect
-from django.template import loader
-from django.shortcuts import render, get_object_or_404
-from django.core.urlresolvers import reverse
 from django.views import generic
 
-from .models import Project, TodoItem, ExpItem
+from .models import Project, ExpItem
 
 
 # Create your views here.

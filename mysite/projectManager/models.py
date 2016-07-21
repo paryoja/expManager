@@ -1,7 +1,4 @@
-import datetime
-
 from django.db import models
-from django.utils import timezone
 
 
 # Create your models here.
@@ -23,6 +20,8 @@ class TodoItem(models.Model):
 
 
 ''' Check on_delete CASCADE '''
+
+
 class ExpItem(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     exp_date = models.DateTimeField('date experimented')

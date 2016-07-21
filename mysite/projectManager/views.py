@@ -22,6 +22,6 @@ class DetailView(generic.DetailView):
     template_name = 'projectManager/detail.html'
 
 
-class ExpView(generic.ListView):
-    model = ExpItem
+class ExpView(generic.DetailView):
+    model = Project
     template_name = 'projectManager/exp.html'

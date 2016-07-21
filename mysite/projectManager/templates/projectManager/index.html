@@ -1,9 +1,16 @@
+Add new project <br />
+
 {% if project_list %}
 	<ul>
 	{% for project in project_list %}
 	<li><a href="{% url 'project:detail' project.id %}">{{ project.project_text }}</a></li>
+	<li><a href="{% url 'project:exp' project.id %}">{{ project.project_text }} experiments</a></li>
 	{% endfor %}
 	</ul>
 {% else %}
 	<p>No polls are available.</p>
 {% endif %}
+
+
+List todos <br />
+List experimental results <br />

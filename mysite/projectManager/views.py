@@ -1,10 +1,10 @@
-from django.views import generic
 from django.core.urlresolvers import reverse
-from django.shortcuts import render, get_object_or_404 
 from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import get_object_or_404
 from django.utils import timezone
+from django.views import generic
 
-from .models import Project, ExpItem, Server, TodoItem
+from .models import Project, Server, TodoItem
 
 
 # Create your views here.
@@ -40,18 +40,18 @@ def addTodo(request, project_id):
     text = request.POST['todo_text']
     date = request.POST['deadline_date']
     level = request.POST['level']
-    todo = TodoItem(project=project, todo_text=text, level=level, pub_date=timezone.now(), deadline_date=date )
+    todo = TodoItem(project=project, todo_text=text, level=level, pub_date=timezone.now(), deadline_date=date)
     todo.save()
     return HttpResponseRedirect(reverse('project:detail', args=(project_id,)))
-    
+
 
 def deleteTodo(request, project_id, todo_id):
-    return HttpResponse( str( request.POST ) )
+    return HttpResponse(str(request.POST))
 
 
 def addForm(request):
-    return HttpResponse( "" )
+    return HttpResponse("")
 
 
 def addProject(request):
-    return HttpResponse( "" )
+    return HttpResponse("")

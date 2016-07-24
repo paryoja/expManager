@@ -1,42 +1,83 @@
-<h1>{{ project.project_text }}</h1>
+<h1>Project {{ project.project_text }}</h1>
 
-{% if error_message %}<p><strong>{{ error_message }}</strong></p>
-{% endif %}
 
 <h2>Project Details</h2>
 
+{% if project.git_url %}
+Source git url: {{ project.git_url }}<br />
+{% endif %}
 
 <h2>Todo List</h2>
+<!-- Remaining todos -->
 <ul>
 	{% for todo in project.todoitem_set.all %}
+	{% if todo.done == False %}
 	<li>
-		<form action="{% url 'project:deleteTodo' project.id todo.id %}">{% csrf_token %}
-			{{ todo.todo_text }} (level: {{ todo.level }}, date: {{ todo.pub_date }})
-			<input type="submit" value="Done" />
-			<input type="submit" value="Delete" />
+		<form action="{% url 'project:modifyTodo' project.id todo.id %}" method="post">{% csrf_token %}
+			Level: {{ todo.level }},  
+			{% if todo.getDday < 0 %}
+				<font color="red">{{ todo.getDday }} day{{ todo.getDday | pluralize }} delayed </font>
+			{% else %}
+				{{ todo.getDday }} day{{ todo.getDday | pluralize }} left
+			{% endif %}: {{ todo.todo_text }} 
+			<input type="submit" name="method" value="Done" />
+			<input type="submit" name="method" value="Delete" />
 		</form>
 	</li>
+	{% endif %}
 	{% endfor %}
 </ul>
 
+<!-- Errors while adding todo -->
+{% if error_message %}<p><strong><font color="red">{{ error_message }}</font></strong></p>{% endif %}
+
+<!-- Adding todo -->
 <form action="{% url 'project:addTodo' project.id %}" method="post">{% csrf_token %}
 	Todo: <input type="text" name="todo_text" /> Prority: 
 	<input type="radio" name="level" id="level0" value="0" /><label for="level0">0</label>
 	<input type="radio" name="level" id="level1" value="1" /><label for="level1">1</label>
-	<input type="radio" name="level" id="level2" value="2" /><label for="level2">2</label>
-	Deadline: <input type="datetime" name="deadline_date" />
+	<input type="radio" name="level" id="level2" value="2" checked /><label for="level2">2</label>
+	Deadline: <input type="date" name="deadline_date" />
+	<select name="deadline_time">
+		<option value="0">00:00</option>
+		<option value="6">06:00</option>
+		<option value="12">12:00</option>
+		<option value="18">18:00</option>
+	</select>
 	<input type="submit" value="Add" />
 </form>
 
+<!-- List of completed todos -->
+<h2> Completed Todos </h2>
+<ul>
+	{% for todo in project.todoitem_set.all %}
+	{% if todo.done == True %}
+	<li>
+		<form action="{% url 'project:modifyTodo' project.id todo.id %}" method="post">{% csrf_token %}
+		{{ todo.level }} : {{ todo.todo_text }} {{ todo.completed_date }}
+		<input type="submit" name="method" value="Delete" />
+		</form>
+	</li>
+	{% endif %}
+	{% endfor %}
+</ul>
+
+<!-- experimental results -->
+{% if project.has_experiments == True %}
 Experimental setting <br />
 <a href="{% url 'project:exp' project.id %}">Experimental results</a><br />
 
 
-Execute experiment <br />
-Variables Range 
-Source git url<br />
+<h2>Execute experiment</h2>
+
+Variables Range<br />
 Download source codes<br />
 Implemented algorithms - version, current state (implementing, testing, bug fixing, complemeted)<br />
-Related works<br />
+
+<h2>Related works</h2>
+Author Title Link
+{% endif %}
+
+
 
 <center><a href="{% url 'project:index' %}">To main menu</a></center>

@@ -1,0 +1,45 @@
+<style>
+table, th, td {
+	border: 1px solid black;
+	border-collapse: collapse;
+}
+</style>
+
+<h1>Exp {{ expitem.id }}) {{ expitem }} detail</h1>
+
+<h2>Project</h2>
+{{ expitem.project }}
+
+<h2>Dataset</h2>
+{{ expitem.dataset }}
+
+<!-- parameter -->
+<h2>Paramters</h2>
+{% if parameterList %}
+<table>
+	{% for attribute, value in parameterList %}
+	<tr>
+		<td align="left">{{ attribute }}</td>
+		<td align="right">{{ value }}</td>
+	</tr>
+	{% endfor %}
+</table>
+{% endif %}
+
+
+
+<!-- result table -->
+<h2>Result</h2>
+{% if parsedResult %}
+<table>
+{% for attribute, value in parsedResult %}
+	<tr>
+		<td align="left">{{ attribute }}</td> 
+		<td align="right">{{ value }}</td>
+	</tr>
+{% endfor %}
+</table>
+{% endif %}
+
+<center><a href="{% url 'project:exp' expitem.project.id %}">To experiments</a></center>
+<center><a href="{% url 'project:index' %}">To main menu</a></center>

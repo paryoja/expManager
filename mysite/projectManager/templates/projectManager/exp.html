@@ -1,8 +1,36 @@
+<style>
+table, th, td {
+	border: 1px solid black;
+	border-collapse: collapse;
+	padding: 5px;
+}
+</style>
+
 <h1> Experimental results for {{ project.project_text }}</h1>
 
 <h2>List of Experiments</h2>
- 
-List graphs <br />
+<a href="{% url 'project:expForm' project.id %}">Add a new experimental result</a><br /><br />
+{% if project.expitem_set.all %}
+<table>
+	<tr>
+	{% for attribute in attribute_list %}
+	{% endfor %}	
+	</tr>
+
+	{% for exp in project.expitem_set.all %}
+	<tr>
+		<td>{{ exp }}</td>
+		<td>{{ exp.algorithm }}</td>
+	{% for attribute, value in exp.toList %}
+		<td>{{ value }}</td>
+	{% endfor %}
+	<td><a href="{% url 'project:expDetail' exp.id %}">detail</a></td>
+</tr>
+{% endfor %}
+</table>
+{% endif %}
+
+<h2>List of graphs </h2>
 
 List experiments to do <br />
 

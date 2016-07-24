@@ -1,0 +1,12 @@
+<!-- add server form -->
+{% if error_message %}<p><strong><font color="red">{{ error_message }}</font></strong></p>{% endif %}
+<form action="{% url 'project:addServer' %}" method="post">
+	{% csrf_token %}
+	<label for="server_name">Server Name</label>
+	<input type="text" name="server_name" /><br />
+
+	<label for="server_ip">Server Ip</label>
+	<input type="text" name="server_ip"  required pattern="((^|\.)((25[0-5])|(2[0-4]\d)|(1\d\d)|([1-9]?\d))){4}$" /><br />
+
+	<input type="submit" name="method" value="Add" />
+</form>

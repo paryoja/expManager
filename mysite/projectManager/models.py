@@ -10,6 +10,10 @@ class Project(models.Model):
     pub_date = models.DateTimeField('date published')
     has_experiments = models.BooleanField(default=False)
     git_url = models.TextField(null=True)
+    experimentParams = models.TextField(null=True)
+
+    def getParamList(self):
+        return self.experimentParams.split( ',' )
 
     def __str__(self):
         return self.project_text

@@ -1,6 +1,6 @@
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render
 from django.utils import timezone
 from django.views import generic
 
@@ -125,9 +125,17 @@ def deleteTodo(request, project_id, todo_id):
     return HttpResponse(str(request.POST))
 
 
-def addForm(request):
-    return HttpResponse("")
+def addAlgorithm(request, project_id):
+    return HttpResponse('')
 
 
-def addProject(request):
-    return HttpResponse("")
+def algorithmForm(request, project_id):
+    return render(request, 'projectManager/algorithmForm.html')
+
+
+def addDataset(request, project_id):
+    return HttpResponse('')
+
+
+def datasetForm(request, project_id):
+    return HttpResponse('')

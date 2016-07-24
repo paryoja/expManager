@@ -13,7 +13,7 @@
 					{% endfor %}
 				</select>
 			</td>
-			<td>Add algorithm</td>
+			<td><a href="{% url 'project:algorithmForm' project.id %}">Add algorithm</a></td>
 		</tr>
 		
 		<tr>
@@ -26,7 +26,7 @@
 					{% endfor %}
 				</select>
 			</td>
-			<td>Add dataset</td>
+			<td><a href="{% url 'project:datasetForm' project.id %}">Add dataset</a></td>
 		</tr>
 
 		<tr>

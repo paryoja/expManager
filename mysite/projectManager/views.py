@@ -1,8 +1,8 @@
-from django.views import generic
 from django.core.urlresolvers import reverse
-from django.shortcuts import render, get_object_or_404 
 from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import get_object_or_404
 from django.utils import timezone
+from django.views import generic
 
 from .models import Algorithm, Project, TodoItem, Dataset, ExpItem, Server, ExpTodo
 from .utils import *
@@ -119,3 +119,15 @@ def expForm(request, project_id):
     return render(request, 'projectManager/addExpForm.html', {
         'project': project
         })
+
+
+def deleteTodo(request, project_id, todo_id):
+    return HttpResponse(str(request.POST))
+
+
+def addForm(request):
+    return HttpResponse("")
+
+
+def addProject(request):
+    return HttpResponse("")

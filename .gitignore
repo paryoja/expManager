@@ -10,3 +10,5 @@ mysite/polls/migrations/__pycache__/
 mysite/projectManager/__pycache__/
 mysite/projectManager/migrations/__pycache__/
 
+.idea/inspectionProfiles/Project_Default.xml
+.idea/inspectionProfiles/profiles_settings.xml

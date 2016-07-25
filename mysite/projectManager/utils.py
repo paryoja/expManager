@@ -10,4 +10,9 @@ def toList( result ):
     return list( dumped.items() )
 
 
-
+def toDictionary( result ):
+    try:
+        dumped = json.loads( result )
+    except JSONDecodeError:
+        return {}
+    return dumped

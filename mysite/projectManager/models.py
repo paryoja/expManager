@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils import timezone
 
-from .utils import toList
+from .utils import *
 
 
 # Create your models here.
@@ -64,6 +64,23 @@ class ExpItem(models.Model):
     
     def __str__(self):
         return self.exp_date.strftime( "%y-%m-%d %H:%M:%S" )
+
+    def toPrintList(self):
+        l = []
+        params = self.project.experimentParams.split( "," )
+        result = toDictionary( self.result )
+
+        print( result )
+
+        for par in params:
+            print( par.strip() )
+            try:
+                l.append( result[ par.strip() ] )
+            except KeyError:
+                l.append( 'Null' )
+
+        return l
+
 
     def toList(self):
         return toList(self.parameter) + toList(self.result)

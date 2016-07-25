@@ -32,6 +32,16 @@ class ExpView(generic.DetailView):
     template_name = 'projectManager/exp.html'
 
 
+class AlgorithmDetailView(generic.DetailView):
+    model = Algorithm
+    template_name = 'projectManager/algorithmDetail.html'
+
+
+class DatasetDetailView(generic.DetailView):
+    model = Dataset
+    template_name = 'projectManager/datasetDetail.html'
+
+
 def exp(request, pk):
     expitem = ExpItem.objects.get(pk=pk)
     parameterList = toList( expitem.parameter )
@@ -41,6 +51,7 @@ def exp(request, pk):
                 'parameterList': parameterList,
                 'parsedResult': parsedResult
                 })
+
 
 class ExpDetailView(generic.DetailView):
     model = ExpItem
@@ -75,6 +86,25 @@ def addServer(request):
     server = Server( server_name=server_name, server_ip=server_ip)
     server.save()
     return HttpResponseRedirect(reverse('project:index'))
+
+
+def addAlgorithm(request, project_id):
+    project = get_object_or_404(Project, pk=project_id)
+    name = request.POST['name']
+    version = request.POST['version']
+    algorithm = Algorithm(project=project, name=name, version=version)
+    algorithm.save()
+    return HttpResponseRedirect(reverse('project:exp', args=(project_id,)))
+
+
+def addDataset(request, project_id):
+    project = get_object_or_404(Project, pk=project_id)
+    name = request.POST['name']
+    is_synthetic = request.POST['is_synthetic']
+    synthetic_parameters = request.POST['synthetic_parameters']
+    dataset = Dataset(project=project, name=name, is_synthetic=is_synthetic, synthetic_parameters=synthetic_parameters)
+    dataset.save()
+    return HttpResponseRedirect(reverse('project:exp', args=(project_id,)))
 
 
 def addExp(request, project_id):
@@ -125,17 +155,14 @@ def deleteTodo(request, project_id, todo_id):
     return HttpResponse(str(request.POST))
 
 
-def addAlgorithm(request, project_id):
-    return HttpResponse('')
-
-
 def algorithmForm(request, project_id):
-    return render(request, 'projectManager/algorithmForm.html')
+    return render(request, 'projectManager/algorithmForm.html', {
+        'project_id': project_id
+        })
 
-
-def addDataset(request, project_id):
-    return HttpResponse('')
 
 
 def datasetForm(request, project_id):
-    return HttpResponse('')
+    return render(request, 'projectManager/datasetForm.html', {
+        'project_id':project_id
+        })

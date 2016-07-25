@@ -1,10 +1,6 @@
-<style>
-table, th, td {
-	border: 1px solid black;
-	border-collapse: collapse;
-	padding: 5px;
-}
-</style>
+{% load staticfiles %}
+
+<link rel="stylesheet" type="text/css" href="{% static 'projectManager/style.css' %}" />
 
 <h1> Experimental results for {{ project.project_text }}</h1>
 
@@ -21,9 +17,7 @@ table, th, td {
 		{% for param in project.getParamList %}
 		<td>{{ param }}</td>
 		{% endfor %}
-
-	{% for attribute in attribute_list %}
-	{% endfor %}	
+		<td>View details</td>
 	</tr>
 
 	{% for exp in project.expitem_set.all %}
@@ -31,7 +25,7 @@ table, th, td {
 		<td>{{ exp }}</td>
 		<td>{{ exp.algorithm }}</td>
 		<td>{{ exp.dataset }}</td>
-	{% for attribute, value in exp.toList %}
+	{% for value in exp.toPrintList %}
 		<td>{{ value }}</td>
 	{% endfor %}
 	<td><a href="{% url 'project:expDetail' exp.id %}">detail</a></td>
@@ -46,17 +40,39 @@ List experiments to do <br />
 
 
 <h2>List of algorithms</h2>
-<a href="{% url 'project:algorithmForm' project.id %}">Add an algorithm</a><br />
-{% for algorithm in project.algorithm_set.all %}
-{{ algorithm.name }} <br />
-{% endfor %}
+<a href="{% url 'project:algorithmForm' project.id %}">Add an algorithm</a><br /><br />
+<table>
+	<tr>
+		<td>Name</td>
+		<td>Version</td>
+	</tr>
 
+	{% for algorithm in project.algorithm_set.all %}
+	<tr>
+		<td><a href="{% url 'project:algorithmDetail' project.id algorithm.id %}">{{ algorithm.name }}</a></td>
+		<td>{{ algorithm.version }}</td>
+	</tr>
+	{% endfor %}
+		
+</table>
 
 <h2>List of Dataset</h2>
-<a href="{% url 'project:datasetForm' project.id %}">Add a dataset</a><br />
-{% for dataset in project.dataset_set.all %}
-{{ dataset.name }} <br />
-{% endfor %}
+<a href="{% url 'project:datasetForm' project.id %}">Add a dataset</a><br /><br />
+<table>
+	<tr>
+		<td>Name</td>
+		<td>Is synthetic</td>
+		<td>Synthetic parameters</td>
+	</tr>
+
+	{% for dataset in project.dataset_set.all %}
+	<tr>
+		<td><a href="{% url 'project:datasetDetail' project.id dataset.id %}">{{ dataset.name }}</td>
+		<td>{{ dataset.is_synthetic }}</td>
+		<td>{{ dataset.synthetic_parameters }}</td>
+	</tr>
+	{% endfor %}
+</table>
 
 <center>
 <a href="{% url 'project:detail' project.id %}">To project detail</a><br />

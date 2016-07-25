@@ -29,9 +29,11 @@ urlpatterns = [
     # related with algorithm
     url(r'^(?P<project_id>[0-9]+)/addAlgorithm$', views.addAlgorithm, name='addAlgorithm' ),
     url(r'^(?P<project_id>[0-9]+)/algorithmForm$', views.algorithmForm, name='algorithmForm' ),
+    url(r'^(?P<project_id>[0-9]+)/algorithmDetail/(?P<pk>[0-9]+)$', views.AlgorithmDetailView.as_view(), name='algorithmDetail'),
 
     # related with dataset
     url(r'^(?P<project_id>[0-9]+)/addDataset$', views.addDataset, name='addDataset' ),
     url(r'^(?P<project_id>[0-9]+)/datasetForm$', views.datasetForm, name='datasetForm' ),
+    url(r'^(?P<project_id>[0-9]+)/datasetDetail/(?P<pk>[0-9]+)$', views.DatasetDetailView.as_view(), name='datasetDetail'),
 
 ]

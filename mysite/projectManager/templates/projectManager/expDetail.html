@@ -1,7 +1,6 @@
 {% load staticfiles %}
 
-<link rel="stylesheet" type="text/css" href="{% static 'projectManager/style.css' %}" />
-
+<link rel="stylesheet" type="text/css" href="{% static 'projectManager/style.css' %}"/>
 
 
 <h1>Exp {{ expitem.id }}) {{ expitem }} detail</h1>
@@ -16,27 +15,26 @@
 <h2>Paramters</h2>
 {% if parameterList %}
 <table>
-	{% for attribute, value in parameterList %}
-	<tr>
-		<td align="left">{{ attribute }}</td>
-		<td align="right">{{ value }}</td>
-	</tr>
-	{% endfor %}
+    {% for attribute, value in parameterList %}
+    <tr>
+        <td align="left">{{ attribute }}</td>
+        <td align="right">{{ value }}</td>
+    </tr>
+    {% endfor %}
 </table>
 {% endif %}
-
 
 
 <!-- result table -->
 <h2>Result</h2>
 {% if parsedResult %}
 <table>
-{% for attribute, value in parsedResult %}
-	<tr>
-		<td align="left">{{ attribute }}</td> 
-		<td align="right">{{ value }}</td>
-	</tr>
-{% endfor %}
+    {% for attribute, value in parsedResult %}
+    <tr>
+        <td align="left">{{ attribute }}</td>
+        <td align="right">{{ value }}</td>
+    </tr>
+    {% endfor %}
 </table>
 {% endif %}
 

@@ -2,17 +2,17 @@ import json
 from json import JSONDecodeError
 
 
-def toList( result ):
+def toList(result):
     try:
-        dumped = json.loads( result )
+        dumped = json.loads(result)
     except JSONDecodeError:
         return []
-    return list( dumped.items() )
+    return list(dumped.items())
 
 
-def toDictionary( result ):
+def toDictionary(result):
     try:
-        dumped = json.loads( result )
+        dumped = json.loads(result)
     except JSONDecodeError:
         return {}
     return dumped

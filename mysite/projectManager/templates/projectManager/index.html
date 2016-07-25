@@ -1,45 +1,45 @@
 {% load staticfiles %}
 
-<link rel="stylesheet" type="text/css" href="{% static 'projectManager/style.css' %}" />
+<link rel="stylesheet" type="text/css" href="{% static 'projectManager/style.css' %}"/>
 
 <h1>List of Projects</h1>
 <a href="{% url 'project:projectForm' %}">Add a new project</a>
 {% if project_list %}
-	<ul>
-	{% for project in project_list %}
-	<li><a href="{% url 'project:detail' project.id %}">{{ project.project_text }}</a></li>
-	{% endfor %}
-	</ul>
+<ul>
+    {% for project in project_list %}
+    <li><a href="{% url 'project:detail' project.id %}">{{ project.project_text }}</a></li>
+    {% endfor %}
+</ul>
 {% else %}
-	<p>No projects are available.</p>
+<p>No projects are available.</p>
 {% endif %}
 
 
-
-
-<h1>List of Urgent Todos</h1> 
+<h1>List of Urgent Todos</h1>
 
 {% if todo_list %}
-	<ul>
-		{% for todo in todo_list %}
-		<li><a href="{% url 'project:detail' todo.project.id %}">{{ todo.project }}</a> : {{ todo.todo_text }} : {{ todo.getDday }} day{{ todo.getDday | pluralize }} left</li>
-		{% endfor %}
-	</ul>
+<ul>
+    {% for todo in todo_list %}
+    <li><a href="{% url 'project:detail' todo.project.id %}">{{ todo.project }}</a> : {{ todo.todo_text }} : {{
+        todo.getDday }} day{{ todo.getDday | pluralize }} left
+    </li>
+    {% endfor %}
+</ul>
 {% endif %}
 
 
 <h1>List of Experimental Results</h1>
 
 {% if project_list %}
-	<ul>
-	{% for project in project_list %}
-	{% if project.has_experiments == True %}
-		<li><a href="{% url 'project:exp' project.id %}">{{ project.project_text }} experiments</a></li>
-	{% endif %}
-	{% endfor %}
-	</ul>
+<ul>
+    {% for project in project_list %}
+    {% if project.has_experiments == True %}
+    <li><a href="{% url 'project:exp' project.id %}">{{ project.project_text }} experiments</a></li>
+    {% endif %}
+    {% endfor %}
+</ul>
 {% else %}
-	<p>No polls are available.</p>
+<p>No polls are available.</p>
 {% endif %}
 
 <h1>List of Servers</h1>
@@ -47,9 +47,9 @@
 <a href="{% url 'project:addServerForm' %}">Add a new server</a>
 
 {% if server_list %}
-	<ul>
-		{% for server in server_list %}
-		<li><a href="{% url 'project:servers' server.id %}">{{ server.server_name }}</a></li>
-		{% endfor %}
-	</ul>
+<ul>
+    {% for server in server_list %}
+    <li><a href="{% url 'project:servers' server.id %}">{{ server.server_name }}</a></li>
+    {% endfor %}
+</ul>
 {% endif %}

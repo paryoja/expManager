@@ -13,7 +13,7 @@ class Project(models.Model):
     experimentParams = models.TextField(null=True)
 
     def getParamList(self):
-        return self.experimentParams.split( ',' )
+        return self.experimentParams.split(',')
 
     def __str__(self):
         return self.project_text
@@ -61,26 +61,25 @@ class ExpItem(models.Model):
     exp_date = models.DateTimeField('date experimented')
     parameter = models.TextField('parameters used')
     result = models.TextField('result')
-    
+
     def __str__(self):
-        return self.exp_date.strftime( "%y-%m-%d %H:%M:%S" )
+        return self.exp_date.strftime("%y-%m-%d %H:%M:%S")
 
     def toPrintList(self):
         l = []
-        params = self.project.experimentParams.split( "," )
-        result = toDictionary( self.result )
+        params = self.project.experimentParams.split(",")
+        result = toDictionary(self.result)
 
-        print( result )
+        print(result)
 
         for par in params:
-            print( par.strip() )
+            print(par.strip())
             try:
-                l.append( result[ par.strip() ] )
+                l.append(result[par.strip()])
             except KeyError:
-                l.append( 'Null' )
+                l.append('Null')
 
         return l
-
 
     def toList(self):
         return toList(self.parameter) + toList(self.result)
@@ -96,7 +95,5 @@ class Server(models.Model):
     server_name = models.CharField(max_length=20)
     server_ip = models.GenericIPAddressField()
     server_cpu = models.CharField(max_length=100, null=True)
-    #memory = models.CharField(max_length=20)
-    #os = models.CharField(max_length=20)
-
-
+    # memory = models.CharField(max_length=20)
+    # os = models.CharField(max_length=20)

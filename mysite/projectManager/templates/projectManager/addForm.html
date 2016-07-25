@@ -1,12 +1,12 @@
 <!-- add project form -->
 {% if error_message %}<p><strong><font color="red">{{ error_message }}</font></strong></p>{% endif %}
 <form action="{% url 'project:addProject' %}" method="post">
-	{% csrf_token %}
-	<label for="project_text">Project Name</label>
-	<input type="text" name="project_text" /><br />
+    {% csrf_token %}
+    <label for="project_text">Project Name</label>
+    <input type="text" name="project_text"/><br/>
 
-	<input type="hidden" name="has_experiments" value="False" />
-	<input type="checkbox" name="has_experiments" value="True" />
-	<label for="has_experiments">Has experiments</label><br />
-	<input type="submit" name="method" value="Add" />
+    <input type="hidden" name="has_experiments" value="False"/>
+    <input type="checkbox" name="has_experiments" value="True"/>
+    <label for="has_experiments">Has experiments</label><br/>
+    <input type="submit" name="method" value="Add"/>
 </form>

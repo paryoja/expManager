@@ -1,6 +1,6 @@
 {% load staticfiles %}
 
-<link rel="stylesheet" type="text/css" href="{% static 'projectManager/style.css' %}" />
+<link rel="stylesheet" type="text/css" href="{% static 'projectManager/style.css' %}"/>
 
 <h1>Algorithm: {{ algorithm.name }} </h1>
 
@@ -11,27 +11,27 @@ Version: {{ algorithm.version }}
 
 {% if algorithm.expitem_set.all %}
 <table>
-	<tr>
-		<td>Date</td>
-		<td>Algorithm</td>
-		<td>Dataset</td>
-		{% for param in algorithm.project.getParamList %}
-		<td>{{ param }}</td>
-		{% endfor %}
-		<td>View details</td>
-	</tr>
+    <tr>
+        <td>Date</td>
+        <td>Algorithm</td>
+        <td>Dataset</td>
+        {% for param in algorithm.project.getParamList %}
+        <td>{{ param }}</td>
+        {% endfor %}
+        <td>View details</td>
+    </tr>
 
-	{% for exp in algorithm.expitem_set.all %}
-	<tr>
-		<td>{{ exp }}</td>
-		<td>{{ exp.algorithm }}</td>
-		<td>{{ exp.dataset }}</td>
-	{% for value in exp.toPrintList %}
-		<td>{{ value }}</td>
-	{% endfor %}
-	<td><a href="{% url 'project:expDetail' exp.id %}">detail</a></td>
-</tr>
-{% endfor %}
+    {% for exp in algorithm.expitem_set.all %}
+    <tr>
+        <td>{{ exp }}</td>
+        <td>{{ exp.algorithm }}</td>
+        <td>{{ exp.dataset }}</td>
+        {% for value in exp.toPrintList %}
+        <td>{{ value }}</td>
+        {% endfor %}
+        <td><a href="{% url 'project:expDetail' exp.id %}">detail</a></td>
+    </tr>
+    {% endfor %}
 </table>
 {% endif %}
 

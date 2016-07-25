@@ -8,6 +8,7 @@ urlpatterns = [
 
     # related with project
     url(r'^(?P<pk>[0-9]+)/$', views.DetailView.as_view(), name='detail'),
+    url(r'^listProjects/$', views.ListProjectView.as_view(), name='listProject'),
     url(r'^projectForm/$', views.addForm, name='projectForm'),
     url(r'^addProject/$', views.addProject, name='addProject'),
     url(r'^(?P<project_id>[0-9]+)/addGitUrl/$', views.addGitUrl, name='addGitUrl'),

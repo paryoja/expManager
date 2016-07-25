@@ -11,7 +11,7 @@
     {% endfor %}
 </ul>
 {% else %}
-<p>No projects are available.</p>
+<p>No projects are available. <a href="{% url 'project:projectForm' %}">Add a new one.</a></p>
 {% endif %}
 
 
@@ -40,7 +40,7 @@
     {% endfor %}
 </ul>
 {% else %}
-<p>No polls are available.</p>
+<p>No projects are available. <a href="{% url 'project:projectForm' %}">Add a new one.</a></p>
 {% endif %}
 
 <h1>List of Servers</h1>

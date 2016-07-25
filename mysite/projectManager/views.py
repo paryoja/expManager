@@ -17,6 +17,14 @@ def index(request):
         'server_list': Server.objects.all()})
 
 
+class ListProjectView(generic.ListView):
+    template_name = 'projectManager/listProjects.html'
+    context_object_name = 'project_list'
+
+    def get_queryset(self):
+        return Project.objects.all
+
+
 class ServerView(generic.DetailView):
     model = Server
     template_name = 'projectManager/servers.html'
@@ -190,3 +198,5 @@ def datasetForm(request, project_id):
     return render(request, 'projectManager/datasetForm.html', {
         'project_id': project_id
     })
+
+

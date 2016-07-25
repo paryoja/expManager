@@ -1,0 +1,1 @@
+{ {% if project_list %} "projects" : [ {% for project in project_list %} {"ProjectName" : "{{ project.project_text }}", "Id" : "{{ project.id }}", "GitUrl" : "{{ project.git_url }}", "HasExperiment" : "{{ project.has_experiments }}"} {% if not forloop.last %},{% endif %} {% endfor %} ] {% endif %} }

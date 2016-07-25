@@ -75,6 +75,12 @@ def addTodo(request, project_id):
 
 def addProject(request):
     project_text = request.POST['project_text']
+    if project_text == '':
+        return render(request, 'projectManager/index.html',
+                {'project_list': Project.objects.all(),
+                'todo_list': TodoItem.objects.filter(level=0).filter(done=False),
+                'server_list': Server.objects.all(),
+                'error_message': 'Project name is empty'})
     has_experiments = request.POST['has_experiments'] == "True"
     project = Project(project_text=project_text, pub_date=timezone.now(), has_experiments=has_experiments)
     project.save()
@@ -135,6 +141,23 @@ def modifyTodo(request, project_id, todo_id):
     elif request.POST['method'] == 'Delete':
         todo.delete()
 
+    return HttpResponseRedirect(reverse('project:detail', args=(project_id,)))
+
+
+def addGitUrl(request, project_id):
+    project = get_object_or_404(Project, pk=project_id)
+    if project.git_url is None:
+        url = request.POST['url']
+
+        from subprocess import call
+        returnValue = call(['git', 'ls-remote', request.POST['url']])
+
+        if returnValue != 0:
+            message = request.POST['url'] + ' is not a valid url'
+            return HttpResponseRedirect(reverse('project:detail', args=(project_id,)))
+
+        project.git_url = url
+        project.save()
     return HttpResponseRedirect(reverse('project:detail', args=(project_id,)))
 
 

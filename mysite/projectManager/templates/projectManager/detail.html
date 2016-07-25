@@ -10,6 +10,11 @@
 
 {% if project.git_url %}
 Source git url: {{ project.git_url }}<br/>
+{% else %}
+<form action="{% url 'project:addGitUrl' project.id %}" method="post">{% csrf_token %}
+	<label for="url">Add new git repository url: </label><input type="text" name="url"/>
+	<input type="submit" value="Add"/>
+</form>
 {% endif %}
 
 <h2>Todo List</h2>

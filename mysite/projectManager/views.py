@@ -3,6 +3,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.utils import timezone
 from django.views import generic
+from django.core.exceptions import ObjectDoesNotExist
 
 from .models import Algorithm, Project, TodoItem, Dataset, ExpItem, Server
 from .utils import *
@@ -199,4 +200,44 @@ def datasetForm(request, project_id):
         'project_id': project_id
     })
 
+
+def listAlgorithms(request, project_id):
+    project = get_object_or_404( Project, pk=project_id)
+    return render(request, 'projectManager/json/listAlgorithms.json', {
+        'algorithm_list' : Algorithm.objects.filter(project = project)
+        })
+
+
+def listDatasets(request, project_id):
+    project = get_object_or_404( Project, pk=project_id)
+    return render(request, 'projectManager/json/listDatasets.json', {
+        'dataset_list' : Dataset.objects.filter(project = project)})
+
+
+def getProjectId(request, project_name):
+    try:
+        project = Project.objects.get( project_text = project_name )
+    except ObjectDoesNotExist:
+        return HttpResponse( '-1' )
+
+    return HttpResponse( project.id )
+
+
+def getAlgorithmId(request, project_id, algorithm_name):
+    project = get_object_or_404(Project, pk = project_id)
+    try:
+        algorithm = Algorithm.objects.filter( project = project ).get( name = algorithm_name )
+    except ObjectDoesNotExist:
+        return HttpResponse( '-1' )
+
+    return HttpResponse( algorithm.id )
+
+def getDatasetId(request, project_id, dataset_name):
+    project = get_object_or_404(Project, pk = project_id)
+    try:
+        dataset = Dataset.objects.filter( project = project ).get( name = dataset_name )
+    except ObjectDoesNotExist:
+        return HttpResponse( '-1' )
+
+    return HttpResponse( dataset.id )
 

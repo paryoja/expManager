@@ -41,7 +41,7 @@ class Algorithm(models.Model):
     version = models.CharField(max_length=10)
 
     def __str__(self):
-        return self.name
+        return self.name + ':' + self.project.project_text
 
 
 class Dataset(models.Model):
@@ -51,7 +51,7 @@ class Dataset(models.Model):
     synthetic_parameters = models.TextField(null=True)
 
     def __str__(self):
-        return self.name
+        return  self.name + ':' + self.project.project_text 
 
 
 class ExpItem(models.Model):
@@ -70,10 +70,7 @@ class ExpItem(models.Model):
         params = self.project.experimentParams.split(",")
         result = toDictionary(self.result)
 
-        print(result)
-
         for par in params:
-            print(par.strip())
             try:
                 l.append(result[par.strip()])
             except KeyError:

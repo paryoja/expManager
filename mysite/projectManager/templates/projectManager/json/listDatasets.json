@@ -1,0 +1,2 @@
+{ {% if dataset_list %} 
+	"datasets" : [ {% for dataset in dataset_list %} {"Name" : "{{ dataset.name }}", "Id" : "{{ dataset.id }}", "IsSynthetic" : "{{ dataset.is_synthetic }}"}, "SyntheticParameters" : "{{ dataset.synthetic_parameters }}"} {% if not forloop.last %},{% endif %} {% endfor %} ] {% endif %} }

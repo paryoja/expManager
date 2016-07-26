@@ -1,0 +1,2 @@
+{ {% if algorithm_list %} 
+	"algorithms" : [ {% for algorithm in algorithm_list %} {"Name" : "{{ algorithm.name }}", "Id" : "{{ algorithm.id }}", "Version" : "{{ algorithm.version }}"} {% if not forloop.last %},{% endif %} {% endfor %} ] {% endif %} }

@@ -31,8 +31,8 @@ Synthetic parameters: {{ dataset.synthetic_parameters }}
     {% for exp in dataset.expitem_set.all %}
     <tr>
         <td>{{ exp }}</td>
-        <td>{{ exp.dataset }}</td>
-        <td>{{ exp.dataset }}</td>
+        <td>{{ exp.algorithm.name }}</td>
+        <td>{{ exp.dataset.name }}</td>
         {% for value in exp.toPrintList %}
         <td>{{ value }}</td>
         {% endfor %}

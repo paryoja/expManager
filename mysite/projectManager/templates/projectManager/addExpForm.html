@@ -1,3 +1,7 @@
+{% load staticfiles %}
+<link rel="stylesheet" type="text/css" href="{% static 'projectManager/css/base.css' %}"/>
+<link rel="stylesheet" type="text/css" href="{% static 'projectManager/css/dashboard.css' %}"/>
+
 <!-- add exp form -->
 {% if error_message %}<p><strong><font color="red">{{ error_message }}</font></strong></p>{% endif %}
 <form action="{% url 'project:addExp' project.id %}" method="post">

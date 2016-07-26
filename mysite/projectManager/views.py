@@ -18,7 +18,7 @@ def index(request):
 
 
 class ListProjectView(generic.ListView):
-    template_name = 'projectManager/listProjects.html'
+    template_name = 'projectManager/json/listProjects.json'
     context_object_name = 'project_list'
 
     def get_queryset(self):

@@ -51,7 +51,7 @@ class Dataset(models.Model):
     synthetic_parameters = models.TextField(null=True)
 
     def __str__(self):
-        return  self.name + ':' + self.project.project_text 
+        return self.name + ':' + self.project.project_text
 
 
 class ExpItem(models.Model):

@@ -64,14 +64,12 @@ List experiments to do <br/>
     <tr>
         <td>Name</td>
         <td>Is synthetic</td>
-        <td>Synthetic parameters</td>
     </tr>
 
     {% for dataset in project.dataset_set.all %}
     <tr>
         <td><a href="{% url 'project:datasetDetail' project.id dataset.id %}">{{ dataset.name }}</td>
         <td>{{ dataset.is_synthetic }}</td>
-        <td>{{ dataset.synthetic_parameters }}</td>
     </tr>
     {% endfor %}
 </table>

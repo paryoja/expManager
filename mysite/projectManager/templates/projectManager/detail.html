@@ -1,7 +1,11 @@
+<html>
 {% load staticfiles %}
+<head>
 <link rel="stylesheet" type="text/css" href="{% static 'projectManager/css/base.css' %}"/>
 <link rel="stylesheet" type="text/css" href="{% static 'projectManager/css/dashboard.css' %}"/>
+</head>
 
+<body>
 
 <h1>Project {{ project.project_text }}</h1>
 
@@ -26,7 +30,7 @@ Source git url: {{ project.git_url }}<br/>
         <form action="{% url 'project:modifyTodo' project.id todo.id %}" method="post">{% csrf_token %}
             Level: {{ todo.level }},
             {% if todo.getDday < 0 %}
-            <font color="red">{{ todo.getDday }} day{{ todo.getDday | pluralize }} delayed </font>
+            <font color="red">{{ todo.getMinusDday }} day{{ todo.getDday | pluralize }} delayed </font>
             {% else %}
             {{ todo.getDday }} day{{ todo.getDday | pluralize }} left
             {% endif %}: {{ todo.todo_text }}
@@ -90,3 +94,5 @@ Author Title Link
 
 
 <center><a href="{% url 'project:index' %}">To main menu</a></center>
+</body>
+</html>

@@ -31,6 +31,9 @@ class TodoItem(models.Model):
     def getDday(self):
         return -(timezone.now() - self.deadline_date).days
 
+    def getMinusDday(self):
+        return (timezone.now() - self.deadline_date).days
+
     def __str__(self):
         return self.todo_text
 
@@ -52,6 +55,9 @@ class Dataset(models.Model):
 
     def __str__(self):
         return self.name + ':' + self.project.project_text
+
+    def parameterToList(self):
+        return toList( self.synthetic_parameters )
 
 
 class ExpItem(models.Model):

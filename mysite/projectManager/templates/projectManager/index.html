@@ -29,6 +29,19 @@
 </ul>
 {% endif %}
 
+<h1>List of Overdued Todos</h1>
+
+{% if overdued_todo_list %}
+<ul>
+    {% for todo in overdued_todo_list %}
+    <li><a href="{% url 'project:detail' todo.project.id %}">{{ todo.project }}</a>
+		: {{ todo.todo_text }} 
+		: {{ todo.getDday }} day{{ todo.getDday | pluralize }} left
+    </li>
+    {% endfor %}
+</ul>
+{% endif %}
+
 
 <h1>List of Experimental Results</h1>
 

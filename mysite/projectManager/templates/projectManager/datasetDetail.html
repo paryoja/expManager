@@ -6,11 +6,21 @@
 
 <h1>Dataset: {{ dataset.name }} </h1>
 
-Is synthetic: {{ dataset.is_synthethic }}
+Is synthetic: {{ dataset.is_synthetic }}
 
 {% if dataset.is_synthetic %}
 <br/>
-Synthetic parameters: {{ dataset.synthetic_parameters }}
+Synthetic parameters:
+
+<table>
+{% for attribute, value in dataset.parameterToList %}
+<tr>
+	<td align="left">{{ attribute }}</td>
+	<td align="right">{{ value }}</td>
+<tr>
+{% endfor %}
+</table>
+
 {% endif %}
 
 
@@ -43,4 +53,8 @@ Synthetic parameters: {{ dataset.synthetic_parameters }}
 {% endif %}
 
 
+<h2>Averaged Result</h2>
+Todo <br/>
 
+<center><a href="{% url 'project:exp' dataset.project.id %}">To experiments</a></center>
+<center><a href="{% url 'project:index' %}">To main menu</a></center>

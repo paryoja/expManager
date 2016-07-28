@@ -4,6 +4,8 @@
 {% if error_message %}<p><strong><font color="red">{{ error_message }}</font></strong></p>{% endif %}
 
 <h1>List of Projects</h1>
+<a href="{% static 'projectManager/expUploader/uploadExperiment.py' %}" download>Download expUploader</a><br/>
+wget http://147.46.143.74:8000{% static 'projectManager/expUploader/uploadExperiment.py' %}<br/><br/>
 <a href="{% url 'project:projectForm' %}">Add a new project</a>
 {% if project_list %}
 <ul>

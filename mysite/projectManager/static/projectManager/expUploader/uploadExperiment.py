@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import json
 import urllib.request
 from datetime import datetime
@@ -55,26 +57,26 @@ class Setting:
             with open('result.html', 'w') as w:
                 w.write(r.text)
 
-    def addDataset(self, name, is_synthetic, synthetic_parameters):
+    def addDataset(self, dataset):
         fromUrl = 'datasetForm/'
         toUrl = 'addDataset/'
 
         post = {
-            'name': name,
-            'is_synthetic': is_synthetic,
+            'name': dataset['name'],
+            'is_synthetic': dataset['is_synthetic'],
         }
-        if is_synthetic:
-            post['synthetic_parameters'] = synthetic_parameters
+        if dataset['is_synthetic']:
+            post['synthetic_parameters'] = json.dumps( dataset['synthetic_parameters'] )
 
         self.post(post, fromUrl, toUrl, False)
 
-    def addAlgorithm(self, name, version):
+    def addAlgorithm(self, algorithm):
         fromUrl = 'algorithmForm/'
         toUrl = 'addAlgorithm/'
 
         post = {
-            'name': name,
-            'version': version
+            'name': algorithm['name'],
+            'version': algorithm['version']
         }
         self.post(post, fromUrl, toUrl, False)
 
@@ -90,13 +92,13 @@ class Setting:
         # check dataset exists
         datasetId = self.getObject('Dataset', dataset['name'])
         if datasetId == '-1':
-            self.addDataset(dataset['name'], dataset['is_synthetic'], dataset['synthetic_parameters'])
+            self.addDataset(dataset)
             datasetId = self.getObject('Dataset', dataset['name'])
 
         # check algorithm exists
         algorithmId = self.getObject('Algorithm', algorithm['name'])
         if algorithmId == '-1':
-            self.addAlgorithm(algorithm['name'], algorithm['version'])
+            self.addAlgorithm(algorithm)
             algorithmId = self.getObject('Algorithm', algorithm['name'])
 
         post = {'method': 'Add'}
@@ -108,21 +110,69 @@ class Setting:
 
         self.post(post, 'expForm', 'addExp', False)
 
+    def close(self):
+        self.client.close()
 
-setting = Setting()
+import sys
+import os
+if __name__ == "__main__":
+    if len(sys.argv) == 1:
+        print("There is no input argument")
+        sys.exit(1) 
 
-dataset = {
-    'name': 'synth',
-    'is_synthetic': 'True',
-    'synthetic_parameters': '{ "datasize" : "1000", "dimension" : "6"  }'
-}
+    method = sys.argv[1]
 
-algorithm = {
-    'name': 'MYALGO',
-    'version': '0.1'
-}
+    setting = Setting()
+    if method == 'dataset':
+        print( 'Adding a new dataset' )
 
-parameter = '{ "threshold" : "0.1" }'
-result = '{ "executionTime" : "100", "buildTime" : "10" }'
+        dataset = {}
+        dataset['name'] = sys.argv[2]
+        dataset['is_synthetic'] = sys.argv[3]
+        dataset['synthetic_parameters'] = sys.argv[4]
 
-setting.addExperiment(dataset, algorithm, parameter, result)
+        datasetId = setting.getObject('Dataset', dataset['name'])
+        if datasetId == '-1':
+            setting.addDataset(dataset)
+
+    elif method == 'algorithm':
+        print( 'Adding a new algorithm' )
+
+        algorithm = {}
+        algorithm['name'] = sys.argv[2]
+        algorithm['version'] = sys.argv[3]
+
+        algorithmId = setting.getObject('Algorithm', algorithm['name'])
+        if algorithmId == '-1':
+            setting.addAlgorithm(algorithm)
+
+
+    elif method == 'exp':
+        print( 'Adding a new experiment' )
+        for fileName in os.listdir( 'json' ):
+            if fileName.endswith('.txt'):
+                with open( os.path.join( 'json', fileName ) ) as r:
+                    for line in r:
+                        parsed = json.loads(line)
+
+                        algorithm = parsed[ 'Algorithm' ]
+                        dataset = parsed[ 'Dataset' ]
+                        parameter = json.dumps( parsed[ 'ParametersUsed' ] )
+                        result = json.dumps( parsed[ 'Result' ] )
+
+                        setting.addExperiment( dataset, algorithm, parameter, result )
+                # move file
+                #os.remove( os.path.join( 'json', fileName ) )
+                os.rename( os.path.join( 'json', fileName ), os.path.join( 'json', 'uploaded', fileName ) )
+
+    setting.close()
+
+    #algorithm = {
+    #    'name': 'MYALGO',
+    #    'version': '0.1'
+    #}
+
+    #parameter = '{ "threshold" : "0.1" }'
+    #result = '{ "executionTime" : "100", "buildTime" : "10" }'
+
+    #setting.addExperiment(dataset, algorithm, parameter, result)

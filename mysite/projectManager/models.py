@@ -10,10 +10,14 @@ class Project(models.Model):
     pub_date = models.DateTimeField('date published')
     has_experiments = models.BooleanField(default=False)
     git_url = models.TextField(null=True)
-    experimentParams = models.TextField(null=True)
+    paramFilter = models.TextField(null=True)
+    resultFilter = models.TextField(null=True)
 
-    def getParamList(self):
-        return self.experimentParams.split(',')
+    def getParamFilter(self):
+        return self.paramFilter.split(',')
+
+    def getResultFilter(self):
+        return self.resultFilter.split(',')
 
     def __str__(self):
         return self.project_text
@@ -24,7 +28,7 @@ class TodoItem(models.Model):
     todo_text = models.CharField(max_length=200)
     level = models.IntegerField(default=0)
     pub_date = models.DateTimeField('date published')
-    deadline_date = models.DateTimeField('')
+    deadline_date = models.DateTimeField('deadline date')
     completed_date = models.DateTimeField(null=True)
     done = models.BooleanField()
 
@@ -42,6 +46,7 @@ class Algorithm(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE, null=True)
     name = models.TextField('Algorithm name')
     version = models.CharField(max_length=10)
+    status = models.CharField(max_length=20)
 
     def __str__(self):
         return self.name + ':' + self.project.project_text
@@ -71,21 +76,27 @@ class ExpItem(models.Model):
     def __str__(self):
         return self.exp_date.strftime("%y-%m-%d %H:%M:%S")
 
-    def toPrintList(self):
-        l = []
-        params = self.project.experimentParams.split(",")
-        result = toDictionary(self.result)
+    def toParamValueList(self):
+        params = self.project.getParamFilter()
+        values = toDictionary(self.parameter)
+        return self.toMatchedList(params, values)
 
+    def toResultValueList(self):
+        params = self.project.getResultFilter()
+        values = toDictionary(self.result)
+        return self.toMatchedList(params, values)
+
+    def toMatchedList(self, params, values):
+        l = []
         for par in params:
             try:
-                l.append(result[par.strip()])
+                l.append(values[par.strip()])
             except KeyError:
                 l.append('Null')
-
         return l
 
-    def toList(self):
-        return toList(self.parameter) + toList(self.result)
+    #def toList(self):
+    #    return toList(self.parameter) + toList(self.result)
 
 
 class ExpTodo(models.Model):

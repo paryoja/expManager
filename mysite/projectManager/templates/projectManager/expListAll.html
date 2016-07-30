@@ -6,7 +6,6 @@
 
 <h1> Experimental results for {{ project.project_text }}</h1>
 
-
 <h2>List of Experiments</h2>
 
 <a href="{% url 'project:expForm' project.id %}">Add a new experimental result</a><br/><br/>
@@ -25,9 +24,8 @@
         <td>View details</td>
     </tr>
 
-	<h3>There are {{ project.expitem_set.all.count }} experiment{{ project.expitem_set.all.count | pluralize }}: 
-		<a href="{% url 'project:expListAll' project.id %}">See all</a></h3>
-    {% for exp in latest_exp_list %}
+	<h3>There are {{ project.expitem_set.all.count }} experiment{{ project.expitem_set.all.count | pluralize }}</h3>
+    {% for exp in project.expitem_set.all %}
     <tr>
         <td>{{ exp }}</td>
         <td>{{ exp.algorithm.name }}</td>
@@ -43,44 +41,6 @@
     {% endfor %}
 </table>
 {% endif %}
-
-<h2>List of graphs </h2>
-
-List experiments to do <br/>
-
-
-<h2>List of algorithms</h2>
-<a href="{% url 'project:algorithmForm' project.id %}">Add an algorithm</a><br/><br/>
-<table>
-    <tr>
-        <td>Name</td>
-        <td>Version</td>
-    </tr>
-
-    {% for algorithm in project.algorithm_set.all %}
-    <tr>
-        <td><a href="{% url 'project:algorithmDetail' project.id algorithm.id %}">{{ algorithm.name }}</a></td>
-        <td>{{ algorithm.version }}</td>
-    </tr>
-    {% endfor %}
-
-</table>
-
-<h2>List of Dataset</h2>
-<a href="{% url 'project:datasetForm' project.id %}">Add a dataset</a><br/><br/>
-<table>
-    <tr>
-        <td>Name</td>
-        <td>Is synthetic</td>
-    </tr>
-
-    {% for dataset in project.dataset_set.all %}
-    <tr>
-        <td><a href="{% url 'project:datasetDetail' project.id dataset.id %}">{{ dataset.name }}</td>
-        <td>{{ dataset.is_synthetic }}</td>
-    </tr>
-    {% endfor %}
-</table>
 
 <center>
     <a href="{% url 'project:detail' project.id %}">To project detail</a><br/>

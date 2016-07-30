@@ -9,7 +9,10 @@
 {{ expitem.project }}
 
 <h2>Dataset</h2>
-{{ expitem.dataset }}
+<a href="{% url 'project:datasetDetail' expitem.project.id expitem.dataset.id %}">{{ expitem.dataset.name }}</a>
+
+<h2>Algorithm</h2>
+<a href="{% url 'project:algorithmDetail' expitem.project.id expitem.algorithm.id %}">{{ expitem.algorithm.name }}</a>
 
 <!-- parameter -->
 <h2>Paramters</h2>
@@ -38,7 +41,7 @@
 </table>
 {% endif %}
 
-<h2>Averaged Result</h2>
+<h2>Related Results</h2>
 Todo <br/>
 
 <center><a href="{% url 'project:exp' expitem.project.id %}">To experiments</a></center>

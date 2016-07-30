@@ -16,9 +16,11 @@ Version: {{ algorithm.version }}
 <table>
     <tr>
         <td>Date</td>
-        <td>Algorithm</td>
         <td>Dataset</td>
-        {% for param in algorithm.project.getParamList %}
+        {% for param in algorithm.project.getParamFilter %}
+        <td>{{ param }}</td>
+        {% endfor %}
+        {% for param in algorithm.project.getResultFilter %}
         <td>{{ param }}</td>
         {% endfor %}
         <td>View details</td>
@@ -27,9 +29,11 @@ Version: {{ algorithm.version }}
     {% for exp in algorithm.expitem_set.all %}
     <tr>
         <td>{{ exp }}</td>
-        <td>{{ exp.algorithm.name }}</td>
         <td>{{ exp.dataset.name }}</td>
-        {% for value in exp.toPrintList %}
+        {% for value in exp.toParamValueList %}
+        <td>{{ value }}</td>
+        {% endfor %}
+        {% for value in exp.toResultValueList %}
         <td>{{ value }}</td>
         {% endfor %}
         <td><a href="{% url 'project:expDetail' exp.id %}">detail</a></td>
@@ -39,4 +43,5 @@ Version: {{ algorithm.version }}
 {% endif %}
 
 
-
+<center><a href="{% url 'project:exp' algorithm.project.id %}">To experiments</a></center>
+<center><a href="{% url 'project:index' %}">To main menu</a></center>

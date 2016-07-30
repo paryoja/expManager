@@ -1,11 +1,15 @@
+<html>
+
+
+<head>
 {% load staticfiles %}
 <link rel="stylesheet" type="text/css" href="{% static 'projectManager/css/base.css' %}"/>
 <link rel="stylesheet" type="text/css" href="{% static 'projectManager/css/dashboard.css' %}"/>
 {% if error_message %}<p><strong><font color="red">{{ error_message }}</font></strong></p>{% endif %}
+</head>
 
+<body>
 <h1>List of Projects</h1>
-<a href="{% static 'projectManager/expUploader/uploadExperiment.py' %}" download>Download expUploader</a><br/>
-wget http://147.46.143.74:8000{% static 'projectManager/expUploader/uploadExperiment.py' %}<br/><br/>
 <a href="{% url 'project:projectForm' %}">Add a new project</a>
 {% if project_list %}
 <ul>
@@ -18,34 +22,9 @@ wget http://147.46.143.74:8000{% static 'projectManager/expUploader/uploadExperi
 {% endif %}
 
 
-<h1>List of Urgent Todos</h1>
-
-{% if todo_list %}
-<ul>
-    {% for todo in todo_list %}
-    <li><a href="{% url 'project:detail' todo.project.id %}">{{ todo.project }}</a>
-		: {{ todo.todo_text }} 
-		: {{ todo.getDday }} day{{ todo.getDday | pluralize }} left
-    </li>
-    {% endfor %}
-</ul>
-{% endif %}
-
-<h1>List of Overdued Todos</h1>
-
-{% if overdued_todo_list %}
-<ul>
-    {% for todo in overdued_todo_list %}
-    <li><a href="{% url 'project:detail' todo.project.id %}">{{ todo.project }}</a>
-		: {{ todo.todo_text }} 
-		: {{ todo.getDday }} day{{ todo.getDday | pluralize }} left
-    </li>
-    {% endfor %}
-</ul>
-{% endif %}
-
-
 <h1>List of Experimental Results</h1>
+<a href="{% static 'projectManager/expUploader/uploadExperiment.py' %}" download>Download expUploader</a><br/>
+wget http://147.46.143.74:8000{% static 'projectManager/expUploader/uploadExperiment.py' %}<br/><br/>
 
 {% if project_list %}
 <ul>
@@ -59,6 +38,49 @@ wget http://147.46.143.74:8000{% static 'projectManager/expUploader/uploadExperi
 <p>No projects are available. <a href="{% url 'project:projectForm' %}">Add a new one.</a></p>
 {% endif %}
 
+
+
+<h1>List of Urgent Todos</h1>
+{% if todo_list %}
+<ul>
+    {% for todo in todo_list %}
+    <li><a href="{% url 'project:detail' todo.project.id %}">{{ todo.project }}</a>
+		: {{ todo.todo_text }} :
+		{% if todo.getDday < 0 %}
+        <font color="red">{{ todo.getMinusDday }} day{{ todo.getDday | pluralize }} delayed</font>
+        {% else %}
+        {{ todo.getDday }} day{{ todo.getDday | pluralize }} left
+        {% endif %}
+    </li>
+    {% endfor %}
+</ul>
+{% endif %}
+
+<h1>List of Overdued Todos</h1>
+
+{% if overdued_todo_list %}
+<ul>
+    {% for todo in overdued_todo_list %}
+    <li><a href="{% url 'project:detail' todo.project.id %}">{{ todo.project }}</a>
+		: {{ todo.todo_text }} 
+		: <font color="red">{{ todo.getMinusDday }} day{{ todo.getDday | pluralize }} delayed</font>
+    </li>
+    {% endfor %}
+</ul>
+{% endif %}
+
+<h1>List of Algorithms</h1>
+
+{% if algorithm_list %}
+<ul>
+	{% for algorithm in algorithm_list %}
+	<li>{{ algorithm.name }} (Status: {{ algorithm.status }})</li>
+	{% endfor %}
+</ul>
+{% endif %}
+
+
+
 <h1>List of Servers</h1>
 
 <a href="{% url 'project:addServerForm' %}">Add a new server</a>
@@ -66,7 +88,10 @@ wget http://147.46.143.74:8000{% static 'projectManager/expUploader/uploadExperi
 {% if server_list %}
 <ul>
     {% for server in server_list %}
-    <li><a href="{% url 'project:servers' server.id %}">{{ server.server_name }}</a></li>
+	<li><a href="{% url 'project:servers' server.id %}">{{ server.server_name }}: {{ server.server_ip }}</a></li>
     {% endfor %}
 </ul>
 {% endif %}
+
+</body>
+</html>

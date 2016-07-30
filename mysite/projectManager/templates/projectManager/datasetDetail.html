@@ -23,6 +23,35 @@ Synthetic parameters:
 
 {% endif %}
 
+<h2>Averaged Result</h2>
+{% if avg_alg_list %}
+<table>
+	<tr>
+		<td>Algorithm</td>
+        {% for param in param_filter %}
+		<td>{{ param }}</td>
+		{% endfor %}
+		{% for result in result_filter %}
+		<td>{{ result }}</td>
+		{% endfor %}
+	</tr>
+
+	{% for alg, exp in avg_alg_list.items %}
+	<tr>
+		<td>{{ alg.0.name }}</td>
+		{% for value in alg.1 %}
+		<td>{{ value }}</td>
+		{% endfor %}
+		
+		{% for value in exp %}
+		<td>{{ value }}</td>
+		{% endfor %}
+	</tr>
+	{% endfor %}
+</table>
+
+{% endif %}
+
 
 <h2>Experiments</h2>
 
@@ -31,8 +60,10 @@ Synthetic parameters:
     <tr>
         <td>Date</td>
         <td>Algorithm</td>
-        <td>Dataset</td>
-        {% for param in dataset.project.getParamList %}
+        {% for param in dataset.project.getParamFilter %}
+        <td>{{ param }}</td>
+        {% endfor %}
+        {% for param in dataset.project.getResultFilter %}
         <td>{{ param }}</td>
         {% endfor %}
         <td>View details</td>
@@ -41,9 +72,11 @@ Synthetic parameters:
     {% for exp in dataset.expitem_set.all %}
     <tr>
         <td>{{ exp }}</td>
-        <td>{{ exp.algorithm.name }}</td>
-        <td>{{ exp.dataset.name }}</td>
-        {% for value in exp.toPrintList %}
+		<td><a href="{% url 'project:algorithmDetail' exp.project.id exp.algorithm.id %}">{{ exp.algorithm.name }}</a></td>
+        {% for value in exp.toParamValueList %}
+        <td>{{ value }}</td>
+        {% endfor %}
+        {% for value in exp.toResultValueList %}
         <td>{{ value }}</td>
         {% endfor %}
         <td><a href="{% url 'project:expDetail' exp.id %}">detail</a></td>
@@ -51,10 +84,6 @@ Synthetic parameters:
     {% endfor %}
 </table>
 {% endif %}
-
-
-<h2>Averaged Result</h2>
-Todo <br/>
 
 <center><a href="{% url 'project:exp' dataset.project.id %}">To experiments</a></center>
 <center><a href="{% url 'project:index' %}">To main menu</a></center>

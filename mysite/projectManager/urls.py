@@ -24,6 +24,7 @@ urlpatterns = [
     url(r'^(?P<pk>[0-9]+)/expDetail/$', views.exp, name='expDetail'),
     url(r'^(?P<project_id>[0-9]+)/addExp/$', views.addExp, name='addExp'),
     url(r'^(?P<project_id>[0-9]+)/expForm/$', views.expForm, name='expForm'),
+    url(r'^(?P<pk>[0-9]+)/expListAll/$', views.ExpListAllView.as_view(), name='expListAll'),
 
     # related with todo
     url(r'^(?P<project_id>[0-9]+)/addTodo/$', views.addTodo, name='addTodo'),

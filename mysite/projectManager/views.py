@@ -5,6 +5,7 @@ from django.shortcuts import get_object_or_404, render
 from django.utils import timezone
 from django.views import generic
 
+from dateutil.parser import parse
 from .models import Algorithm, Project, TodoItem, Dataset, ExpItem, Server
 from .utils import *
 
@@ -12,9 +13,12 @@ from .utils import *
 # Create your views here.
 
 def index(request):
+    unfinished = TodoItem.objects.filter(done=False)
     return render(request, 'projectManager/index.html', {
         'project_list': Project.objects.all(),
-        'todo_list': TodoItem.objects.filter(level=0).filter(done=False),
+        'todo_list': unfinished.filter(level=0).order_by('deadline_date'),
+        'overdued_todo_list' : unfinished.filter(deadline_date__lt = timezone.now()).order_by('deadline_date'), 
+        'algorithm_list' : Algorithm.objects.all(),
         'server_list': Server.objects.all()})
 
 
@@ -40,6 +44,17 @@ class ExpView(generic.DetailView):
     model = Project
     template_name = 'projectManager/exp.html'
 
+    def get_context_data(self, **kwargs):
+        context = super(ExpView, self).get_context_data(**kwargs)
+        context[ 'latest_exp_list' ] = context[ 'project' ].expitem_set.all().order_by('-exp_date')[:10]
+
+        return context
+
+
+class ExpListAllView(generic.DetailView):
+    model = Project
+    template_name = 'projectManager/expListAll.html'
+
 
 class AlgorithmDetailView(generic.DetailView):
     model = Algorithm
@@ -49,6 +64,61 @@ class AlgorithmDetailView(generic.DetailView):
 class DatasetDetailView(generic.DetailView):
     model = Dataset
     template_name = 'projectManager/datasetDetail.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(DatasetDetailView, self).get_context_data(**kwargs)
+        
+        dataset = context[ 'dataset' ]
+        expList = ExpItem.objects.filter(dataset = dataset)
+
+        paramFilter = dataset.project.getParamFilter()
+
+        exp_alg_list = {}
+        for exp in expList:
+            alg = exp.algorithm
+            if alg in exp_alg_list:
+                alg_param = exp_alg_list[ alg ]
+            else:
+                alg_param = {}
+                exp_alg_list[ alg ] = alg_param
+
+            exp_param = tuple(exp.toParamValueList())
+            
+            if exp_param in alg_param:
+                alg_param[ exp_param ].append( exp )
+            else:
+                alg_param[ exp_param ] = [ exp ]
+
+
+        resultFilter = dataset.project.getResultFilter()
+
+        avg_alg_list = {}
+        for key, val in exp_alg_list.items():
+            for k, v in val.items():
+                result = []
+                print( k )
+                print( v )
+
+                for par in resultFilter:
+                    total = 0.0
+                    count = 0.0
+                    for exp in v:
+                        total += float( toDictionary( exp.result )[ par ] )
+                        count += 1
+                
+                    result.append( total / count )
+                # append count
+                result.append( count )
+                avg_alg_list[ (key, k) ] = result 
+
+        # count
+        resultFilter.append( 'count' )
+
+        context[ 'avg_alg_list' ] = avg_alg_list
+        context[ 'param_filter' ] = paramFilter
+        context[ 'result_filter' ] = resultFilter
+
+        return context
 
 
 def exp(request, pk):
@@ -74,7 +144,8 @@ def addTodo(request, project_id):
     if text == "":
         return render(request, 'projectManager/detail.html',
                       {'project': project, 'error_message': 'Todo text is empty'})
-    date = request.POST['deadline_date'] + " " + request.POST['deadline_time'] + ":00"
+    
+    date = parse( request.POST['deadline_date'] + " " + request.POST['deadline_time'] + ":00 KST")
     level = request.POST['level']
     todo = TodoItem(project=project, todo_text=text, level=level, pub_date=timezone.now(), deadline_date=date,
                     done=False)
@@ -127,7 +198,7 @@ def addExp(request, project_id):
     project = get_object_or_404(Project, pk=project_id)
     dataset = get_object_or_404(Dataset, pk=request.POST['dataset_name'])
     algorithm = get_object_or_404(Algorithm, pk=request.POST['algorithm_name'])
-    exp_date = request.POST['pub_date']
+    exp_date = parse( request.POST['pub_date'] + " KST" )
     parameter = request.POST['parameter']
     result = request.POST['result']
     print(request.POST)
@@ -146,6 +217,7 @@ def modifyTodo(request, project_id, todo_id):
     print(request)
     if request.POST['method'] == 'Done':
         todo.done = True
+        todo.completed_date = timezone.now()
         todo.save()
     elif request.POST['method'] == 'Delete':
         todo.delete()

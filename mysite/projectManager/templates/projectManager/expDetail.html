@@ -1,8 +1,11 @@
+{% extends "projectManager/base.html" %}
+{% block title %}Exp {{ expitem.id }} Details{% endblock %}
+{% block additionalStyle %}
 {% load staticfiles %}
-<link rel="stylesheet" type="text/css" href="{% static 'projectManager/css/base.css' %}"/>
-<link rel="stylesheet" type="text/css" href="{% static 'projectManager/css/dashboard.css' %}"/>
 <link rel="stylesheet" type="text/css" href="{% static 'projectManager/css/style.css' %}"/>
+{% endblock %}
 
+{% block body %}
 <h1>Exp {{ expitem.id }}) {{ expitem }} detail</h1>
 
 <h2>Project</h2>
@@ -21,7 +24,11 @@
     {% for attribute, value in parameterList %}
     <tr>
         <td align="left">{{ attribute }}</td>
-        <td align="right">{{ value }}</td>
+		{% if value.isdigit %}
+        <td align="right">{{ value | floatformat }}</td>
+		{% else %}
+		<td align="right">{{ value }}</td>
+		{% endif %}
     </tr>
     {% endfor %}
 </table>
@@ -35,7 +42,11 @@
     {% for attribute, value in parsedResult %}
     <tr>
         <td align="left">{{ attribute }}</td>
-        <td align="right">{{ value }}</td>
+		{% if value.isdigit %}
+        <td align="right">{{ value | floatformat }}</td>
+		{% else %}
+		<td align="right">{{ value }}</td>
+		{% endif %}
     </tr>
     {% endfor %}
 </table>
@@ -46,3 +57,4 @@ Todo <br/>
 
 <center><a href="{% url 'project:exp' expitem.project.id %}">To experiments</a></center>
 <center><a href="{% url 'project:index' %}">To main menu</a></center>
+{% endblock %}

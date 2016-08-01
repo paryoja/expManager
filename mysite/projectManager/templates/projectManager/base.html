@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+{% load staticfiles %}
+<head>
+	<title>{% block title %}{% endblock %}</title>
+	<link rel="stylesheet" type="text/css" href="{% static 'projectManager/css/base.css' %}"/>
+	<link rel="stylesheet" type="text/css" href="{% static 'projectManager/css/dashboard.css' %}"/>
+	{% block additionalStyle %}{% endblock %}
+</head>
+
+<body>
+	{% block body %}{% endblock %}
+</body>
+</html>

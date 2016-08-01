@@ -25,8 +25,7 @@ Source git url: {{ project.git_url }}<br/>
 <h2>Todo List</h2>
 <!-- Remaining todos -->
 <ul>
-    {% for todo in project.todoitem_set.all %}
-    {% if todo.done == False %}
+    {% for todo in todo_list %}
     <li>
         <form action="{% url 'project:modifyTodo' project.id todo.id %}" method="post">{% csrf_token %}
             Level: {{ todo.level }},
@@ -39,7 +38,6 @@ Source git url: {{ project.git_url }}<br/>
             <input type="submit" name="method" value="Delete"/>
         </form>
     </li>
-    {% endif %}
     {% endfor %}
 </ul>
 
@@ -65,15 +63,13 @@ Source git url: {{ project.git_url }}<br/>
 <!-- List of completed todos -->
 <h2> Completed Todos </h2>
 <ul>
-    {% for todo in project.todoitem_set.all %}
-    {% if todo.done == True %}
+    {% for todo in completed_list %}
     <li>
         <form action="{% url 'project:modifyTodo' project.id todo.id %}" method="post">{% csrf_token %}
             {{ todo.level }} : {{ todo.todo_text }} {{ todo.completed_date }}
             <input type="submit" name="method" value="Delete"/>
         </form>
     </li>
-    {% endif %}
     {% endfor %}
 </ul>
 

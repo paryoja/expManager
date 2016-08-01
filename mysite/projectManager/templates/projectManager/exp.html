@@ -1,9 +1,11 @@
+{% extends "projectManager/base.html" %}
+{% block title %}Experimental results of {{ project.project_text }} Details{% endblock %}
+{% block additionalStyle %}
 {% load staticfiles %}
-<link rel="stylesheet" type="text/css" href="{% static 'projectManager/css/base.css' %}"/>
-<link rel="stylesheet" type="text/css" href="{% static 'projectManager/css/dashboard.css' %}"/>
 <link rel="stylesheet" type="text/css" href="{% static 'projectManager/css/style.css' %}"/>
+{% endblock %}
 
-
+{% block body %}
 <h1> Experimental results for {{ project.project_text }}</h1>
 
 
@@ -11,6 +13,9 @@
 
 <a href="{% url 'project:expForm' project.id %}">Add a new experimental result</a><br/><br/>
 {% if project.expitem_set.all %}
+<h3>There are {{ project.expitem_set.all.count }} experiment{{ project.expitem_set.all.count | pluralize }}: 
+<a href="{% url 'project:expListAll' project.id %}">See all</a></h3>
+
 <table>
     <tr>
         <td>Date</td>
@@ -25,18 +30,16 @@
         <td>View details</td>
     </tr>
 
-	<h3>There are {{ project.expitem_set.all.count }} experiment{{ project.expitem_set.all.count | pluralize }}: 
-		<a href="{% url 'project:expListAll' project.id %}">See all</a></h3>
     {% for exp in latest_exp_list %}
     <tr>
         <td>{{ exp }}</td>
         <td>{{ exp.algorithm.name }}</td>
         <td>{{ exp.dataset.name }}</td>
 		{% for value in exp.toParamValueList %}
-		<td>{{ value }}</td>
+		<td>{{ value | floatformat }}</td>
 		{% endfor %}
         {% for value in exp.toResultValueList %}
-        <td>{{ value }}</td>
+        <td>{{ value | floatformat }}</td>
         {% endfor %}
         <td><a href="{% url 'project:expDetail' exp.id %}">detail</a></td>
     </tr>
@@ -86,3 +89,4 @@ List experiments to do <br/>
     <a href="{% url 'project:detail' project.id %}">To project detail</a><br/>
     <a href="{% url 'project:index' %}">To main menu</a>
 </center>
+{% endblock %}

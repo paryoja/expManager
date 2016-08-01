@@ -36,15 +36,15 @@ Synthetic parameters:
 		{% endfor %}
 	</tr>
 
-	{% for alg, exp in avg_alg_list.items %}
+	{% for alg, exp in avg_alg_list %}
 	<tr>
 		<td>{{ alg.0.name }}</td>
 		{% for value in alg.1 %}
-		<td>{{ value }}</td>
+		<td>{{ value | floatformat }}</td>
 		{% endfor %}
 		
 		{% for value in exp %}
-		<td>{{ value }}</td>
+		<td>{{ value | floatformat }}</td>
 		{% endfor %}
 	</tr>
 	{% endfor %}
@@ -74,10 +74,10 @@ Synthetic parameters:
         <td>{{ exp }}</td>
 		<td><a href="{% url 'project:algorithmDetail' exp.project.id exp.algorithm.id %}">{{ exp.algorithm.name }}</a></td>
         {% for value in exp.toParamValueList %}
-        <td>{{ value }}</td>
+        <td>{{ value | floatformat }}</td>
         {% endfor %}
         {% for value in exp.toResultValueList %}
-        <td>{{ value }}</td>
+        <td>{{ value | floatformat }}</td>
         {% endfor %}
         <td><a href="{% url 'project:expDetail' exp.id %}">detail</a></td>
     </tr>

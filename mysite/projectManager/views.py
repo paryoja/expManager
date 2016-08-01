@@ -38,6 +38,13 @@ class ServerView(generic.DetailView):
 class DetailView(generic.DetailView):
     model = Project
     template_name = 'projectManager/detail.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super(DetailView, self).get_context_data(**kwargs)
+        context[ 'todo_list' ] = context['project'].todoitem_set.filter(done=False).order_by('level')
+        context[ 'completed_list' ] = context['project'].todoitem_set.filter(done=True).order_by('-completed_date')
+
+        return context
 
 
 class ExpView(generic.DetailView):
@@ -46,7 +53,7 @@ class ExpView(generic.DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(ExpView, self).get_context_data(**kwargs)
-        context[ 'latest_exp_list' ] = context[ 'project' ].expitem_set.all().order_by('-exp_date')[:10]
+        context[ 'latest_exp_list' ] = context[ 'project' ].expitem_set.order_by('-exp_date')[:10]
 
         return context
 
@@ -96,14 +103,16 @@ class DatasetDetailView(generic.DetailView):
         for key, val in exp_alg_list.items():
             for k, v in val.items():
                 result = []
-                print( k )
-                print( v )
+
+                resultDictionary = {}
+                for exp in v:
+                    resultDictionary[ exp ] = toDictionary( exp.result )
 
                 for par in resultFilter:
                     total = 0.0
                     count = 0.0
                     for exp in v:
-                        total += float( toDictionary( exp.result )[ par ] )
+                        total += float( resultDictionary[ exp ][ par ] )
                         count += 1
                 
                     result.append( total / count )
@@ -114,7 +123,8 @@ class DatasetDetailView(generic.DetailView):
         # count
         resultFilter.append( 'count' )
 
-        context[ 'avg_alg_list' ] = avg_alg_list
+        import operator
+        context[ 'avg_alg_list' ] = sorted( avg_alg_list.items(), key=operator.itemgetter(0))
         context[ 'param_filter' ] = paramFilter
         context[ 'result_filter' ] = resultFilter
 
@@ -145,7 +155,12 @@ def addTodo(request, project_id):
         return render(request, 'projectManager/detail.html',
                       {'project': project, 'error_message': 'Todo text is empty'})
     
-    date = parse( request.POST['deadline_date'] + " " + request.POST['deadline_time'] + ":00 KST")
+    timeStr = request.POST['deadline_date'] + " " + request.POST['deadline_time'] + ":00 KST"
+    date = parse(timeStr)
+    if date < timezone.now():
+        return render(request, 'projectManager/detail.html',
+                      {'project': project, 'error_message': 'Invalid deadline ' + timeStr})
+
     level = request.POST['level']
     todo = TodoItem(project=project, todo_text=text, level=level, pub_date=timezone.now(), deadline_date=date,
                     done=False)
@@ -201,7 +216,6 @@ def addExp(request, project_id):
     exp_date = parse( request.POST['pub_date'] + " KST" )
     parameter = request.POST['parameter']
     result = request.POST['result']
-    print(request.POST)
 
     expitem = ExpItem(project=project, dataset=dataset, algorithm=algorithm, exp_date=exp_date, parameter=parameter,
                       result=result)

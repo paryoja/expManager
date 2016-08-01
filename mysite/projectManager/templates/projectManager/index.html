@@ -1,14 +1,8 @@
-<html>
+{% extends "projectManager/base.html" %}
+{% block title %}My Projects{% endblock %}
 
-
-<head>
+{% block body %}
 {% load staticfiles %}
-<link rel="stylesheet" type="text/css" href="{% static 'projectManager/css/base.css' %}"/>
-<link rel="stylesheet" type="text/css" href="{% static 'projectManager/css/dashboard.css' %}"/>
-{% if error_message %}<p><strong><font color="red">{{ error_message }}</font></strong></p>{% endif %}
-</head>
-
-<body>
 <h1>List of Projects</h1>
 <a href="{% url 'project:projectForm' %}">Add a new project</a>
 {% if project_list %}
@@ -91,7 +85,9 @@ wget http://147.46.143.74:8000{% static 'projectManager/expUploader/uploadExperi
 	<li><a href="{% url 'project:servers' server.id %}">{{ server.server_name }}: {{ server.server_ip }}</a></li>
     {% endfor %}
 </ul>
-{% endif %}
 
-</body>
-</html>
+
+<h1>Useful Sites</h1>
+<a href="https://www.eclipse.org">Eclipse</a>
+{% endif %}
+{% endblock %}

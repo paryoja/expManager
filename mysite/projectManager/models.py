@@ -78,6 +78,7 @@ class ExpItem(models.Model):
     exp_date = models.DateTimeField('date experimented')
     parameter = models.TextField('parameters used')
     result = models.TextField('result')
+    failed = models.BooleanField('failed', default=False)
 
     def __str__(self):
         return self.exp_date.strftime("%y-%m-%d %H:%M:%S")

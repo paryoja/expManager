@@ -1,12 +1,8 @@
-<html>
-{% load staticfiles %}
-<head>
-<link rel="stylesheet" type="text/css" href="{% static 'projectManager/css/base.css' %}"/>
-<link rel="stylesheet" type="text/css" href="{% static 'projectManager/css/dashboard.css' %}"/>
-<link rel="stylesheet" type="text/css" href="{% static 'admin/css/changelists.css' %}"/>
-</head>
+{% extends "projectManager/base.html" %}
+{% block title %}{{ project.project_text }} Project{% endblock %}
 
-<body>
+{% block body %}
+{% load staticfiles %}
 
 <h1>Project {{ project.project_text }}</h1>
 
@@ -91,5 +87,4 @@ Author Title Link
 
 
 <center><a href="{% url 'project:index' %}">To main menu</a></center>
-</body>
-</html>
+{% endblock %}

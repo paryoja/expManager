@@ -1,3 +1,4 @@
+from dateutil.parser import parse
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect
@@ -5,7 +6,6 @@ from django.shortcuts import get_object_or_404, render
 from django.utils import timezone
 from django.views import generic
 
-from dateutil.parser import parse
 from .models import Algorithm, Project, TodoItem, Dataset, ExpItem, Server
 from .utils import *
 
@@ -17,8 +17,8 @@ def index(request):
     return render(request, 'projectManager/index.html', {
         'project_list': Project.objects.all(),
         'todo_list': unfinished.filter(level=0).order_by('deadline_date'),
-        'overdued_todo_list' : unfinished.filter(deadline_date__lt = timezone.now()).order_by('deadline_date'), 
-        'algorithm_list' : Algorithm.objects.all(),
+        'overdued_todo_list': unfinished.filter(deadline_date__lt=timezone.now()).order_by('deadline_date'),
+        'algorithm_list': Algorithm.objects.all(),
         'server_list': Server.objects.all()})
 
 
@@ -38,11 +38,11 @@ class ServerView(generic.DetailView):
 class DetailView(generic.DetailView):
     model = Project
     template_name = 'projectManager/detail.html'
-    
+
     def get_context_data(self, **kwargs):
         context = super(DetailView, self).get_context_data(**kwargs)
-        context[ 'todo_list' ] = context['project'].todoitem_set.filter(done=False).order_by('level')
-        context[ 'completed_list' ] = context['project'].todoitem_set.filter(done=True).order_by('-completed_date')
+        context['todo_list'] = context['project'].todoitem_set.filter(done=False).order_by('level')
+        context['completed_list'] = context['project'].todoitem_set.filter(done=True).order_by('-completed_date')
 
         return context
 
@@ -53,7 +53,7 @@ class ExpView(generic.DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(ExpView, self).get_context_data(**kwargs)
-        context[ 'latest_exp_list' ] = context[ 'project' ].expitem_set.order_by('-exp_date')[:10]
+        context['latest_exp_list'] = context['project'].expitem_set.order_by('-exp_date')[:10]
 
         return context
 
@@ -74,9 +74,9 @@ class DatasetDetailView(generic.DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(DatasetDetailView, self).get_context_data(**kwargs)
-        
-        dataset = context[ 'dataset' ]
-        expList = ExpItem.objects.filter(dataset = dataset)
+
+        dataset = context['dataset']
+        expList = ExpItem.objects.filter(dataset=dataset)
 
         paramFilter = dataset.project.getParamFilter()
 
@@ -84,18 +84,17 @@ class DatasetDetailView(generic.DetailView):
         for exp in expList:
             alg = exp.algorithm
             if alg in exp_alg_list:
-                alg_param = exp_alg_list[ alg ]
+                alg_param = exp_alg_list[alg]
             else:
                 alg_param = {}
-                exp_alg_list[ alg ] = alg_param
+                exp_alg_list[alg] = alg_param
 
             exp_param = tuple(exp.toParamValueList())
-            
-            if exp_param in alg_param:
-                alg_param[ exp_param ].append( exp )
-            else:
-                alg_param[ exp_param ] = [ exp ]
 
+            if exp_param in alg_param:
+                alg_param[exp_param].append(exp)
+            else:
+                alg_param[exp_param] = [exp]
 
         resultFilter = dataset.project.getResultFilter()
 
@@ -106,27 +105,27 @@ class DatasetDetailView(generic.DetailView):
 
                 resultDictionary = {}
                 for exp in v:
-                    resultDictionary[ exp ] = toDictionary( exp.result )
+                    resultDictionary[exp] = toDictionary(exp.result)
 
                 for par in resultFilter:
                     total = 0.0
                     count = 0.0
                     for exp in v:
-                        total += float( resultDictionary[ exp ][ par ] )
+                        total += float(resultDictionary[exp][par])
                         count += 1
-                
-                    result.append( total / count )
-                # append count
-                result.append( count )
-                avg_alg_list[ (key, k) ] = result 
 
-        # count
-        resultFilter.append( 'count' )
+                    result.append(total / count)
+                # append count
+                result.append(count)
+                avg_alg_list[(key, k)] = result
+
+                # count
+        resultFilter.append('count')
 
         import operator
-        context[ 'avg_alg_list' ] = sorted( avg_alg_list.items(), key=operator.itemgetter(0))
-        context[ 'param_filter' ] = paramFilter
-        context[ 'result_filter' ] = resultFilter
+        context['avg_alg_list'] = sorted(avg_alg_list.items(), key=operator.itemgetter(0))
+        context['param_filter'] = paramFilter
+        context['result_filter'] = resultFilter
 
         return context
 
@@ -154,7 +153,7 @@ def addTodo(request, project_id):
     if text == "":
         return render(request, 'projectManager/detail.html',
                       {'project': project, 'error_message': 'Todo text is empty'})
-    
+
     timeStr = request.POST['deadline_date'] + " " + request.POST['deadline_time'] + ":00 KST"
     date = parse(timeStr)
     if date < timezone.now():
@@ -185,7 +184,7 @@ def addProject(request):
 def addServer(request):
     server_name = request.POST['server_name']
     server_ip = request.POST['server_ip']
-    
+
     try:
         server = Server.objects.get(server_name=server_name)
     except ObjectDoesNotExist:
@@ -219,7 +218,7 @@ def addExp(request, project_id):
     dataset = get_object_or_404(Dataset, pk=request.POST['dataset_name'])
     algorithm = get_object_or_404(Algorithm, pk=request.POST['algorithm_name'])
     server = get_object_or_404(Server, pk=request.POST['server_name'])
-    exp_date = parse( request.POST['pub_date'] + " KST" )
+    exp_date = parse(request.POST['pub_date'] + " KST")
     parameter = request.POST['parameter']
     result = request.POST['result']
 
@@ -308,7 +307,7 @@ def listDatasets(request, project_id):
 
 def getServerId(request, server_name):
     try:
-        server = Server.objects.get(server_name = server_name)
+        server = Server.objects.get(server_name=server_name)
     except ObjectDoesNotExist:
         return HttpResponse('-1')
 

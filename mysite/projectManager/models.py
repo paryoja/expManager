@@ -62,6 +62,7 @@ class Server(models.Model):
     server_name = models.CharField(max_length=20)
     server_ip = models.GenericIPAddressField()
     server_cpu = models.CharField(max_length=100, null=True)
+
     # memory = models.CharField(max_length=20)
     # os = models.CharField(max_length=20)
 
@@ -79,7 +80,7 @@ class Dataset(models.Model):
         return self.name + ':' + self.project.project_text
 
     def parameterToList(self):
-        return toList( self.synthetic_parameters )
+        return toList(self.synthetic_parameters)
 
 
 class ExpItem(models.Model):
@@ -114,8 +115,8 @@ class ExpItem(models.Model):
                 l.append('Null')
         return l
 
-    #def toList(self):
-    #    return toList(self.parameter) + toList(self.result)
+        # def toList(self):
+        #    return toList(self.parameter) + toList(self.result)
 
 
 class ExpTodo(models.Model):
@@ -128,4 +129,3 @@ class RelatedWork(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     authors = models.TextField(null=True)
     url = models.URLField(null=True)
-

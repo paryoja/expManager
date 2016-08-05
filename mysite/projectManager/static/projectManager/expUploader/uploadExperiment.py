@@ -69,7 +69,7 @@ class Setting:
             'is_synthetic': dataset['is_synthetic'],
         }
         if dataset['is_synthetic']:
-            post['synthetic_parameters'] = json.dumps( dataset['synthetic_parameters'] )
+            post['synthetic_parameters'] = json.dumps(dataset['synthetic_parameters'])
 
         self.post(post, fromUrl, toUrl, False)
 
@@ -90,10 +90,10 @@ class Setting:
         import socket
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         s.connect(('gmail.com', 80))
-        
+
         post = {
-            'server_name' : socket.gethostname(),
-            'server_ip' : s.getsockname()[0]
+            'server_name': socket.gethostname(),
+            'server_ip': s.getsockname()[0]
         }
         print('add server')
         self.post(post, fromUrl, toUrl, False)
@@ -150,18 +150,20 @@ class Setting:
     def close(self):
         self.client.close()
 
+
 import sys
 import os
+
 if __name__ == "__main__":
     if len(sys.argv) == 1:
         print("There is no input argument")
-        sys.exit(1) 
+        sys.exit(1)
 
     method = sys.argv[1]
 
     setting = Setting()
     if method == 'dataset':
-        print( 'Adding a new dataset' )
+        print('Adding a new dataset')
 
         dataset = {}
         dataset['name'] = sys.argv[2]
@@ -173,7 +175,7 @@ if __name__ == "__main__":
             setting.addDataset(dataset)
 
     elif method == 'algorithm':
-        print( 'Adding a new algorithm' )
+        print('Adding a new algorithm')
 
         algorithm = {}
         algorithm['name'] = sys.argv[2]
@@ -185,22 +187,21 @@ if __name__ == "__main__":
 
 
     elif method == 'exp':
-        print( 'Adding a new experiment' )
-        for fileName in os.listdir( 'json' ):
+        print('Adding a new experiment')
+        for fileName in os.listdir('json'):
             if fileName.endswith('.txt'):
-                with open( os.path.join( 'json', fileName ) ) as r:
+                with open(os.path.join('json', fileName)) as r:
                     for line in r:
                         parsed = json.loads(line)
 
-                        algorithm = parsed[ 'Algorithm' ]
-                        dataset = parsed[ 'Dataset' ]
-                        parameter = json.dumps( parsed[ 'ParametersUsed' ] )
-                        result = json.dumps( parsed[ 'Result' ] )
+                        algorithm = parsed['Algorithm']
+                        dataset = parsed['Dataset']
+                        parameter = json.dumps(parsed['ParametersUsed'])
+                        result = json.dumps(parsed['Result'])
 
-                        setting.addExperiment( dataset, algorithm, parameter, result )
+                        setting.addExperiment(dataset, algorithm, parameter, result)
                 # move file
-                #os.remove( os.path.join( 'json', fileName ) )
-                os.rename( os.path.join( 'json', fileName ), os.path.join( 'json', 'uploaded', fileName ) )
+                # os.remove( os.path.join( 'json', fileName ) )
+                os.rename(os.path.join('json', fileName), os.path.join('json', 'uploaded', fileName))
 
     setting.close()
-

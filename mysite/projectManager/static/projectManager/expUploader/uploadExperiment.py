@@ -44,22 +44,25 @@ class Setting:
         self.client = requests.session()
 
     def post(self, post, fromUrl, toUrl, debug):
-        getUrl = urlJoin([self.serverUrl, self.projectId, fromUrl])
-        self.client.get(getUrl)
+        getUrl = urlJoin([self.serverUrl, fromUrl.replace('%d', self.projectId)])
+        get = self.client.get(getUrl)
+        if debug:
+            print(getUrl)
+            print(get)
 
         csrftoken = self.client.cookies['csrftoken']
 
-        Url = urlJoin([self.serverUrl, self.projectId, toUrl])
+        Url = urlJoin([self.serverUrl, toUrl.replace('%d', self.projectId)])
         post['csrfmiddlewaretoken'] = csrftoken
         r = self.client.post(Url, data=post, headers=dict(Referer=Url))
 
         if debug:
-            with open('result.html', 'w') as w:
-                w.write(r.text)
+            with open('result.html', 'wb') as w:
+                w.write(r.text.encode("utf8"))
 
     def addDataset(self, dataset):
-        fromUrl = 'datasetForm/'
-        toUrl = 'addDataset/'
+        fromUrl = '%d/datasetForm/'
+        toUrl = '%d/addDataset/'
 
         post = {
             'name': dataset['name'],
@@ -71,14 +74,39 @@ class Setting:
         self.post(post, fromUrl, toUrl, False)
 
     def addAlgorithm(self, algorithm):
-        fromUrl = 'algorithmForm/'
-        toUrl = 'addAlgorithm/'
+        fromUrl = '%d/algorithmForm/'
+        toUrl = '%d/addAlgorithm/'
 
         post = {
             'name': algorithm['name'],
             'version': algorithm['version']
         }
         self.post(post, fromUrl, toUrl, False)
+
+    def addServer(self):
+        fromUrl = 'serverForm/'
+        toUrl = 'addServer/'
+
+        import socket
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(('gmail.com', 80))
+        
+        post = {
+            'server_name' : socket.gethostname(),
+            'server_ip' : s.getsockname()[0]
+        }
+        print('add server')
+        self.post(post, fromUrl, toUrl, False)
+
+    def getServer(self):
+        import socket
+        requestUrl = urlJoin([self.serverUrl, 'getServerId', socket.gethostname()])
+        print(requestUrl)
+        try:
+            with urllib.request.urlopen(requestUrl) as response:
+                return response.read().decode()
+        except HTTPError:
+            print(requestUrl)
 
     def getObject(self, objectName, name):
         requestUrl = urlJoin([self.serverUrl, self.projectId, 'get' + objectName + 'Id', name])
@@ -101,14 +129,23 @@ class Setting:
             self.addAlgorithm(algorithm)
             algorithmId = self.getObject('Algorithm', algorithm['name'])
 
+        # check server exists
+        serverId = self.getServer()
+        if serverId == '-1':
+            self.addServer()
+            serverId = self.getServer()
+
+        print(serverId)
+
         post = {'method': 'Add'}
         post['pub_date'] = datetime.now()
         post['parameter'] = parameter
         post['algorithm_name'] = algorithmId
         post['dataset_name'] = datasetId
+        post['server_name'] = serverId
         post['result'] = result
 
-        self.post(post, 'expForm', 'addExp', False)
+        self.post(post, '%d/expForm', '%d/addExp', False)
 
     def close(self):
         self.client.close()
@@ -167,12 +204,3 @@ if __name__ == "__main__":
 
     setting.close()
 
-    #algorithm = {
-    #    'name': 'MYALGO',
-    #    'version': '0.1'
-    #}
-
-    #parameter = '{ "threshold" : "0.1" }'
-    #result = '{ "executionTime" : "100", "buildTime" : "10" }'
-
-    #setting.addExperiment(dataset, algorithm, parameter, result)

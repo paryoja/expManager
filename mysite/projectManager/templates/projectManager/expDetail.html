@@ -17,6 +17,11 @@
 <h2>Algorithm</h2>
 <a href="{% url 'project:algorithmDetail' expitem.project.id expitem.algorithm.id %}">{{ expitem.algorithm.name }}</a>
 
+{% if expitem.server %}
+<h2>Server</h2>
+<a href="{% url 'project:servers' expitem.server.id %}">{{ expitem.server.server_name }}</a>
+{% endif %}
+
 <!-- parameter -->
 <h2>Paramters</h2>
 {% if parameterList %}

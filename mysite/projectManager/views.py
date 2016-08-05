@@ -185,7 +185,12 @@ def addProject(request):
 def addServer(request):
     server_name = request.POST['server_name']
     server_ip = request.POST['server_ip']
-    server = Server(server_name=server_name, server_ip=server_ip)
+    
+    try:
+        server = Server.objects.get(server_name=server_name)
+    except ObjectDoesNotExist:
+        server = Server(server_name=server_name, server_ip=server_ip)
+
     server.save()
     return HttpResponseRedirect(reverse('project:index'))
 
@@ -213,12 +218,13 @@ def addExp(request, project_id):
     project = get_object_or_404(Project, pk=project_id)
     dataset = get_object_or_404(Dataset, pk=request.POST['dataset_name'])
     algorithm = get_object_or_404(Algorithm, pk=request.POST['algorithm_name'])
+    server = get_object_or_404(Server, pk=request.POST['server_name'])
     exp_date = parse( request.POST['pub_date'] + " KST" )
     parameter = request.POST['parameter']
     result = request.POST['result']
 
     expitem = ExpItem(project=project, dataset=dataset, algorithm=algorithm, exp_date=exp_date, parameter=parameter,
-                      result=result)
+                      result=result, server=server)
     expitem.save()
 
     return HttpResponseRedirect(reverse('project:exp', args=(project_id,)))
@@ -298,6 +304,15 @@ def listDatasets(request, project_id):
     project = get_object_or_404(Project, pk=project_id)
     return render(request, 'projectManager/json/listDatasets.json', {
         'dataset_list': Dataset.objects.filter(project=project)})
+
+
+def getServerId(request, server_name):
+    try:
+        server = Server.objects.get(server_name = server_name)
+    except ObjectDoesNotExist:
+        return HttpResponse('-1')
+
+    return HttpResponse(server.id)
 
 
 def getProjectId(request, project_name):

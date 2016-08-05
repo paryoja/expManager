@@ -82,7 +82,7 @@ wget http://147.46.143.74:8000{% static 'projectManager/expUploader/uploadExperi
 {% if server_list %}
 <ul>
     {% for server in server_list %}
-	<li><a href="{% url 'project:servers' server.id %}">{{ server.server_name }}: {{ server.server_ip }}</a></li>
+	<li><a href="{% url 'project:servers' server.id %}">{{ server.server_ip }}: {{ server.server_name }}</a></li>
     {% endfor %}
 </ul>
 
@@ -94,6 +94,7 @@ wget http://147.46.143.74:8000{% static 'projectManager/expUploader/uploadExperi
 	<li><a href="https://keras.io/" target="_blank">Keras</a></li>
 	<li><a href="http://hadoop.apache.org/" target="_blank">Hadoop</a></li>
 	<li><a href="http://spark.apache.org/" target="_blank">Spark</a></li>
+	<li><a href="http://www.ubuntu.com/" target="_blank">Ubuntu</a></li>
 	<li><a href="http://snap.stanford.edu/" target="_blank">SNAP datasets</a></li>
 </ul>
 {% endif %}

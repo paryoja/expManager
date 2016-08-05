@@ -18,6 +18,7 @@ urlpatterns = [
     url(r'^servers/(?P<pk>[0-9]+)/$', views.ServerView.as_view(), name='servers'),
     url(r'^serverForm/$', views.addServerForm, name='addServerForm'),
     url(r'^addServer/$', views.addServer, name='addServer'),
+    url(r'^getServerId/(?P<server_name>.+)/$', views.getServerId, name='getServerId'),
 
     # related with experiments
     url(r'^(?P<pk>[0-9]+)/exp/$', views.ExpView.as_view(), name='exp'),

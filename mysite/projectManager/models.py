@@ -58,6 +58,17 @@ class Algorithm(models.Model):
         return self.name < other.name
 
 
+class Server(models.Model):
+    server_name = models.CharField(max_length=20)
+    server_ip = models.GenericIPAddressField()
+    server_cpu = models.CharField(max_length=100, null=True)
+    # memory = models.CharField(max_length=20)
+    # os = models.CharField(max_length=20)
+
+    def __str__(self):
+        return self.server_name
+
+
 class Dataset(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     name = models.TextField(null=True)
@@ -79,6 +90,7 @@ class ExpItem(models.Model):
     parameter = models.TextField('parameters used')
     result = models.TextField('result')
     failed = models.BooleanField('failed', default=False)
+    server = models.ForeignKey(Server, default=None, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
         return self.exp_date.strftime("%y-%m-%d %H:%M:%S")
@@ -112,9 +124,8 @@ class ExpTodo(models.Model):
     pub_date = models.DateTimeField('date published')
 
 
-class Server(models.Model):
-    server_name = models.CharField(max_length=20)
-    server_ip = models.GenericIPAddressField()
-    server_cpu = models.CharField(max_length=100, null=True)
-    # memory = models.CharField(max_length=20)
-    # os = models.CharField(max_length=20)
+class RelatedWork(models.Model):
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    authors = models.TextField(null=True)
+    url = models.URLField(null=True)
+

@@ -1,0 +1,8 @@
+  &ltproperty&gt
+    &ltname&gtfs.defaultFS&lt/name&gt
+    &ltvalue&gthdfs://{{ namenode|default:"127.0.0.1" }}:8020&lt/value&gt
+  &lt/property&gt
+  &ltproperty&gt
+    &ltname&gthadoop.tmp.dir&lt/name&gt
+    &ltvalue&gt/usr/local/hadoop-datastore/hadoop-2.6.4&lt/value&gt
+  &lt/property&gt

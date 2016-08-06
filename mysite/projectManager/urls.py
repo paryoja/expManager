@@ -48,4 +48,5 @@ urlpatterns = [
     url(r'^(?P<project_id>[0-9]+)/datasetDetail/(?P<pk>[0-9]+)/$', views.DatasetDetailView.as_view(),
         name='datasetDetail'),
 
+    url(r'^hadoopSetting/$', views.hadoopSetting, name='hadoopSetting'),
 ]

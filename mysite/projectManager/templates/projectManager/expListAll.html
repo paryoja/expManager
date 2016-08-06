@@ -15,6 +15,7 @@
 <table>
     <tr>
         <td>Date</td>
+		<td>Server</td>
         <td>Algorithm</td>
         <td>Dataset</td>
 		{% for param in project.getParamFilter %}
@@ -30,6 +31,7 @@
     {% for exp in project.expitem_set.all %}
     <tr>
         <td>{{ exp.exp_date }}</td>
+		<td>{{ exp.server.server_name }}</td>
         <td>{{ exp.algorithm.name }}</td>
         <td>{{ exp.dataset.name }}</td>
 		{% for value in exp.toParamValueList %}

@@ -1,0 +1,27 @@
+{% extends "projectManager/base.html" %}
+{% block title %}My Projects{% endblock %}
+
+{% block body %}
+{% load staticfiles %}
+<h2>core-site.xml</h2>
+<pre>
+{% include "projectManager/hadoop/core-site.template" %}
+</pre>
+
+<h2>hdfs-site.xml</h2>
+<pre>
+{% include "projectManager/hadoop/hdfs-site.template" %}
+</pre>
+
+<h2>yarn-site.xml</h2>
+<pre>
+{% include "projectManager/hadoop/yarn-site.template" %}
+</pre>
+
+<h2>mapred-site.xml</h2>
+<pre>
+{% include "projectManager/hadoop/mapred-site.template" %}
+</pre>
+
+<center><a href="{% url 'project:index' %}">To main menu</a></center>
+{% endblock %}

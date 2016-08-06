@@ -28,6 +28,7 @@ Synthetic parameters:
 <table>
 	<tr>
 		<td>Algorithm</td>
+		<td>Server</td>
         {% for param in param_filter %}
 		<td>{{ param }}</td>
 		{% endfor %}
@@ -38,7 +39,8 @@ Synthetic parameters:
 
 	{% for alg, exp in avg_alg_list %}
 	<tr>
-		<td>{{ alg.0.name }}</td>
+		<td>{{ alg.0.0.name }}</td>
+		<td>{{ alg.0.1.server_name }}</td>
 		{% for value in alg.1 %}
 		<td>{{ value | floatformat }}</td>
 		{% endfor %}
@@ -59,6 +61,7 @@ Synthetic parameters:
 <table>
     <tr>
         <td>Date</td>
+		<td>Server</td>
         <td>Algorithm</td>
         {% for param in dataset.project.getParamFilter %}
         <td>{{ param }}</td>
@@ -72,6 +75,7 @@ Synthetic parameters:
     {% for exp in dataset.expitem_set.all %}
     <tr>
         <td>{{ exp }}</td>
+		<td>{{ exp.server.server_name }}</td>
 		<td><a href="{% url 'project:algorithmDetail' exp.project.id exp.algorithm.id %}">{{ exp.algorithm.name }}</a></td>
         {% for value in exp.toParamValueList %}
         <td>{{ value | floatformat }}</td>

@@ -69,6 +69,15 @@ class Server(models.Model):
     def __str__(self):
         return self.server_name
 
+    def __eq__(self, other):
+        if other is None:
+            return False
+        return self.server_name == other.server_name
+
+    def __lt__(self, other):
+        if other is None:
+            return False
+        return self.server_name < other.server_name
 
 class Dataset(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)

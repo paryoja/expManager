@@ -75,58 +75,7 @@ class DatasetDetailView(generic.DetailView):
     def get_context_data(self, **kwargs):
         context = super(DatasetDetailView, self).get_context_data(**kwargs)
 
-        dataset = context['dataset']
-        expList = ExpItem.objects.filter(dataset=dataset)
-
-        paramFilter = dataset.project.getParamFilter()
-
-        exp_alg_list = {}
-        for exp in expList:
-            alg = exp.algorithm
-            if alg in exp_alg_list:
-                alg_param = exp_alg_list[alg]
-            else:
-                alg_param = {}
-                exp_alg_list[alg] = alg_param
-
-            exp_param = tuple(exp.toParamValueList())
-
-            if exp_param in alg_param:
-                alg_param[exp_param].append(exp)
-            else:
-                alg_param[exp_param] = [exp]
-
-        resultFilter = dataset.project.getResultFilter()
-
-        avg_alg_list = {}
-        for key, val in exp_alg_list.items():
-            for k, v in val.items():
-                result = []
-
-                resultDictionary = {}
-                for exp in v:
-                    resultDictionary[exp] = toDictionary(exp.result)
-
-                for par in resultFilter:
-                    total = 0.0
-                    count = 0.0
-                    for exp in v:
-                        total += float(resultDictionary[exp][par])
-                        count += 1
-
-                    result.append(total / count)
-                # append count
-                result.append(count)
-                avg_alg_list[(key, k)] = result
-
-                # count
-        resultFilter.append('count')
-
-        import operator
-        context['avg_alg_list'] = sorted(avg_alg_list.items(), key=operator.itemgetter(0))
-        context['param_filter'] = paramFilter
-        context['result_filter'] = resultFilter
-
+        context = getDatasetContextData(context)
         return context
 
 
@@ -341,3 +290,7 @@ def getDatasetId(request, project_id, dataset_name):
         return HttpResponse('-1')
 
     return HttpResponse(dataset.id)
+
+
+def hadoopSetting(request):
+    return render(request, 'projectManager/hadoopSetting.html')

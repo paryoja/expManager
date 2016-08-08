@@ -82,17 +82,12 @@ class DatasetDetailView(generic.DetailView):
 def exp(request, pk):
     expitem = ExpItem.objects.get(pk=pk)
     parameterList = toList(expitem.parameter)
-    parsedResult = toList(expitem.result)
+    parsedResult = sorted( toList(expitem.result), key=lambda x: x[0])
     return render(request, 'projectManager/expDetail.html', {
         'expitem': expitem,
         'parameterList': parameterList,
         'parsedResult': parsedResult
     })
-
-
-class ExpDetailView(generic.DetailView):
-    model = ExpItem
-    template_name = 'projectManager/expDetail.html'
 
 
 # add items
@@ -182,7 +177,6 @@ def addExp(request, project_id):
 def modifyTodo(request, project_id, todo_id):
     todo = get_object_or_404(TodoItem, pk=todo_id)
 
-    print(request)
     if request.POST['method'] == 'Done':
         todo.done = True
         todo.completed_date = timezone.now()
@@ -191,6 +185,18 @@ def modifyTodo(request, project_id, todo_id):
         todo.delete()
 
     return HttpResponseRedirect(reverse('project:detail', args=(project_id,)))
+
+
+def modifyExp(request, project_id, exp_id):
+    exp = get_object_or_404(ExpItem, pk=exp_id)
+
+    if request.POST['method'] == 'invalid':
+        exp.invalid = True
+        exp.save()
+    elif request.POST['method'] == 'delete':
+        exp.delete()
+
+    return HttpResponseRedirect(reverse('project:expListAll', args=(project_id,)))
 
 
 def addGitUrl(request, project_id):
@@ -293,4 +299,8 @@ def getDatasetId(request, project_id, dataset_name):
 
 
 def hadoopSetting(request):
-    return render(request, 'projectManager/hadoopSetting.html')
+    return render(request, 'projectManager/setting/hadoopSetting.html')
+
+
+def vimSetting(request):
+    return render(request, 'projectManager/setting/vimSetting.html')

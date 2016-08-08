@@ -16,8 +16,24 @@ class Project(models.Model):
     def getParamFilter(self):
         return self.paramFilter.split(',')
 
+    def getParamFilterOriginalName(self):
+        split = self.paramFilter.split(',')
+        return splitColon(split, 0)
+
+    def getParamFilterName(self):
+        split = self.paramFilter.split(',')
+        return splitColon(split, 1)
+
     def getResultFilter(self):
         return self.resultFilter.split(',')
+
+    def getResultFilterOriginalName(self):
+        split = self.resultFilter.split(',')
+        return splitColon(split, 0)
+
+    def getResultFilterName(self):
+        split = self.resultFilter.split(',')
+        return splitColon(split, 1)
 
     def __str__(self):
         return self.project_text
@@ -100,6 +116,7 @@ class ExpItem(models.Model):
     parameter = models.TextField('parameters used')
     result = models.TextField('result')
     failed = models.BooleanField('failed', default=False)
+    invalid = models.BooleanField('invalid', default=False)
     server = models.ForeignKey(Server, default=None, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
@@ -118,14 +135,13 @@ class ExpItem(models.Model):
     def toMatchedList(self, params, values):
         l = []
         for par in params:
+            if ':' in par:
+                par = par.split(':')[0]
             try:
                 l.append(values[par.strip()])
             except KeyError:
                 l.append('Null')
         return l
-
-        # def toList(self):
-        #    return toList(self.parameter) + toList(self.result)
 
 
 class ExpTodo(models.Model):

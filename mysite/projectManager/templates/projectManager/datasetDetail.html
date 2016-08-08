@@ -63,10 +63,10 @@ Synthetic parameters:
         <td>Date</td>
 		<td>Server</td>
         <td>Algorithm</td>
-        {% for param in dataset.project.getParamFilter %}
+        {% for param in dataset.project.getParamFilterName %}
         <td>{{ param }}</td>
         {% endfor %}
-        {% for param in dataset.project.getResultFilter %}
+        {% for param in dataset.project.getResultFilterName %}
         <td>{{ param }}</td>
         {% endfor %}
         <td>View details</td>

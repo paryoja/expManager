@@ -18,19 +18,20 @@
 		<td>Server</td>
         <td>Algorithm</td>
         <td>Dataset</td>
-		{% for param in project.getParamFilter %}
+		{% for param in project.getParamFilterName %}
 		<td>{{ param }}</td>
 		{% endfor %}
-        {% for param in project.getResultFilter %}
+        {% for param in project.getResultFilterName %}
         <td>{{ param }}</td>
         {% endfor %}
         <td>View details</td>
+		<td>Invalidate</td>
     </tr>
 
 	<h3>There are {{ project.expitem_set.all.count }} experiment{{ project.expitem_set.all.count | pluralize }}</h3>
     {% for exp in project.expitem_set.all %}
     <tr>
-        <td>{{ exp.exp_date }}</td>
+		<td>{{ exp.exp_date }}</td>
 		<td>{{ exp.server.server_name }}</td>
         <td>{{ exp.algorithm.name }}</td>
         <td>{{ exp.dataset.name }}</td>
@@ -40,7 +41,14 @@
         {% for value in exp.toResultValueList %}
         <td>{{ value | floatformat }}</td>
         {% endfor %}
-        <td><a href="{% url 'project:expDetail' exp.id %}">detail</a></td>
+		{% if exp.invalid %}<td><font color="red">Invalid</font></td>
+		{% else %}<td><a href="{% url 'project:expDetail' exp.id %}">detail</a></td>
+		{% endif %}
+		{% if exp.invalid %}
+		<td><form action="{% url 'project:modifyExp' project.id exp.id %}" method="POST">{% csrf_token %}<input type="submit" name="method" value="delete" /></form></td>
+		{% else %}
+		<td><form action="{% url 'project:modifyExp' project.id exp.id %}" method="POST">{% csrf_token %}<input type="submit" name="method" value="invalid" /></form></td>
+		{% endif %}
     </tr>
     {% endfor %}
 </table>

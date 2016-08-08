@@ -18,6 +18,13 @@ def toDictionary(result):
     return dumped
 
 
+def splitColon(itemList, index):
+    for i in range(len(itemList)):
+        if ':' in itemList[i]:
+            itemList[i] = itemList[i].split(':')[index]
+    return itemList
+
+
 def getDatasetContextData(context):
     from .models import ExpItem
     dataset = context['dataset']
@@ -42,7 +49,7 @@ def getDatasetContextData(context):
         else:
             alg_param[exp_param] = [exp]
 
-    resultFilter = dataset.project.getResultFilter()
+    resultFilter = dataset.project.getResultFilterOriginalName()
 
     avg_alg_list = {}
     for key, val in exp_alg_list.items():
@@ -57,10 +64,16 @@ def getDatasetContextData(context):
                 total = 0.0
                 count = 0.0
                 for exp in v:
-                    total += float(resultDictionary[exp][par])
-                    count += 1
+                    try:
+                        total += float(resultDictionary[exp][par])
+                        count += 1
+                    except KeyError:
+                        pass
 
-                result.append(total / count)
+                if count != 0:
+                    result.append(total / count)
+                else:
+                    result.append(total)
             # append count
             result.append(count)
             avg_alg_list[(key, k)] = result

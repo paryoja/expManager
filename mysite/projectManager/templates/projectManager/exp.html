@@ -22,10 +22,10 @@
 		<td>Server</td>
         <td>Algorithm</td>
         <td>Dataset</td>
-		{% for param in project.getParamFilter %}
+		{% for param in project.getParamFilterName %}
 		<td>{{ param }}</td>
 		{% endfor %}
-        {% for param in project.getResultFilter %}
+        {% for param in project.getResultFilterName %}
         <td>{{ param }}</td>
         {% endfor %}
         <td>View details</td>

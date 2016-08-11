@@ -78,6 +78,7 @@ class Server(models.Model):
     server_name = models.CharField(max_length=20)
     server_ip = models.GenericIPAddressField()
     server_cpu = models.CharField(max_length=100, null=True)
+    rsa_pub = models.CharField(max_length=400, null=True)
 
     # memory = models.CharField(max_length=20)
     # os = models.CharField(max_length=20)

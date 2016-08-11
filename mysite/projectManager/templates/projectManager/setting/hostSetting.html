@@ -1,0 +1,19 @@
+{% extends "projectManager/base.html" %}
+{% block title %}Host File Settings{% endblock %}
+
+{% block body %}
+{% load staticfiles %}
+
+
+<pre>
+{% for server in public_server_list %}{{ server.server_ip }} {{ server.server_name }} 
+{% endfor %}
+</pre>
+
+<pre>
+{% for server in rsa_server_list %}{{ server.server_name }} {{ server.rsa_pub }} 
+{% endfor %}
+</pre>
+
+<center><a href="{% url 'project:index' %}">To main menu</a></center>
+{% endblock %}

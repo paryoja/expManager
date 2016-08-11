@@ -49,6 +49,8 @@ urlpatterns = [
     url(r'^(?P<project_id>[0-9]+)/datasetDetail/(?P<pk>[0-9]+)/$', views.DatasetDetailView.as_view(),
         name='datasetDetail'),
 
+    # related with settings
     url(r'^hadoopSetting/$', views.hadoopSetting, name='hadoopSetting'),
     url(r'^vimSetting/$', views.vimSetting, name='vimSetting'),
+    url(r'^hostSetting/$', views.hostSetting, name='hostSetting'),
 ]

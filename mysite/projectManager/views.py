@@ -5,6 +5,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.utils import timezone
 from django.views import generic
+from django.db.models import Q
 
 from .models import Algorithm, Project, TodoItem, Dataset, ExpItem, Server
 from .utils import *
@@ -304,3 +305,9 @@ def hadoopSetting(request):
 
 def vimSetting(request):
     return render(request, 'projectManager/setting/vimSetting.html')
+
+
+def hostSetting(request):
+    return render(request, 'projectManager/setting/hostSetting.html', {
+            'public_server_list': Server.objects.filter(~Q(server_ip__startswith='192.168')),
+            'rsa_server_list': Server.objects.filter(rsa_pub__startswith='ssh')})

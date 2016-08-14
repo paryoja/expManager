@@ -1,9 +1,11 @@
+{% extends "projectManager/base.html" %}
+{% block title %}{{ dataset.name }} Details{% endblock %}
+{% block additionalStyle %}
 {% load staticfiles %}
-<link rel="stylesheet" type="text/css" href="{% static 'projectManager/css/base.css' %}"/>
-<link rel="stylesheet" type="text/css" href="{% static 'projectManager/css/dashboard.css' %}"/>
-
 <link rel="stylesheet" type="text/css" href="{% static 'projectManager/css/style.css' %}"/>
+{% endblock %}
 
+{% block body %}
 <h1>Dataset: {{ dataset.name }} </h1>
 
 Is synthetic: {{ dataset.is_synthetic }}
@@ -58,36 +60,12 @@ Synthetic parameters:
 <h2>Experiments</h2>
 
 {% if dataset.expitem_set.all %}
-<table>
-    <tr>
-        <td>Date</td>
-		<td>Server</td>
-        <td>Algorithm</td>
-        {% for param in dataset.project.getParamFilterName %}
-        <td>{{ param }}</td>
-        {% endfor %}
-        {% for param in dataset.project.getResultFilterName %}
-        <td>{{ param }}</td>
-        {% endfor %}
-        <td>View details</td>
-    </tr>
-
-    {% for exp in dataset.expitem_set.all %}
-    <tr>
-        <td>{{ exp }}</td>
-		<td>{{ exp.server.server_name }}</td>
-		<td><a href="{% url 'project:algorithmDetail' exp.project.id exp.algorithm.id %}">{{ exp.algorithm.name }}</a></td>
-        {% for value in exp.toParamValueList %}
-        <td>{{ value | floatformat }}</td>
-        {% endfor %}
-        {% for value in exp.toResultValueList %}
-        <td>{{ value | floatformat }}</td>
-        {% endfor %}
-        <td><a href="{% url 'project:expDetail' exp.id %}">detail</a></td>
-    </tr>
-    {% endfor %}
-</table>
+{% include 'projectManager/expListTemplate.html' %}
+{% else %}
+<h3>There is no experimental results</h3>
 {% endif %}
 
 <center><a href="{% url 'project:exp' dataset.project.id %}">To experiments</a></center>
 <center><a href="{% url 'project:index' %}">To main menu</a></center>
+
+{% endblock %}

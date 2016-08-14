@@ -10,6 +10,26 @@ def toList(result):
     return list(dumped.items())
 
 
+def appendDict(result, appendDict, index):
+    if index == 0:
+        for key, value in appendDict.items():
+            result[key] = [value]
+
+    else:
+        for key, value in result.items():
+            if key in appendDict:
+                value.append(appendDict[key])
+            else:
+                value.append('')
+        for key, value in appendDict.items():
+            if key not in result:
+                noneList = []
+                for i in range(index):
+                    noneList.append('')
+                noneList.append(value)
+                result[key] = noneList
+
+
 def toDictionary(result):
     try:
         dumped = json.loads(result)

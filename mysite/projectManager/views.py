@@ -54,7 +54,7 @@ class ExpView(generic.DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(ExpView, self).get_context_data(**kwargs)
-        context['latest_exp_list'] = context['project'].expitem_set.order_by('-exp_date')[:10]
+        context['exp_list'] = context['project'].expitem_set.order_by('-exp_date')[:10]
 
         return context
 
@@ -63,10 +63,24 @@ class ExpListAllView(generic.DetailView):
     model = Project
     template_name = 'projectManager/expListAll.html'
 
+    def get_context_data(self, **kwargs):
+        context = super(ExpListAllView, self).get_context_data(**kwargs)
+        context['exp_list'] = context['project'].expitem_set.all()
+
+        return context
+
+
 
 class AlgorithmDetailView(generic.DetailView):
     model = Algorithm
     template_name = 'projectManager/algorithmDetail.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(AlgorithmDetailView, self).get_context_data(**kwargs)
+        context['exp_list'] = context['algorithm'].expitem_set.all()
+        context['project'] = context['algorithm'].project
+
+        return context
 
 
 class DatasetDetailView(generic.DetailView):
@@ -77,6 +91,8 @@ class DatasetDetailView(generic.DetailView):
         context = super(DatasetDetailView, self).get_context_data(**kwargs)
 
         context = getDatasetContextData(context)
+        context['exp_list'] = context['dataset'].expitem_set.all()
+        context['project'] = context['dataset'].project
         return context
 
 
@@ -89,6 +105,37 @@ def exp(request, pk):
         'parameterList': parameterList,
         'parsedResult': parsedResult
     })
+
+
+def expCompare(request, project_id):
+    project = get_object_or_404(Project, pk=project_id)
+
+    expitems = request.GET.getlist('exp')
+    expList = []
+
+    parameterListMap = {}
+    resultListMap = {}
+    index = 0
+    for expId in expitems:
+        exp = get_object_or_404(ExpItem, pk=expId)
+        expList.append(exp)
+        parameterList = toDictionary(exp.parameter)
+        appendDict(parameterListMap, parameterList, index)
+
+        resultList = toDictionary(exp.result)
+        appendDict(resultListMap, resultList, index)
+
+        index += 1
+    sortedResultList = sorted(list(resultListMap.items()), key=lambda x: x[0])
+
+    
+    return render(request, 'projectManager/expCompare.html', {
+        'project': project,
+        'expList': expList,
+        'parameterList': list(parameterListMap.items()),
+        'resultList': sortedResultList
+        })
+
 
 
 # add items
@@ -279,10 +326,10 @@ def getProjectId(request, project_name):
     return HttpResponse(project.id)
 
 
-def getAlgorithmId(request, project_id, algorithm_name):
+def getAlgorithmId(request, project_id, algorithm_name, algorithm_version):
     project = get_object_or_404(Project, pk=project_id)
     try:
-        algorithm = Algorithm.objects.filter(project=project).get(name=algorithm_name)
+        algorithm = Algorithm.objects.filter(project=project).filter(name=algorithm_name).get(version=algorithm_version)
     except ObjectDoesNotExist:
         return HttpResponse('-1')
 

@@ -1,5 +1,5 @@
 {% extends "projectManager/base.html" %}
-{% block title %}Experimental results of {{ project.project_text }} Details{% endblock %}
+{% block title %}Experimental results of {{ project.project_text }}{% endblock %}
 {% block additionalStyle %}
 {% load staticfiles %}
 <link rel="stylesheet" type="text/css" href="{% static 'projectManager/css/style.css' %}"/>
@@ -11,42 +11,13 @@
 
 <h2>List of Experiments</h2>
 
+
 <a href="{% url 'project:expForm' project.id %}">Add a new experimental result</a><br/><br/>
 {% if project.expitem_set.all %}
 <h3>There are {{ project.expitem_set.all.count }} experiment{{ project.expitem_set.all.count | pluralize }}: 
 <a href="{% url 'project:expListAll' project.id %}">See all</a></h3>
 
-<table>
-    <tr>
-        <td>Date</td>
-		<td>Server</td>
-        <td>Algorithm</td>
-        <td>Dataset</td>
-		{% for param in project.getParamFilterName %}
-		<td>{{ param }}</td>
-		{% endfor %}
-        {% for param in project.getResultFilterName %}
-        <td>{{ param }}</td>
-        {% endfor %}
-        <td>View details</td>
-    </tr>
-
-    {% for exp in latest_exp_list %}
-    <tr>
-        <td>{{ exp }}</td>
-		<td>{{ exp.server.server_name }}</td>
-        <td>{{ exp.algorithm.name }}</td>
-        <td>{{ exp.dataset.name }}</td>
-		{% for value in exp.toParamValueList %}
-		<td>{{ value | floatformat }}</td>
-		{% endfor %}
-        {% for value in exp.toResultValueList %}
-        <td>{{ value | floatformat }}</td>
-        {% endfor %}
-        <td><a href="{% url 'project:expDetail' exp.id %}">detail</a></td>
-    </tr>
-    {% endfor %}
-</table>
+{% include 'projectManager/expListTemplate.html' %}
 {% endif %}
 
 <h2>List of graphs </h2>
@@ -92,3 +63,4 @@ List experiments to do <br/>
     <a href="{% url 'project:index' %}">To main menu</a>
 </center>
 {% endblock %}
+

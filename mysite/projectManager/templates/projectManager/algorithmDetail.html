@@ -1,47 +1,26 @@
+{% extends "projectManager/base.html" %}
+{% block title %}{{ algorithm.name }} Details{% endblock %}
+{% block additionalStyle %}
 {% load staticfiles %}
-<link rel="stylesheet" type="text/css" href="{% static 'projectManager/css/base.css' %}"/>
-<link rel="stylesheet" type="text/css" href="{% static 'projectManager/css/dashboard.css' %}"/>
-
 <link rel="stylesheet" type="text/css" href="{% static 'projectManager/css/style.css' %}"/>
+{% endblock %}
 
+
+{% block body %}
 
 <h1>Algorithm: {{ algorithm.name }} </h1>
-
 Version: {{ algorithm.version }}
 
 
 <h2>Experiments</h2>
 
 {% if algorithm.expitem_set.all %}
-<table>
-    <tr>
-        <td>Date</td>
-        <td>Dataset</td>
-        {% for param in algorithm.project.getParamFilter %}
-        <td>{{ param }}</td>
-        {% endfor %}
-        {% for param in algorithm.project.getResultFilter %}
-        <td>{{ param }}</td>
-        {% endfor %}
-        <td>View details</td>
-    </tr>
-
-    {% for exp in algorithm.expitem_set.all %}
-    <tr>
-        <td>{{ exp }}</td>
-        <td>{{ exp.dataset.name }}</td>
-        {% for value in exp.toParamValueList %}
-        <td>{{ value }}</td>
-        {% endfor %}
-        {% for value in exp.toResultValueList %}
-        <td>{{ value }}</td>
-        {% endfor %}
-        <td><a href="{% url 'project:expDetail' exp.id %}">detail</a></td>
-    </tr>
-    {% endfor %}
-</table>
+{% include 'projectManager/expListTemplate.html' %}
+{% else %}
+<h3>There is no experimental results</h3>
 {% endif %}
 
 
 <center><a href="{% url 'project:exp' algorithm.project.id %}">To experiments</a></center>
 <center><a href="{% url 'project:index' %}">To main menu</a></center>
+{% endblock %}

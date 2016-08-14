@@ -101,7 +101,6 @@ class Setting:
     def getServer(self):
         import socket
         requestUrl = urlJoin([self.serverUrl, 'getServerId', socket.gethostname()])
-        print(requestUrl)
         try:
             with urllib.request.urlopen(requestUrl) as response:
                 return response.read().decode()
@@ -124,18 +123,16 @@ class Setting:
             datasetId = self.getObject('Dataset', dataset['name'])
 
         # check algorithm exists
-        algorithmId = self.getObject('Algorithm', algorithm['name'])
+        algorithmId = self.getObject('Algorithm', algorithm['name'] + '/' + algorithm['version'])
         if algorithmId == '-1':
             self.addAlgorithm(algorithm)
-            algorithmId = self.getObject('Algorithm', algorithm['name'])
+            algorithmId = self.getObject('Algorithm', algorithm['name'] + '/' + algorithm['version'])
 
         # check server exists
         serverId = self.getServer()
         if serverId == '-1':
             self.addServer()
             serverId = self.getServer()
-
-        print(serverId)
 
         post = {'method': 'Add'}
         post['pub_date'] = datetime.now()
@@ -145,6 +142,7 @@ class Setting:
         post['server_name'] = serverId
         post['result'] = result
 
+        print('posting')
         self.post(post, '%d/expForm', '%d/addExp', False)
 
     def close(self):

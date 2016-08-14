@@ -1,0 +1,83 @@
+{% extends "projectManager/base.html" %}
+{% block title %}Exp Compare{% endblock %}
+{% block additionalStyle %}
+{% load staticfiles %}
+<link rel="stylesheet" type="text/css" href="{% static 'projectManager/css/style.css' %}"/>
+{% endblock %}
+
+{% block body %}
+<h1>Exp compare</h1>
+
+<h2>Project</h2>
+{{ project }}
+
+<h2>Dataset</h2>
+{% for exp in expList %}
+exp{{ exp.id }} <a href="{% url 'project:datasetDetail' exp.project.id exp.dataset.id %}">{{ exp.dataset.name }}</a><br/>
+{% endfor %}
+
+<h2>Algorithm</h2>
+{% for exp in expList %}
+exp{{ exp.id }} <a href="{% url 'project:algorithmDetail' exp.project.id exp.algorithm.id %}">{{ exp.algorithm.name }}</a><br/>
+{% endfor %}
+
+<h2>Server</h2>
+{% for exp in expList %}
+exp{{ exp.id }} <a href="{% url 'project:servers' exp.server.id %}">{{ exp.server.server_name }}</a><br/>
+{% endfor %}
+
+<!-- parameter -->
+<h2>Paramters</h2>
+{% if parameterList %}
+<table>
+	<tr>
+		<td align="left">Name</td>
+		{% for exp in expList %}
+		<td>{{ exp.id }}</td>
+		{% endfor %}
+	</tr>
+    {% for attribute, valueList in parameterList %}
+    <tr>
+        <td align="left">{{ attribute }}</td>
+		{% for value in valueList %}
+		{% if value.isdigit %}
+        <td align="right">{{ value | floatformat }}</td>
+		{% else %}
+		<td align="left">{{ value }}</td>
+		{% endif %}
+		{% endfor %}
+    </tr>
+    {% endfor %}
+</table>
+{% endif %}
+
+
+<!-- result table -->
+<h2>Result</h2>
+{% if resultList %}
+<table>
+	<tr>
+		<td align="left">Name</td>
+		{% for exp in expList %}
+		<td>{{ exp.id }}</td>
+		{% endfor %}
+	</tr>
+
+    {% for attribute, valueList in resultList %}
+    <tr>
+        <td align="left">{{ attribute }}</td>
+		{% for value in valueList %}
+		{% if value.isdigit %}
+        <td align="right">{{ value | floatformat }}</td>
+		{% else %}
+		<td align="left">{{ value }}</td>
+		{% endif %}
+		{% endfor %}
+    </tr>
+    {% endfor %}
+</table>
+{% endif %}
+
+<center><a href="{% url 'project:exp' project.id %}">To experiments</a></center>
+<center><a href="{% url 'project:index' %}">To main menu</a></center>
+{% endblock %}

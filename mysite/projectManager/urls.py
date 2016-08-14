@@ -23,6 +23,7 @@ urlpatterns = [
     # related with experiments
     url(r'^(?P<pk>[0-9]+)/exp/$', views.ExpView.as_view(), name='exp'),
     url(r'^(?P<pk>[0-9]+)/expDetail/$', views.exp, name='expDetail'),
+    url(r'^(?P<project_id>[0-9]+)/expCompare/$', views.expCompare, name='expCompare'),
     url(r'^(?P<project_id>[0-9]+)/addExp/$', views.addExp, name='addExp'),
     url(r'^(?P<project_id>[0-9]+)/expForm/$', views.expForm, name='expForm'),
     url(r'^(?P<pk>[0-9]+)/expListAll/$', views.ExpListAllView.as_view(), name='expListAll'),
@@ -36,7 +37,7 @@ urlpatterns = [
     url(r'^(?P<project_id>[0-9]+)/addAlgorithm/$', views.addAlgorithm, name='addAlgorithm'),
     url(r'^(?P<project_id>[0-9]+)/algorithmForm/$', views.algorithmForm, name='algorithmForm'),
     url(r'^(?P<project_id>[0-9]+)/listAlgorithms/$', views.listAlgorithms, name='listAlgorithms'),
-    url(r'^(?P<project_id>[0-9]+)/getAlgorithmId/(?P<algorithm_name>.+)/$', views.getAlgorithmId,
+    url(r'^(?P<project_id>[0-9]+)/getAlgorithmId/(?P<algorithm_name>.+)/(?P<algorithm_version>.+)/$', views.getAlgorithmId,
         name='getAlgorithmId'),
     url(r'^(?P<project_id>[0-9]+)/algorithmDetail/(?P<pk>[0-9]+)/$', views.AlgorithmDetailView.as_view(),
         name='algorithmDetail'),

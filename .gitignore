@@ -13,3 +13,4 @@ mysite/db.sqlite3.bak
 .idea/inspectionProfiles/Project_Default.xml
 .idea/inspectionProfiles/profiles_settings.xml
 *.swp
+mysite/projectManager/static/projectManager/expUploader

@@ -54,4 +54,7 @@ urlpatterns = [
     url(r'^hadoopSetting/$', views.hadoopSetting, name='hadoopSetting'),
     url(r'^vimSetting/$', views.vimSetting, name='vimSetting'),
     url(r'^hostSetting/$', views.hostSetting, name='hostSetting'),
+
+    # file download
+    url(r'^expUploader/$', views.expUploader, name='expUploader')
 ]

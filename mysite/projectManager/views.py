@@ -389,3 +389,18 @@ def hostSetting(request):
     return render(request, 'projectManager/setting/hostSetting.html', {
             'public_server_list': Server.objects.filter(~Q(server_ip__startswith='192.168')),
             'rsa_server_list': Server.objects.filter(rsa_pub__startswith='ssh')})
+
+import os, tempfile
+from wsgiref.util import FileWrapper
+import git
+def expUploader(request):
+    g = git.cmd.Git('projectManager/static/projectManager/expUploader/ExperimentUploader')
+    g.pull()
+
+    filename = 'projectManager/static/projectManager/expUploader/ExperimentUploader/uploadExperiment.py'
+    wrapper = FileWrapper(open(filename))
+    response = HttpResponse(wrapper, content_type='text/x-python')
+    response['Content-Length'] = os.path.getsize(filename)
+    response['Content-Disposition'] = 'attachment; filename="uploadExperiment.py"'
+    return response
+

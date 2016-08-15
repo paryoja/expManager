@@ -17,8 +17,8 @@
 
 
 <h1>List of Experimental Results</h1>
-<a href="{% static 'projectManager/expUploader/uploadExperiment.py' %}" download>Download expUploader</a><br/>
-wget http://147.46.143.74:8000{% static 'projectManager/expUploader/uploadExperiment.py' %}<br/><br/>
+<a href="{% url 'project:expUploader' %}" download>Download expUploader</a><br/>
+wget http://147.46.143.74:8000{% url 'project:expUploader' %}<br/><br/>
 
 {% if project_list %}
 <ul>

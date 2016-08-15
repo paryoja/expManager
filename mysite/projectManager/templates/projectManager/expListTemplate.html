@@ -1,5 +1,5 @@
 <!-- requires project and exp_list -->
-<form action="{% url 'project:expCompare' project.id %}" method="get">
+<form id="CompareForm" action="{% url 'project:expCompare' project.id %}" method="get"></form>
 <table>
     <tr>
 		<td></td>
@@ -19,7 +19,7 @@
 
     {% for exp in exp_list %}
     <tr>
-		<td><input type="checkbox" name="exp" value="{{ exp.id }}"/>
+		<td><input type="checkbox" name="exp" value="{{ exp.id }}" form="CompareForm"/>
         <td>{{ exp }}</td>
 		<td>{{ exp.server.server_name }}</td>
 		<td>{{ exp.algorithm.name }} {{ exp.algorithm.version }}</td>
@@ -41,6 +41,6 @@
     </tr>
     {% endfor %}
 </table>
-<input type="submit" value="Compare"/>
+<input type="submit" value="Compare" form="CompareForm"/>
 </form>
 

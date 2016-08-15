@@ -110,7 +110,7 @@ def exp(request, pk):
 def expCompare(request, project_id):
     project = get_object_or_404(Project, pk=project_id)
 
-    expitems = request.GET.getlist('exp')
+    expitems = sorted(request.GET.getlist('exp'))
     expList = []
 
     parameterListMap = {}

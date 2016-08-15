@@ -67,6 +67,7 @@ class Setting:
         post = {
             'name': dataset['name'],
             'is_synthetic': dataset['is_synthetic'],
+	    'file_size': dataset['file_size']
         }
         if dataset['is_synthetic']:
             post['synthetic_parameters'] = json.dumps(dataset['synthetic_parameters'])
@@ -121,18 +122,27 @@ class Setting:
         if datasetId == '-1':
             self.addDataset(dataset)
             datasetId = self.getObject('Dataset', dataset['name'])
+            if datasetId == '-1':
+                print('Error while adding dataset')
+                sys.exit(1)
 
         # check algorithm exists
         algorithmId = self.getObject('Algorithm', algorithm['name'] + '/' + algorithm['version'])
         if algorithmId == '-1':
             self.addAlgorithm(algorithm)
             algorithmId = self.getObject('Algorithm', algorithm['name'] + '/' + algorithm['version'])
+            if algorithmId == '-1':
+                print('Error while adding algorithm')
+                sys.exit(1)
 
         # check server exists
         serverId = self.getServer()
         if serverId == '-1':
             self.addServer()
             serverId = self.getServer()
+            if serverId == '-1':
+                print('Error while adding server')
+                sys.exit(1)
 
         post = {'method': 'Add'}
         post['pub_date'] = datetime.now()
@@ -144,6 +154,7 @@ class Setting:
 
         print('posting')
         self.post(post, '%d/expForm', '%d/addExp', False)
+        # TODO : check exp is added correctly
 
     def close(self):
         self.client.close()

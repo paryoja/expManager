@@ -35,6 +35,7 @@ exp{{ exp.id }} <a href="{% url 'project:servers' exp.server.id %}">{{ exp.serve
 		{% for exp in expList %}
 		<td>{{ exp.id }}</td>
 		{% endfor %}
+		<td>Equals</td>
 	</tr>
     {% for attribute, valueList in parameterList %}
     <tr>
@@ -46,6 +47,11 @@ exp{{ exp.id }} <a href="{% url 'project:servers' exp.server.id %}">{{ exp.serve
 		<td align="left">{{ value }}</td>
 		{% endif %}
 		{% endfor %}
+		{% if attribute in sameValue %}
+		<td><font color="green">Same</font></td>
+		{% else %}
+		<td><font color="red">Different</font></td>
+		{% endif %}
     </tr>
     {% endfor %}
 </table>
@@ -61,6 +67,7 @@ exp{{ exp.id }} <a href="{% url 'project:servers' exp.server.id %}">{{ exp.serve
 		{% for exp in expList %}
 		<td>{{ exp.id }}</td>
 		{% endfor %}
+		<td>Equals</td>
 	</tr>
 
     {% for attribute, valueList in resultList %}
@@ -73,6 +80,11 @@ exp{{ exp.id }} <a href="{% url 'project:servers' exp.server.id %}">{{ exp.serve
 		<td align="left">{{ value }}</td>
 		{% endif %}
 		{% endfor %}
+		{% if attribute in sameValue %}
+		<td><font color="green">Same</font></td>
+		{% else %}
+		<td><font color="red">Different</font></td>
+		{% endif %}
     </tr>
     {% endfor %}
 </table>

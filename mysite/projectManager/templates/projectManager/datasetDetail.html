@@ -8,7 +8,8 @@
 {% block body %}
 <h1>Dataset: {{ dataset.name }} </h1>
 
-Is synthetic: {{ dataset.is_synthetic }}
+Is synthetic: {{ dataset.is_synthetic }}<br/>
+Size: {{ dataset.size|filesizeformat }}
 
 {% if dataset.is_synthetic %}
 <br/>

@@ -126,14 +126,38 @@ def expCompare(request, project_id):
         appendDict(resultListMap, resultList, index)
 
         index += 1
+    sortedParameterList = sorted(list(parameterListMap.items()), key=lambda x: x[0])
     sortedResultList = sorted(list(resultListMap.items()), key=lambda x: x[0])
 
+    sameValue = set()
+    for (key, valueList) in sortedParameterList:
+        startValue = valueList[0]
+        same = True
+        for value in valueList:
+            if startValue != value:
+                same = False
+                break
+        
+        if same:
+            sameValue.update({key})
+
+    for (key, valueList) in sortedResultList:
+        startValue = valueList[0]
+        same = True
+        for value in valueList:
+            if startValue != value:
+                same = False
+                break
+        
+        if same:
+            sameValue.update({key})
     
     return render(request, 'projectManager/expCompare.html', {
         'project': project,
         'expList': expList,
-        'parameterList': list(parameterListMap.items()),
-        'resultList': sortedResultList
+        'parameterList': sortedParameterList,
+        'resultList': sortedResultList,
+        'sameValue': sameValue
         })
 
 
@@ -200,7 +224,13 @@ def addDataset(request, project_id):
     name = request.POST['name']
     is_synthetic = request.POST['is_synthetic']
     synthetic_parameters = request.POST['synthetic_parameters']
-    dataset = Dataset(project=project, name=name, is_synthetic=is_synthetic, synthetic_parameters=synthetic_parameters)
+
+    if 'file_size' in request.POST.keys():
+        file_size = int(request.POST['file_size'])
+    else:
+        file_size = 0
+
+    dataset = Dataset(project=project, name=name, is_synthetic=is_synthetic, synthetic_parameters=synthetic_parameters, size=file_size)
     dataset.save()
     return HttpResponseRedirect(reverse('project:exp', args=(project_id,)))
 
@@ -213,6 +243,7 @@ def addExp(request, project_id):
     exp_date = parse(request.POST['pub_date'] + " KST")
     parameter = request.POST['parameter']
     result = request.POST['result']
+
 
     expitem = ExpItem(project=project, dataset=dataset, algorithm=algorithm, exp_date=exp_date, parameter=parameter,
                       result=result, server=server)

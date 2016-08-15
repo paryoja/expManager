@@ -105,6 +105,7 @@ class Dataset(models.Model):
     name = models.TextField(null=True)
     is_synthetic = models.BooleanField(default=False)
     synthetic_parameters = models.TextField(null=True)
+    size = models.FloatField(null=True)
 
     def __str__(self):
         return self.name + ':' + self.project.project_text

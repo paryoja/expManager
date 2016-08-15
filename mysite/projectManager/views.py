@@ -390,6 +390,11 @@ def hostSetting(request):
             'public_server_list': Server.objects.filter(~Q(server_ip__startswith='192.168')),
             'rsa_server_list': Server.objects.filter(rsa_pub__startswith='ssh')})
 
+
+def eclipseSetting(request):
+    return render(request, 'projectManager/setting/eclipseSetting.html')
+
+
 import os, tempfile
 from wsgiref.util import FileWrapper
 import git

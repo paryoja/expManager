@@ -1,0 +1,10 @@
+{% extends "projectManager/base.html" %}
+{% block title %}Eclipse Settings{% endblock %}
+
+{% block body %}
+{% load staticfiles %}
+<a href="{% static 'projectManager/eclipse/yjpark_code.xml' %}" download>Code</a><br/>
+<a href="{% static 'projectManager/eclipse/yjpark_formatter.xml' %}" download>Formatter</a>
+
+<center><a href="{% url 'project:index' %}">To main menu</a></center>
+{% endblock %}

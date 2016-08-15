@@ -1,11 +1,11 @@
 from dateutil.parser import parse
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
+from django.db.models import Q
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.utils import timezone
 from django.views import generic
-from django.db.models import Q
 
 from .models import Algorithm, Project, TodoItem, Dataset, ExpItem, Server
 from .utils import *
@@ -70,7 +70,6 @@ class ExpListAllView(generic.DetailView):
         return context
 
 
-
 class AlgorithmDetailView(generic.DetailView):
     model = Algorithm
     template_name = 'projectManager/algorithmDetail.html'
@@ -99,7 +98,7 @@ class DatasetDetailView(generic.DetailView):
 def exp(request, pk):
     expitem = ExpItem.objects.get(pk=pk)
     parameterList = toList(expitem.parameter)
-    parsedResult = sorted( toList(expitem.result), key=lambda x: x[0])
+    parsedResult = sorted(toList(expitem.result), key=lambda x: x[0])
     return render(request, 'projectManager/expDetail.html', {
         'expitem': expitem,
         'parameterList': parameterList,
@@ -137,7 +136,7 @@ def expCompare(request, project_id):
             if startValue != value:
                 same = False
                 break
-        
+
         if same:
             sameValue.update({key})
 
@@ -148,18 +147,17 @@ def expCompare(request, project_id):
             if startValue != value:
                 same = False
                 break
-        
+
         if same:
             sameValue.update({key})
-    
+
     return render(request, 'projectManager/expCompare.html', {
         'project': project,
         'expList': expList,
         'parameterList': sortedParameterList,
         'resultList': sortedResultList,
         'sameValue': sameValue
-        })
-
+    })
 
 
 # add items
@@ -230,7 +228,8 @@ def addDataset(request, project_id):
     else:
         file_size = 0
 
-    dataset = Dataset(project=project, name=name, is_synthetic=is_synthetic, synthetic_parameters=synthetic_parameters, size=file_size)
+    dataset = Dataset(project=project, name=name, is_synthetic=is_synthetic, synthetic_parameters=synthetic_parameters,
+                      size=file_size)
     dataset.save()
     return HttpResponseRedirect(reverse('project:exp', args=(project_id,)))
 
@@ -243,7 +242,6 @@ def addExp(request, project_id):
     exp_date = parse(request.POST['pub_date'] + " KST")
     parameter = request.POST['parameter']
     result = request.POST['result']
-
 
     expitem = ExpItem(project=project, dataset=dataset, algorithm=algorithm, exp_date=exp_date, parameter=parameter,
                       result=result, server=server)
@@ -387,17 +385,19 @@ def vimSetting(request):
 
 def hostSetting(request):
     return render(request, 'projectManager/setting/hostSetting.html', {
-            'public_server_list': Server.objects.filter(~Q(server_ip__startswith='192.168')),
-            'rsa_server_list': Server.objects.filter(rsa_pub__startswith='ssh')})
+        'public_server_list': Server.objects.filter(~Q(server_ip__startswith='192.168')),
+        'rsa_server_list': Server.objects.filter(rsa_pub__startswith='ssh')})
 
 
 def eclipseSetting(request):
     return render(request, 'projectManager/setting/eclipseSetting.html')
 
 
-import os, tempfile
+import os
 from wsgiref.util import FileWrapper
 import git
+
+
 def expUploader(request):
     g = git.cmd.Git('projectManager/static/projectManager/expUploader/ExperimentUploader')
     g.pull()
@@ -408,4 +408,3 @@ def expUploader(request):
     response['Content-Length'] = os.path.getsize(filename)
     response['Content-Disposition'] = 'attachment; filename="uploadExperiment.py"'
     return response
-

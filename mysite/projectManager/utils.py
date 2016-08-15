@@ -106,4 +106,3 @@ def getDatasetContextData(context):
     context['result_filter'] = resultFilter
 
     return context
-

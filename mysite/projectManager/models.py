@@ -125,7 +125,8 @@ class ExpItem(models.Model):
     server = models.ForeignKey(Server, default=None, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
-        return self.exp_date.strftime("%y-%m-%d %H:%M:%S")
+        local_time = timezone.localtime(self.exp_date)
+        return local_time.strftime("%y-%m-%d %H:%M:%S")
 
     def toParamValueList(self):
         params = self.project.getParamFilter()

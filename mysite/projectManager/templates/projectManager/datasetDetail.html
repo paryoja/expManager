@@ -41,7 +41,7 @@ Synthetic parameters:
 
 	{% for alg, exp in avg_alg_list %}
 	<tr>
-		<td>{{ alg.0.0.name }}</td>
+		<td>{{ alg.0.0.name }} {{ alg.0.0.version }}</td>
 		<td>{{ alg.0.1.server_name }}</td>
 		{% for value in alg.1 %}
 		<td>{{ value | floatformat }}</td>

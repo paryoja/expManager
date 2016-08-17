@@ -1,17 +1,21 @@
+import os
+from wsgiref.util import FileWrapper
+
+import git
 from dateutil.parser import parse
+from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.db.models import Q
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.utils import timezone
-from django.views import generic
-from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
+from django.views import generic
 
+from .forms import ProjectEditForm
 from .models import Algorithm, Project, TodoItem, Dataset, ExpItem, Server
 from .utils import *
-from .forms import ProjectEditForm
 
 
 # Create your views here.
@@ -200,8 +204,8 @@ def addProjectWithForm(request):
             new_project = edit_form.save()
 
             return HttpResponseRedirect(reverse('project:index'))
-    return render(request, 'projectManager/addProjectForm.html', 
-            {'form': edit_form})
+    return render(request, 'projectManager/addProjectForm.html',
+                  {'form': edit_form})
 
 
 def addProject(request):
@@ -414,11 +418,6 @@ def hostSetting(request):
 
 def eclipseSetting(request):
     return render(request, 'projectManager/setting/eclipseSetting.html')
-
-
-import os
-from wsgiref.util import FileWrapper
-import git
 
 
 def expUploader(request):

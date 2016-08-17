@@ -6,13 +6,17 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.utils import timezone
 from django.views import generic
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
 
 from .models import Algorithm, Project, TodoItem, Dataset, ExpItem, Server
 from .utils import *
+from .forms import ProjectEditForm
 
 
 # Create your views here.
 
+@login_required
 def index(request):
     unfinished = TodoItem.objects.filter(done=False)
     return render(request, 'projectManager/index.html', {
@@ -20,7 +24,7 @@ def index(request):
         'todo_list': unfinished.filter(level=0).order_by('deadline_date'),
         'overdued_todo_list': unfinished.filter(deadline_date__lt=timezone.now()).order_by('deadline_date'),
         'algorithm_list': Algorithm.objects.all(),
-        'server_list': Server.objects.all()})
+        'server_list': Server.objects.all().order_by('server_ip')})
 
 
 class ListProjectView(generic.ListView):
@@ -40,10 +44,15 @@ class DetailView(generic.DetailView):
     model = Project
     template_name = 'projectManager/detail.html'
 
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(DetailView, self).dispatch(*args, **kwargs)
+
     def get_context_data(self, **kwargs):
         context = super(DetailView, self).get_context_data(**kwargs)
         context['todo_list'] = context['project'].todoitem_set.filter(done=False).order_by('level')
         context['completed_list'] = context['project'].todoitem_set.filter(done=True).order_by('-completed_date')
+        context['related_list'] = context['project'].relatedwork_set.all()
 
         return context
 
@@ -179,6 +188,20 @@ def addTodo(request, project_id):
                     done=False)
     todo.save()
     return HttpResponseRedirect(reverse('project:detail', args=(project_id,)))
+
+
+def addProjectWithForm(request):
+    if request.method == 'GET':
+        edit_form = ProjectEditForm()
+    elif request.method == 'POST':
+        edit_form = ProjectEditForm(request.POST)
+
+        if edit_form.is_valid():
+            new_project = edit_form.save()
+
+            return HttpResponseRedirect(reverse('project:index'))
+    return render(request, 'projectManager/addProjectForm.html', 
+            {'form': edit_form})
 
 
 def addProject(request):

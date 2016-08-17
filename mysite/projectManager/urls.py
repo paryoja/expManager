@@ -1,4 +1,5 @@
 from django.conf.urls import url
+import django.contrib.auth.views as auth_views
 
 from . import views
 
@@ -6,11 +7,15 @@ app_name = 'project'
 urlpatterns = [
     url(r'^$', views.index, name='index'),
 
+    # login/logout
+    url(r'^accounts/login/', auth_views.login, name='login', kwargs={'template_name':'projectManager/login.html'}),
+    url(r'^accounts/logout/', auth_views.logout, name='logout'),
+
     # related with project
     url(r'^(?P<pk>[0-9]+)/$', views.DetailView.as_view(), name='detail'),
     url(r'^listProjects/$', views.ListProjectView.as_view(), name='listProject'),
-    url(r'^projectForm/$', views.addForm, name='projectForm'),
-    url(r'^addProject/$', views.addProject, name='addProject'),
+    url(r'^projectForm/$', views.addProjectWithForm, name='projectForm'),
+    url(r'^addProject/$', views.addProjectWithForm, name='addProjectWithForm'),
     url(r'^getProjectId/(?P<project_name>.+)/$', views.getProjectId, name='getProjectId'),
     url(r'^(?P<project_id>[0-9]+)/addGitUrl/$', views.addGitUrl, name='addGitUrl'),
 

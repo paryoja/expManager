@@ -82,7 +82,13 @@ Download source codes<br/>
 Implemented algorithms - version, current state (implementing, testing, bug fixing, complemeted)<br/>
 
 <h2>Related works</h2>
-Author Title Link
+<ul>
+{% for related in related_list %}
+<li>
+	<u>{{ related.title }}</u>: {{ related.authors }} <a href="{{ related.url }}">Link</a>
+</li>
+{% endfor %}
+</ul>
 {% endif %}
 
 

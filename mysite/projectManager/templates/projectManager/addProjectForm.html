@@ -1,0 +1,13 @@
+{% load staticfiles %}
+<link rel="stylesheet" type="text/css" href="{% static 'projectManager/css/base.css' %}"/>
+<link rel="stylesheet" type="text/css" href="{% static 'projectManager/css/dashboard.css' %}"/>
+
+<!-- add project form -->
+
+<form action="{% url 'project:addProjectWithForm' %}" method="POST">
+    {% csrf_token %}
+	{{ form.as_p }}
+	<p>
+	<input type="submit"/>
+	</p>
+</form>

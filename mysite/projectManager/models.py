@@ -7,11 +7,11 @@ from .utils import *
 # Create your models here.
 class Project(models.Model):
     project_text = models.CharField(max_length=200)
-    pub_date = models.DateTimeField('date published')
+    pub_date = models.DateTimeField('date published', auto_now_add=True)
     has_experiments = models.BooleanField(default=False)
     git_url = models.TextField(null=True)
-    paramFilter = models.TextField(null=True)
-    resultFilter = models.TextField(null=True)
+    paramFilter = models.TextField(null=True, blank=True)
+    resultFilter = models.TextField(null=True, blank=True)
 
     def getParamFilter(self):
         return self.paramFilter.split(',')
@@ -160,5 +160,11 @@ class ExpTodo(models.Model):
 
 class RelatedWork(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    title = models.TextField(null=False)
     authors = models.TextField(null=True)
+    journal = models.TextField(null=True)
     url = models.URLField(null=True)
+    pdf_path = models.CharField(max_length=256, null=True)
+
+    def __str__(self):
+        return self.title

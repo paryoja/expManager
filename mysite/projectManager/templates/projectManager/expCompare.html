@@ -33,7 +33,7 @@ exp{{ exp.id }} <a href="{% url 'project:servers' exp.server.id %}">{{ exp.serve
 	<tr>
 		<td align="left">Name</td>
 		{% for exp in expList %}
-		<td>{{ exp.id }}</td>
+		<td>{{ exp.id }} {{ exp.algorithm.name }}</td>
 		{% endfor %}
 		<td>Equals</td>
 	</tr>
@@ -65,7 +65,7 @@ exp{{ exp.id }} <a href="{% url 'project:servers' exp.server.id %}">{{ exp.serve
 	<tr>
 		<td align="left">Name</td>
 		{% for exp in expList %}
-		<td>{{ exp.id }}</td>
+		<td>{{ exp.id }} {{ exp.algorithm.name }}</td>
 		{% endfor %}
 		<td>Equals</td>
 	</tr>

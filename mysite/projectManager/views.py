@@ -1,4 +1,5 @@
 import os
+import sys
 from wsgiref.util import FileWrapper
 
 import git
@@ -92,6 +93,7 @@ class AlgorithmDetailView(generic.DetailView):
         context = super(AlgorithmDetailView, self).get_context_data(**kwargs)
         context['exp_list'] = context['algorithm'].expitem_set.all()
         context['project'] = context['algorithm'].project
+        context['skip_algorithm'] = True
 
         return context
 
@@ -106,6 +108,7 @@ class DatasetDetailView(generic.DetailView):
         context = getDatasetContextData(context)
         context['exp_list'] = context['dataset'].expitem_set.all()
         context['project'] = context['dataset'].project
+        context['skip_dataset'] = True
         return context
 
 
@@ -141,36 +144,68 @@ def expCompare(request, project_id):
         index += 1
     sortedParameterList = sorted(list(parameterListMap.items()), key=lambda x: x[0])
     sortedResultList = sorted(list(resultListMap.items()), key=lambda x: x[0])
-
     sameValue = set()
     for (key, valueList) in sortedParameterList:
         startValue = valueList[0]
         same = True
+
         for value in valueList:
             if startValue != value:
                 same = False
                 break
 
+
         if same:
             sameValue.update({key})
 
+    minMaxList = []
     for (key, valueList) in sortedResultList:
         startValue = valueList[0]
         same = True
-        for value in valueList:
+
+        if startValue.isdigit() and startValue != '':
+            minValue = float(startValue)
+            maxValue = float(startValue)
+            maxId = 0
+            minId = 0
+        else:
+            minValue = sys.maxsize
+            maxValue = -sys.maxsize
+
+        for idx,value in enumerate(valueList):
             if startValue != value:
                 same = False
-                break
+
+                if value.isdigit():
+                    if minValue > float(value):
+                        minValue = float(value)
+                        minId = idx
+                    if maxValue < float(value):
+                        maxValue = float(value)
+                        maxId = idx
+
+        if minValue == sys.maxsize:
+            minValue = ''
+        else:
+            minValue = (minValue, minId)
+
+        if maxValue == -sys.maxsize:
+            maxValue = ''
+        else:
+            maxValue = (maxValue, maxId)
+
+        minMaxList.append((minValue, maxValue))
 
         if same:
             sameValue.update({key})
 
+    zippedResult = zip( sortedResultList, minMaxList )
     return render(request, 'projectManager/expCompare.html', {
         'project': project,
         'expList': expList,
         'parameterList': sortedParameterList,
-        'resultList': sortedResultList,
-        'sameValue': sameValue
+        'resultList': zippedResult,
+        'sameValue': sameValue,
     })
 
 
@@ -205,7 +240,7 @@ def addProjectWithForm(request):
             new_project = edit_form.save()
 
             return HttpResponseRedirect(reverse('project:index'))
-    return render(request, 'projectManager/addProjectForm.html',
+    return render(request, 'projectManager/form/addProjectForm.html',
                   {'form': edit_form})
 
 
@@ -329,16 +364,16 @@ def addGitUrl(request, project_id):
 
 
 def addForm(request):
-    return render(request, 'projectManager/addForm.html')
+    return render(request, 'projectManager/form/addForm.html')
 
 
 def addServerForm(request):
-    return render(request, 'projectManager/addServerForm.html')
+    return render(request, 'projectManager/form/addServerForm.html')
 
 
 def expForm(request, project_id):
     project = get_object_or_404(Project, pk=project_id)
-    return render(request, 'projectManager/addExpForm.html', {
+    return render(request, 'projectManager/form/addExpForm.html', {
         'project': project
     })
 
@@ -348,13 +383,13 @@ def deleteTodo(request, project_id, todo_id):
 
 
 def algorithmForm(request, project_id):
-    return render(request, 'projectManager/algorithmForm.html', {
+    return render(request, 'projectManager/form/algorithmForm.html', {
         'project_id': project_id
     })
 
 
 def datasetForm(request, project_id):
-    return render(request, 'projectManager/datasetForm.html', {
+    return render(request, 'projectManager/form/datasetForm.html', {
         'project_id': project_id
     })
 

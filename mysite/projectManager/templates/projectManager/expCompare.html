@@ -68,27 +68,35 @@ exp{{ exp.id }} <a href="{% url 'project:servers' exp.server.id %}">{{ exp.serve
 		<td>{{ exp.id }} {{ exp.algorithm.name }}</td>
 		{% endfor %}
 		<td>Equals</td>
+		<td>Min</td>
+		<td>Max</td>
 	</tr>
 
-    {% for attribute, valueList in resultList %}
+    {% for attr, minmax in resultList %}
     <tr>
-        <td align="left">{{ attribute }}</td>
-		{% for value in valueList %}
+
+        <td align="left">{{ attr.0 }}</td>
+		{% for value in attr.1 %}
 		{% if value.isdigit %}
         <td align="right">{{ value | floatformat }}</td>
 		{% else %}
 		<td align="left">{{ value }}</td>
 		{% endif %}
 		{% endfor %}
-		{% if attribute in sameValue %}
+		{% if attr.0 in sameValue %}
 		<td><font color="green">Same</font></td>
+		<td></td>
+		<td></td>
 		{% else %}
 		<td><font color="red">Different</font></td>
+		<td>{% if minmax.0 != "" %}{{ minmax.0.0 | floatformat }} (index: {{ minmax.0.1 }}){% endif %}</td>
+		<td>{% if minmax.1 != "" %}{{ minmax.1.0 | floatformat }} (index: {{ minmax.1.1 }}){% endif %}</td>
 		{% endif %}
     </tr>
     {% endfor %}
 </table>
 {% endif %}
+
 
 <center><a href="{% url 'project:exp' project.id %}">To experiments</a></center>
 <center><a href="{% url 'project:index' %}">To main menu</a></center>

@@ -154,7 +154,6 @@ def expCompare(request, project_id):
                 same = False
                 break
 
-
         if same:
             sameValue.update({key})
 

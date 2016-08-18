@@ -64,15 +64,12 @@ wget http://147.46.143.74:8000{% url 'project:expUploader' %}<br/><br/>
 {% endif %}
 
 <h1>Useful Sites</h1>
+<a href="{% url 'project:addBookMark' %}">Add a bookmark</a>
+
 <ul>
-	<li><a href="https://www.eclipse.org/" target="_blank">Eclipse</a></li>
-	<li><a href="https://www.djangoproject.com/" target="_blank">Django</a></li>
-	<li><a href="https://keras.io/" target="_blank">Keras</a></li>
-	<li><a href="http://hadoop.apache.org/" target="_blank">Hadoop</a></li>
-	<li><a href="http://spark.apache.org/" target="_blank">Spark</a></li>
-	<li><a href="http://www.ubuntu.com/" target="_blank">Ubuntu</a></li>
-	<li><a href="http://snap.stanford.edu/" target="_blank">SNAP datasets</a></li>
-	<li><a href="http://blog.hannal.com/2014/8/start_with_django_webframework_01/" target="_blank">Pystagram Tutorial</a></li>
+{% for bookmark in bookmark_list %}
+<li><a href="{% url 'project:redirectBookMark' bookmark.id %}" target="_blank">{{ bookmark.name }}</a></li>
+{% endfor %}
 </ul>
 
 <h1>Settings</h1>

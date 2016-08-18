@@ -63,5 +63,9 @@ urlpatterns = [
     url(r'^eclipseSetting/$', views.eclipseSetting, name='eclipseSetting'),
 
     # file download
-    url(r'^expUploader/$', views.expUploader, name='expUploader')
+    url(r'^expUploader/$', views.expUploader, name='expUploader'),
+
+    # related with bookmark
+    url(r'^addBookMark/$', views.addBookMark, name='addBookMark'),
+    url(r'redirectBookMark/(?P<bookmark_id>[0-9]+)/$', views.redirectBookMark, name='redirectBookMark'),
 ]

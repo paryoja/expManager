@@ -1,0 +1,10 @@
+{% extends "projectManager/base.html" %}
+{% block body %}
+<form action="{% block action %}{% endblock %}" method="POST">
+    {% csrf_token %}
+	{{ form.as_p }}
+	<p>
+	<input type="submit" value="Submit"/>
+	</p>
+</form>
+{% endblock %}

@@ -3,7 +3,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.db.models import Q
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, render, redirect
 from django.utils import timezone
 from django.views import generic
 from django.contrib.auth.decorators import login_required
@@ -11,7 +11,7 @@ from django.utils.decorators import method_decorator
 
 from .models import Algorithm, Project, TodoItem, Dataset, ExpItem, Server
 from .utils import *
-from .forms import ProjectEditForm
+from .forms import * 
 
 
 # Create your views here.
@@ -24,7 +24,9 @@ def index(request):
         'todo_list': unfinished.filter(level=0).order_by('deadline_date'),
         'overdued_todo_list': unfinished.filter(deadline_date__lt=timezone.now()).order_by('deadline_date'),
         'algorithm_list': Algorithm.objects.all(),
-        'server_list': Server.objects.all().order_by('server_ip')})
+        'server_list': Server.objects.all().order_by('server_ip'),
+        'bookmark_list': BookMark.objects.all().order_by('-times_visited')
+        })
 
 
 class ListProjectView(generic.ListView):
@@ -244,6 +246,12 @@ def addDataset(request, project_id):
     project = get_object_or_404(Project, pk=project_id)
     name = request.POST['name']
     is_synthetic = request.POST['is_synthetic']
+
+    if is_synthetic == 'true':
+        is_synthetic = 'True'
+    elif is_synthetic == 'false':
+        is_synthetic = 'False'
+
     synthetic_parameters = request.POST['synthetic_parameters']
 
     if 'file_size' in request.POST.keys():
@@ -253,6 +261,7 @@ def addDataset(request, project_id):
 
     dataset = Dataset(project=project, name=name, is_synthetic=is_synthetic, synthetic_parameters=synthetic_parameters,
                       size=file_size)
+
     dataset.save()
     return HttpResponseRedirect(reverse('project:exp', args=(project_id,)))
 
@@ -431,3 +440,26 @@ def expUploader(request):
     response['Content-Length'] = os.path.getsize(filename)
     response['Content-Disposition'] = 'attachment; filename="uploadExperiment.py"'
     return response
+
+
+def addBookMark(request):
+    if request.method == 'GET':
+        edit_form = BookMarkEditForm()
+    elif request.method == 'POST':
+        edit_form = BookMarkEditForm(request.POST)
+
+        if edit_form.is_valid():
+            new_project = edit_form.save()
+
+            return HttpResponseRedirect(reverse('project:index'))
+
+    return render(request, 'projectManager/form/addBookMark.html', {'form': edit_form})
+
+
+def redirectBookMark(request, bookmark_id):
+    bookmark = BookMark.objects.get(pk = bookmark_id)
+    bookmark.times_visited += 1
+    bookmark.save()
+    return redirect(bookmark.url, permanent=True)
+
+

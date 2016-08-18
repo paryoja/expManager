@@ -168,3 +168,14 @@ class RelatedWork(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class BookMark(models.Model):
+    name = models.CharField(max_length=100, null=False)
+    url = models.URLField()
+    last_visit = models.DateTimeField(null=True, auto_now=True)
+    times_visited = models.IntegerField(default=0)
+
+    def __str__(self):
+        return self.name
+

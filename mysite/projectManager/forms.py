@@ -2,6 +2,7 @@ from django import forms
 
 from .models import Project, BookMark
 
+
 class ProjectEditForm(forms.ModelForm):
     class Meta:
         model = Project

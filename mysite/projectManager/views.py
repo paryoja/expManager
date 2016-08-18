@@ -14,9 +14,10 @@ from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views import generic
 
-from .models import Algorithm, Project, TodoItem, Dataset, ExpItem, Server
+from .forms import *
+from .models import Algorithm, TodoItem, Dataset, ExpItem, Server
 from .utils import *
-from .forms import * 
+
 
 # Create your views here.
 
@@ -30,7 +31,7 @@ def index(request):
         'algorithm_list': Algorithm.objects.all(),
         'server_list': Server.objects.all().order_by('server_ip'),
         'bookmark_list': BookMark.objects.all().order_by('-times_visited')
-        })
+    })
 
 
 class ListProjectView(generic.ListView):
@@ -171,7 +172,7 @@ def expCompare(request, project_id):
             minValue = sys.maxsize
             maxValue = -sys.maxsize
 
-        for idx,value in enumerate(valueList):
+        for idx, value in enumerate(valueList):
             if startValue != value:
                 same = False
 
@@ -198,7 +199,7 @@ def expCompare(request, project_id):
         if same:
             sameValue.update({key})
 
-    zippedResult = zip( sortedResultList, minMaxList )
+    zippedResult = zip(sortedResultList, minMaxList)
     return render(request, 'projectManager/expCompare.html', {
         'project': project,
         'expList': expList,
@@ -489,8 +490,7 @@ def addBookMark(request):
 
 
 def redirectBookMark(request, bookmark_id):
-    bookmark = BookMark.objects.get(pk = bookmark_id)
+    bookmark = BookMark.objects.get(pk=bookmark_id)
     bookmark.times_visited += 1
     bookmark.save()
     return redirect(bookmark.url, permanent=True)
-

@@ -1,5 +1,5 @@
-from django.conf.urls import url
 import django.contrib.auth.views as auth_views
+from django.conf.urls import url
 
 from . import views
 
@@ -8,7 +8,7 @@ urlpatterns = [
     url(r'^$', views.index, name='index'),
 
     # login/logout
-    url(r'^accounts/login/', auth_views.login, name='login', kwargs={'template_name':'projectManager/login.html'}),
+    url(r'^accounts/login/', auth_views.login, name='login', kwargs={'template_name': 'projectManager/login.html'}),
     url(r'^accounts/logout/', auth_views.logout, name='logout'),
 
     # related with project

@@ -61,6 +61,7 @@ urlpatterns = [
     url(r'^vimSetting/$', views.vimSetting, name='vimSetting'),
     url(r'^hostSetting/$', views.hostSetting, name='hostSetting'),
     url(r'^eclipseSetting/$', views.eclipseSetting, name='eclipseSetting'),
+    url(r'^ubuntuPreseed/$', views.ubuntuPreseed, name='ubuntuPreseed'),
 
     # file download
     url(r'^expUploader/$', views.expUploader, name='expUploader'),

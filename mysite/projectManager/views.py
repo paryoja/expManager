@@ -143,6 +143,7 @@ def expCompare(request, project_id):
         appendDict(resultListMap, resultList, index)
 
         index += 1
+
     sortedParameterList = sorted(list(parameterListMap.items()), key=lambda x: x[0])
     sortedResultList = sorted(list(resultListMap.items()), key=lambda x: x[0])
     sameValue = set()
@@ -164,8 +165,8 @@ def expCompare(request, project_id):
         same = True
 
         if startValue.isdigit() and startValue != '':
-            minValue = float(startValue)
-            maxValue = float(startValue)
+            minValue = startValue
+            maxValue = startValue
             maxId = 0
             minId = 0
         else:
@@ -177,24 +178,31 @@ def expCompare(request, project_id):
                 same = False
 
                 if value.isdigit():
-                    if minValue > float(value):
-                        minValue = float(value)
+                    if float(minValue) > float(value):
+                        minValue = value
                         minId = idx
-                    if maxValue < float(value):
-                        maxValue = float(value)
+                    if float(maxValue) < float(value):
+                        maxValue = value
                         maxId = idx
+
+        if float(minValue) != 0:
+            ratio = float(maxValue) / float(minValue)
+        else:
+            ratio = ''
 
         if minValue == sys.maxsize:
             minValue = ''
+            ratio = ''
         else:
             minValue = (minValue, minId)
 
         if maxValue == -sys.maxsize:
             maxValue = ''
+            ratio = ''
         else:
             maxValue = (maxValue, maxId)
 
-        minMaxList.append((minValue, maxValue))
+        minMaxList.append((minValue, maxValue, ratio))
 
         if same:
             sameValue.update({key})
@@ -461,6 +469,10 @@ def hostSetting(request):
 
 def eclipseSetting(request):
     return render(request, 'projectManager/setting/eclipseSetting.html')
+
+
+def ubuntuPreseed(request):
+    return render(request, 'projectManager/setting/ubuntuPreseed.html')
 
 
 def expUploader(request):

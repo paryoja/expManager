@@ -31,6 +31,7 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'projectManager.apps.ProjectmanagerConfig',
     'polls.apps.PollsConfig',
+    'django.contrib.humanize',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -115,3 +116,11 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 
 STATIC_URL = '/static/'
+
+MEDIA_URL = '/pdf/'
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'pdf_files')
+
+LOGIN_REDIRECT_URL = '/projects/'
+
+LOGIN_URL = '/projects/accounts/login/'

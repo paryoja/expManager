@@ -26,6 +26,7 @@ Synthetic parameters:
 
 {% endif %}
 
+{% load humanize %}
 <h2>Averaged Result</h2>
 {% if avg_alg_list %}
 <table>
@@ -45,11 +46,11 @@ Synthetic parameters:
 		<td>{{ alg.0.0.name }} {{ alg.0.0.version }}</td>
 		<td>{{ alg.0.1.server_name }}</td>
 		{% for value in alg.1 %}
-		<td>{{ value | floatformat }}</td>
+		<td>{{ value | floatformat | intcomma }}</td>
 		{% endfor %}
 		
 		{% for value in exp %}
-		<td>{{ value | floatformat }}</td>
+		<td>{{ value | floatformat | intcomma }}</td>
 		{% endfor %}
 	</tr>
 	{% endfor %}

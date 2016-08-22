@@ -1,4 +1,5 @@
 <!-- requires project and exp_list -->
+{% load humanize %}
 <form id="CompareForm" action="{% url 'project:expCompare' project.id %}" method="get"></form>
 <table>
     <tr>
@@ -37,10 +38,10 @@
 		<td><a href="{% url 'project:datasetDetail' project.id exp.dataset.id %}">{{ exp.dataset.name }}</a></td>
 		{% endif %}
 		{% for value in exp.toParamValueList %}
-		<td>{{ value | floatformat }}</td>
+		<td>{{ value | floatformat | intcomma }}</td>
 		{% endfor %}
         {% for value in exp.toResultValueList %}
-        <td>{{ value | floatformat }}</td>
+        <td>{{ value | floatformat | intcomma }}</td>
         {% endfor %}
 		{% if exp.invalid %}<td><font color="red">Invalid</font></td>
 		{% else %}<td><a href="{% url 'project:expDetail' exp.id %}">detail</a></td>

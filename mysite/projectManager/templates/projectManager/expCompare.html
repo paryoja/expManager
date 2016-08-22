@@ -26,6 +26,9 @@ exp{{ exp.id }} <a href="{% url 'project:algorithmDetail' exp.project.id exp.alg
 exp{{ exp.id }} <a href="{% url 'project:servers' exp.server.id %}">{{ exp.server.server_name }}</a><br/>
 {% endfor %}
 
+{% load humanize %}
+
+
 <!-- parameter -->
 <h2>Paramters</h2>
 {% if parameterList %}
@@ -42,7 +45,7 @@ exp{{ exp.id }} <a href="{% url 'project:servers' exp.server.id %}">{{ exp.serve
         <td align="left">{{ attribute }}</td>
 		{% for value in valueList %}
 		{% if value.isdigit %}
-        <td align="right">{{ value | floatformat }}</td>
+        <td align="right">{{ value | floatformat | intcomma }}</td>
 		{% else %}
 		<td align="left">{{ value }}</td>
 		{% endif %}
@@ -70,6 +73,7 @@ exp{{ exp.id }} <a href="{% url 'project:servers' exp.server.id %}">{{ exp.serve
 		<td>Equals</td>
 		<td>Min</td>
 		<td>Max</td>
+		<td>Ratio</td>
 	</tr>
 
     {% for attr, minmax in resultList %}
@@ -78,19 +82,41 @@ exp{{ exp.id }} <a href="{% url 'project:servers' exp.server.id %}">{{ exp.serve
         <td align="left">{{ attr.0 }}</td>
 		{% for value in attr.1 %}
 		{% if value.isdigit %}
-        <td align="right">{{ value | floatformat }}</td>
+		<td align="right">
+			{% if attr.0 in sameValue %}
+			<font color="green">
+			{% elif value == minmax.1.0 %}
+			<font color="red">
+			{% elif value == minmax.0.0 %}
+			<font color="blue">
+			{% else %}
+			<font color="black">
+			{% endif %}
+				{{ value | floatformat | intcomma }}
+			</font>
+		</td>
 		{% else %}
-		<td align="left">{{ value }}</td>
+		<td align="left">
+			{% if attr.0 in sameValue %}
+			<font color="green">
+			{% else %}
+			<font color="black">
+			{% endif %}
+			{{ value }}
+			</font>
+		</td>
 		{% endif %}
 		{% endfor %}
 		{% if attr.0 in sameValue %}
 		<td><font color="green">Same</font></td>
 		<td></td>
 		<td></td>
+		<td></td>
 		{% else %}
 		<td><font color="red">Different</font></td>
-		<td>{% if minmax.0 != "" %}{{ minmax.0.0 | floatformat }} (index: {{ minmax.0.1 }}){% endif %}</td>
-		<td>{% if minmax.1 != "" %}{{ minmax.1.0 | floatformat }} (index: {{ minmax.1.1 }}){% endif %}</td>
+		<td>{% if minmax.0 != "" %}{{ minmax.0.0 | floatformat | intcomma }} (idx: {{ minmax.0.1 }}){% endif %}</td>
+		<td>{% if minmax.1 != "" %}{{ minmax.1.0 | floatformat | intcomma }} (idx: {{ minmax.1.1 }}){% endif %}</td>
+		<td>{{ minmax.2 | floatformat | intcomma }}</td>
 		{% endif %}
     </tr>
     {% endfor %}

@@ -1,0 +1,9 @@
+{% extends "projectManager/base.html" %}
+{% block title %}Ubuntu Preseed{% endblock %}
+
+{% block body %}
+{% load staticfiles %}
+<pre>
+{% include 'projectManager/setting/ubuntu/ubuntu.seed' %}
+</pre>
+{% endblock %}

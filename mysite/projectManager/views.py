@@ -506,3 +506,7 @@ def redirectBookMark(request, bookmark_id):
     bookmark.times_visited += 1
     bookmark.save()
     return redirect(bookmark.url, permanent=True)
+
+
+def map(request):
+    return render(request, 'projectManager/map.html')

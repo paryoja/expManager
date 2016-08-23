@@ -34,3 +34,8 @@
     &ltname&gtyarn.log-aggregation-enable&lt/name&gt
     &ltvalue&gttrue&lt/value&gt
   &lt/property&gt
+  &ltproperty&gt
+    &ltname&gtyarn.resourcemanager.hostname&lt/name&gt
+    &ltvalue&gt{{ namenode|default:"127.0.0.1" }}&lt/value&gt
+  &lt/property&gt
+

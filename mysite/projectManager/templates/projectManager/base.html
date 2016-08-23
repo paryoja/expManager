@@ -9,6 +9,13 @@
 </head>
 
 <body>
+<div id="nav">
+	<a href="{% url 'project:index' %}">Home</a> |
+	{% if user.is_authenticated %}
+	Hello {{ user.username }}
+	{% endif %}
+</div>
+
 	{% block body %}{% endblock %}
 </body>
 </html>

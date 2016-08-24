@@ -5,6 +5,8 @@
 	<title>{% block title %}{% endblock %}</title>
 	<link rel="stylesheet" type="text/css" href="{% static 'projectManager/css/base.css' %}"/>
 	<link rel="stylesheet" type="text/css" href="{% static 'projectManager/css/dashboard.css' %}"/>
+	<script type="text/javascript" src="/static/projectManager/js/jquery-3.1.0.js"></script>
+	{% block extraScript %}{% endblock %}
 	{% block additionalStyle %}{% endblock %}
 </head>
 

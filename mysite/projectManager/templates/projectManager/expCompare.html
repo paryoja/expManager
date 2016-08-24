@@ -108,10 +108,12 @@ exp{{ exp.id }} <a href="{% url 'project:servers' exp.server.id %}">{{ exp.serve
 		{% endif %}
 		{% endfor %}
 		{% if attr.0 in sameValue %}
-		<td><font color="green">Same</font></td>
-		<td></td>
-		<td></td>
-		<td></td>
+		<td colspan="4"><font color="green">Same</font></td>
+		{% elif attr.0 in similarValue %}
+		<td><font color="gray">Similar</font></td>
+		<td>{% if minmax.0 != "" %}{{ minmax.0.0 | floatformat | intcomma }} (idx: {{ minmax.0.1 }}){% endif %}</td>
+		<td>{% if minmax.1 != "" %}{{ minmax.1.0 | floatformat | intcomma }} (idx: {{ minmax.1.1 }}){% endif %}</td>
+		<td>{{ minmax.2 | floatformat | intcomma }}</td>
 		{% else %}
 		<td><font color="red">Different</font></td>
 		<td>{% if minmax.0 != "" %}{{ minmax.0.0 | floatformat | intcomma }} (idx: {{ minmax.0.1 }}){% endif %}</td>

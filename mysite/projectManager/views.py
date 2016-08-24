@@ -147,6 +147,7 @@ def expCompare(request, project_id):
     sortedParameterList = sorted(list(parameterListMap.items()), key=lambda x: x[0])
     sortedResultList = sorted(list(resultListMap.items()), key=lambda x: x[0])
     sameValue = set()
+    similarValue = set()
     for (key, valueList) in sortedParameterList:
         startValue = valueList[0]
         same = True
@@ -202,6 +203,10 @@ def expCompare(request, project_id):
         else:
             maxValue = (maxValue, maxId)
 
+        if isinstance( ratio, float ) and ratio < 1.1:
+            similarValue.update({key})
+
+
         minMaxList.append((minValue, maxValue, ratio))
 
         if same:
@@ -214,6 +219,7 @@ def expCompare(request, project_id):
         'parameterList': sortedParameterList,
         'resultList': zippedResult,
         'sameValue': sameValue,
+        'similarValue': similarValue,
     })
 
 

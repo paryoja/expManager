@@ -8,7 +8,7 @@
   &lt/property&gt
   &ltproperty&gt
     &ltname&gtyarn.scheduler.maximum-allocation-mb&lt/name&gt
-    &ltvalue&gt4098&lt/value&gt
+    &ltvalue&gt4096&lt/value&gt
   &lt/property&gt
   &ltproperty&gt
     &ltname&gtyarn.resourcemanager.admin.client.thread-count&lt/name&gt
@@ -28,7 +28,7 @@
   &lt/property&gt
   &ltproperty&gt
     &ltname&gtyarn.nodemanager.resource.memory-mb&lt/name&gt
-    &ltvalue&gt4098&lt/value&gt
+    &ltvalue&gt4096&lt/value&gt
   &lt/property&gt
   &ltproperty&gt
     &ltname&gtyarn.log-aggregation-enable&lt/name&gt

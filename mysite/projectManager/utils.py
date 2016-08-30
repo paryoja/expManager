@@ -48,7 +48,7 @@ def splitColon(itemList, index):
 def getDatasetContextData(context):
     from .models import ExpItem
     dataset = context['dataset']
-    expList = ExpItem.objects.filter(dataset=dataset)
+    expList = ExpItem.objects.filter(dataset=dataset).filter(invalid=False)
 
     paramFilter = dataset.project.getParamFilter()
 

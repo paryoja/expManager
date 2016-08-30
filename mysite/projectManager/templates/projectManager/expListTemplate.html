@@ -29,7 +29,11 @@
 		<td><input type="checkbox" name="exp" value="{{ exp.id }}" form="CompareForm"/>
         <td>{{ exp }}</td>
 		{% if not skip_server %}
-		<td><a href="{% url 'project:servers' exp.server.id %}">{{ exp.server.server_name }}</a></td>
+			{% if not exp.server == None %}
+				<td><a href="{% url 'project:servers' exp.server.id %}">{{ exp.server.server_name }}</a></td>
+			{% else %}
+				<td></td>
+			{% endif %}
 		{% endif %}
 		{% if not skip_algorithm %}
 		<td><a href="{% url 'project:algorithmDetail' project.id exp.algorithm.id %}">{{ exp.algorithm.name }} {{ exp.algorithm.version }}</a></td>

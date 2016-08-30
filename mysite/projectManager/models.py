@@ -68,6 +68,8 @@ class Algorithm(models.Model):
         return self.name + ':' + self.project.project_text + ":" + self.version
 
     def __eq__(self, other):
+        if not isinstance(other, Algorithm):
+            return False
         if self.name == other.name:
             return self.version == other.version
         return False
@@ -91,6 +93,8 @@ class Server(models.Model):
         return self.server_name
 
     def __eq__(self, other):
+        if not isinstance(other, Server):
+            return False
         if other is None:
             return False
         return self.server_name == other.server_name
@@ -175,6 +179,16 @@ class BookMark(models.Model):
     url = models.URLField()
     last_visit = models.DateTimeField(null=True, auto_now=True)
     times_visited = models.IntegerField(default=0)
+
+    def __str__(self):
+        return self.name
+
+
+class SettingFiles(models.Model):
+    server = models.ForeignKey(Server, on_delete=models.CASCADE)
+    name = models.TextField(null=False)
+    attachment = models.FileField()
+    hashcode = models.CharField(max_length=500, null=False)
 
     def __str__(self):
         return self.name

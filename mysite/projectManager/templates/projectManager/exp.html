@@ -48,12 +48,18 @@ List experiments to do <br/>
     <tr>
         <td>Name</td>
         <td>Is synthetic</td>
+		<td>Size</td>
     </tr>
 
-    {% for dataset in project.dataset_set.all %}
+    {% for dataset in dataset_list %}
     <tr>
         <td><a href="{% url 'project:datasetDetail' project.id dataset.id %}">{{ dataset.name }}</td>
         <td>{{ dataset.is_synthetic }}</td>
+		{% if dataset.size %}
+		<td>{{ dataset.size|filesizeformat }}</td>
+		{% else %}
+		<td></td>
+		{% endif %}
     </tr>
     {% endfor %}
 </table>

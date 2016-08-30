@@ -7,6 +7,7 @@ from dateutil.parser import parse
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render, redirect
@@ -71,19 +72,26 @@ class ExpView(generic.DetailView):
     def get_context_data(self, **kwargs):
         context = super(ExpView, self).get_context_data(**kwargs)
         context['exp_list'] = context['project'].expitem_set.order_by('-exp_date')[:10]
+        context['dataset_list'] = context['project'].dataset_set.order_by('size')
 
         return context
 
 
-class ExpListAllView(generic.DetailView):
-    model = Project
-    template_name = 'projectManager/expListAll.html'
+def expListAll(request, pk):
+    project = get_object_or_404(Project, pk=pk)
+    exp_all = project.expitem_set.order_by('-id')
 
-    def get_context_data(self, **kwargs):
-        context = super(ExpListAllView, self).get_context_data(**kwargs)
-        context['exp_list'] = context['project'].expitem_set.all()
+    paginator = Paginator(exp_all, 25)
+    page = request.GET.get('page')
 
-        return context
+    try:
+        exps = paginator.page(page)
+    except PageNotAnInteger:
+        exps = paginator.page(1)
+    except EmptyPage:
+        exps = paginator.page(paginator.num_pages)
+
+    return render(request, 'projectManager/expListAll.html', {'project':project, 'exp_list': exps})
 
 
 class AlgorithmDetailView(generic.DetailView):
@@ -357,7 +365,7 @@ def modifyExp(request, project_id, exp_id):
     elif request.POST['method'] == 'delete':
         exp.delete()
 
-    return HttpResponseRedirect(reverse('project:expListAll', args=(project_id,)))
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
 def addGitUrl(request, project_id):
@@ -479,6 +487,10 @@ def eclipseSetting(request):
 
 def ubuntuPreseed(request):
     return render(request, 'projectManager/setting/ubuntuPreseed.html')
+
+
+def jupyterSetting(request):
+    return render(request, 'projectManager/setting/jupyterSEtting.html')
 
 
 def expUploader(request):

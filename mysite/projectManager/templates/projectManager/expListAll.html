@@ -12,8 +12,38 @@
 
 <a href="{% url 'project:expForm' project.id %}">Add a new experimental result</a><br/><br/>
 <h3>There are {{ project.expitem_set.all.count }} experiment{{ project.expitem_set.all.count | pluralize }}</h3>
+<div class="pagination">
+	<span class="step-links">
  
+	{% if exp_list.has_previous %}
+		<a href="?page={{ exp_list.previous_page_number }}">previous</a>
+	{% else %}
+		previous
+	{% endif %}
+
+	{% for page in exp_list.paginator.page_range %}
+		{% if forloop.counter != exp_list.number %}
+		|<a href="?page={{ page }}">{{ page }}</a>
+		{% else %}
+		{{ page }}
+		{% endif %}
+	{% endfor %}
+	|
+
+	{% if exp_list.has_next %}
+		<a href="?page={{ exp_list.next_page_number }}">next</a>
+	{% else %}
+		next
+	{% endif %}
+	</span>
+</div>
+
+Page {{ exp_list.number }} of {{ exp_list.paginator.num_pages }}.
+
+
+
 {% include 'projectManager/expListTemplate.html' %}
+
 <center>
     <a href="{% url 'project:detail' project.id %}">To project detail</a><br/>
     <a href="{% url 'project:index' %}">To main menu</a>

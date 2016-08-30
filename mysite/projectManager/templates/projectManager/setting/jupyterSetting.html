@@ -1,0 +1,15 @@
+{% extends "projectManager/base.html" %}
+{% block title %}Jupyter Settings{% endblock %}
+
+{% block body %}
+jupyter notebook --generate-config
+In [1]: from notebook.auth import passwd
+In [2]: passwd()
+<pre>
+c.NotebookApp.open_browser = False
+c.NotebookApp.password = u'sha1:533d6e18fbd7:d2f12941de8e7f0a00af26d690830bb541bc231c'
+c.NotebookApp.port = 18888
+</pre>
+
+<center><a href="{% url 'project:index' %}">To main menu</a></center>
+{% endblock %}

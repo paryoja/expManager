@@ -31,7 +31,7 @@ urlpatterns = [
     url(r'^(?P<project_id>[0-9]+)/expCompare/$', views.expCompare, name='expCompare'),
     url(r'^(?P<project_id>[0-9]+)/addExp/$', views.addExp, name='addExp'),
     url(r'^(?P<project_id>[0-9]+)/expForm/$', views.expForm, name='expForm'),
-    url(r'^(?P<pk>[0-9]+)/expListAll/$', views.ExpListAllView.as_view(), name='expListAll'),
+    url(r'^(?P<pk>[0-9]+)/expListAll/$', views.expListAll, name='expListAll'),
     url(r'^(?P<project_id>[0-9]+)/(?P<exp_id>[0-9]+)/modifyExp/$', views.modifyExp, name='modifyExp'),
 
     # related with todo
@@ -62,6 +62,7 @@ urlpatterns = [
     url(r'^hostSetting/$', views.hostSetting, name='hostSetting'),
     url(r'^eclipseSetting/$', views.eclipseSetting, name='eclipseSetting'),
     url(r'^ubuntuPreseed/$', views.ubuntuPreseed, name='ubuntuPreseed'),
+    url(r'^jupyterSetting/$', views.jupyterSetting, name='jupyterSetting'),
 
     # file download
     url(r'^expUploader/$', views.expUploader, name='expUploader'),

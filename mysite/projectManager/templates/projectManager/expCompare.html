@@ -23,7 +23,11 @@ exp{{ exp.id }} <a href="{% url 'project:algorithmDetail' exp.project.id exp.alg
 
 <h2>Server</h2>
 {% for exp in expList %}
-exp{{ exp.id }} <a href="{% url 'project:servers' exp.server.id %}">{{ exp.server.server_name }}</a><br/>
+exp{{ exp.id }}
+{% if exp.server != None %} 
+<a href="{% url 'project:servers' exp.server.id %}">{{ exp.server.server_name }}</a>
+{% endif %}
+<br/>
 {% endfor %}
 
 {% load humanize %}

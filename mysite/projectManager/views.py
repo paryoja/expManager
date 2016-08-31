@@ -1,4 +1,3 @@
-import os
 import sys
 from urllib.request import urlopen
 from wsgiref.util import FileWrapper
@@ -7,8 +6,8 @@ import git
 from dateutil.parser import parse
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.urlresolvers import reverse
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.core.urlresolvers import reverse
 from django.db.models import Q
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render, redirect
@@ -92,7 +91,7 @@ def expListAll(request, pk):
     except EmptyPage:
         exps = paginator.page(paginator.num_pages)
 
-    return render(request, 'projectManager/expListAll.html', {'project':project, 'exp_list': exps})
+    return render(request, 'projectManager/expListAll.html', {'project': project, 'exp_list': exps})
 
 
 class AlgorithmDetailView(generic.DetailView):
@@ -212,9 +211,8 @@ def expCompare(request, project_id):
         else:
             maxValue = (maxValue, maxId)
 
-        if isinstance( ratio, float ) and ratio < 1.1:
+        if isinstance(ratio, float) and ratio < 1.1:
             similarValue.update({key})
-
 
         minMaxList.append((minValue, maxValue, ratio))
 
@@ -536,7 +534,7 @@ def addRelatedWork(request, pk):
     url = request.POST['url']
     content = urlopen(url)
     name = getPDFName(url)
-    related = RelatedWork(project=project,title=name,url=url)
-    related.pdf_path.save(name,content)
+    related = RelatedWork(project=project, title=name, url=url)
+    related.pdf_path.save(name, content)
     related.save()
     return HttpResponseRedirect(reverse('project:detail', args=(project.id,)))

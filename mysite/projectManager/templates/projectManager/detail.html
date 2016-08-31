@@ -82,10 +82,15 @@ Download source codes<br/>
 Implemented algorithms - version, current state (implementing, testing, bug fixing, complemeted)<br/>
 
 <h2>Related works</h2>
+<form action="{% url 'project:addRelatedWork' project.id %}" method="post">
+	{% csrf_token %}
+	Url: <input type="text" name="url"></input>
+	<input type="submit"/>
+</form>
 <ul>
 {% for related in related_list %}
 <li>
-	<u>{{ related.title }}</u>: {{ related.authors }} <a href="{{ related.url }}">Link</a>
+	<u>{{ related.title }}</u>: {{ related.authors }} <a href="{{ related.url }}">Link</a> <a href="{{ related.pdf_path.url }}">Local File</a>
 </li>
 {% endfor %}
 </ul>

@@ -18,6 +18,7 @@ urlpatterns = [
     url(r'^addProject/$', views.addProjectWithForm, name='addProjectWithForm'),
     url(r'^getProjectId/(?P<project_name>.+)/$', views.getProjectId, name='getProjectId'),
     url(r'^(?P<project_id>[0-9]+)/addGitUrl/$', views.addGitUrl, name='addGitUrl'),
+    url(r'^addRelatedWork/(?P<pk>[0-9]+)/$', views.addRelatedWork, name='addRelatedWork'),
 
     # related with server
     url(r'^servers/(?P<pk>[0-9]+)/$', views.ServerView.as_view(), name='servers'),

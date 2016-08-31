@@ -1,4 +1,5 @@
 import json
+import os
 from json import JSONDecodeError
 
 
@@ -106,3 +107,10 @@ def getDatasetContextData(context):
     context['result_filter'] = resultFilter
 
     return context
+
+
+def getPDFName(url):
+    name = os.path.basename(url)
+    name = name[:name.find('.pdf')+4]
+ 
+    return name 

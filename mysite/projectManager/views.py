@@ -1,5 +1,6 @@
 import os
 import sys
+from urllib.request import urlopen
 from wsgiref.util import FileWrapper
 
 import git
@@ -16,7 +17,7 @@ from django.utils.decorators import method_decorator
 from django.views import generic
 
 from .forms import *
-from .models import Algorithm, TodoItem, Dataset, ExpItem, Server
+from .models import Algorithm, TodoItem, Dataset, ExpItem, Server, RelatedWork
 from .utils import *
 
 
@@ -528,3 +529,14 @@ def redirectBookMark(request, bookmark_id):
 
 def map(request):
     return render(request, 'projectManager/map.html')
+
+
+def addRelatedWork(request, pk):
+    project = get_object_or_404(Project, pk=pk)
+    url = request.POST['url']
+    content = urlopen(url)
+    name = getPDFName(url)
+    related = RelatedWork(project=project,title=name,url=url)
+    related.pdf_path.save(name,content)
+    related.save()
+    return HttpResponseRedirect(reverse('project:detail', args=(project.id,)))

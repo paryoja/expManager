@@ -8,27 +8,42 @@
 {% block body %}
 <h1>Exp compare</h1>
 
-<h2>Project</h2>
-{{ project }}
+<h2>{{ project }}</h2>
 
-<h2>Dataset</h2>
-{% for exp in expList %}
-exp{{ exp.id }} <a href="{% url 'project:datasetDetail' exp.project.id exp.dataset.id %}">{{ exp.dataset.name }}</a><br/>
-{% endfor %}
+<table>
+	<tr>
+		<td></td>
+		{% for exp in expList %}
+		<td>{{ exp.id }}</td>
+		{% endfor %}
+	</tr>
 
-<h2>Algorithm</h2>
-{% for exp in expList %}
-exp{{ exp.id }} <a href="{% url 'project:algorithmDetail' exp.project.id exp.algorithm.id %}">{{ exp.algorithm.name }}</a><br/>
-{% endfor %}
+	<tr>
+		<td>Dataset</td>
+		{% for exp in expList %}
+		<td><a href="{% url 'project:datasetDetail' exp.project.id exp.dataset.id %}">{{ exp.dataset.name }}</a></td>
+		{% endfor %}
+	</tr>
 
-<h2>Server</h2>
-{% for exp in expList %}
-exp{{ exp.id }}
-{% if exp.server != None %} 
-<a href="{% url 'project:servers' exp.server.id %}">{{ exp.server.server_name }}</a>
-{% endif %}
-<br/>
-{% endfor %}
+	<tr>
+		<td>Algorithm</td>
+		{% for exp in expList %}
+		<td><a href="{% url 'project:algorithmDetail' exp.project.id exp.algorithm.id %}">{{ exp.algorithm.name }}</a></td>
+		{% endfor %}
+	</tr>
+
+	<tr>
+		<td>Server</td>
+		{% for exp in expList %}
+		{% if exp.server != None %} 
+		<td><a href="{% url 'project:servers' exp.server.id %}">{{ exp.server.server_name }}</a></td>
+		{% else %}
+		<td></td>
+		{% endif %}
+		{% endfor %}
+	</tr>
+
+</table>
 
 {% load humanize %}
 

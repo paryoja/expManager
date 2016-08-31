@@ -23,9 +23,9 @@
 
 	{% for page in exp_list.paginator.page_range %}
 		{% if forloop.counter != exp_list.number %}
-		|<a href="?page={{ page }}">{{ page }}</a>
+		| <a href="?page={{ page }}">{{ page }}</a>
 		{% else %}
-		{{ page }}
+		| {{ page }}
 		{% endif %}
 	{% endfor %}
 	|

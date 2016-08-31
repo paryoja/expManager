@@ -123,6 +123,7 @@ class ExpItem(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     algorithm = models.ForeignKey(Algorithm, on_delete=models.CASCADE)
     dataset = models.ForeignKey(Dataset, on_delete=models.CASCADE, null=True)
+    upload_date = models.DateTimeField('date uploaded', auto_now_add=True)
     exp_date = models.DateTimeField('date experimented')
     parameter = models.TextField('parameters used')
     result = models.TextField('result')

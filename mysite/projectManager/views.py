@@ -332,7 +332,7 @@ def addExp(request, project_id):
     dataset = get_object_or_404(Dataset, pk=request.POST['dataset_name'])
     algorithm = get_object_or_404(Algorithm, pk=request.POST['algorithm_name'])
     server = get_object_or_404(Server, pk=request.POST['server_name'])
-    exp_date = parse(request.POST['pub_date'] + " KST")
+    exp_date = parse(request.POST['exp_date'])
     parameter = request.POST['parameter']
     result = request.POST['result']
 

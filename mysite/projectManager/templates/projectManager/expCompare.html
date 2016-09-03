@@ -19,6 +19,14 @@
 	</tr>
 
 	<tr>
+		<td>Date</td>
+		{% for exp in expList %}
+		<td>{{ exp.exp_date }}</td>
+		{% endfor %}
+	</tr>
+
+
+	<tr>
 		<td>Dataset</td>
 		{% for exp in expList %}
 		<td><a href="{% url 'project:datasetDetail' exp.project.id exp.dataset.id %}">{{ exp.dataset.name }}</a></td>

@@ -84,7 +84,7 @@ Implemented algorithms - version, current state (implementing, testing, bug fixi
 <h2>Related works</h2>
 <form action="{% url 'project:addRelatedWork' project.id %}" method="post">
 	{% csrf_token %}
-	Url: <input type="text" name="url"></input>
+	Title: <input type="text" name="title"/> Authors: <input type="text" name="authors"/> Url: <input type="text" name="url"/></input>
 	<input type="submit"/>
 </form>
 <ul>

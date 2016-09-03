@@ -531,10 +531,12 @@ def map(request):
 
 def addRelatedWork(request, pk):
     project = get_object_or_404(Project, pk=pk)
+    title = request.POST['title']
+    authors = request.POST['authors']
     url = request.POST['url']
     content = urlopen(url)
-    name = getPDFName(url)
-    related = RelatedWork(project=project, title=name, url=url)
+    #name = getPDFName(url)
+    related = RelatedWork(project=project, title=title, authors=authors, url=url)
     related.pdf_path.save(name, content)
     related.save()
     return HttpResponseRedirect(reverse('project:detail', args=(project.id,)))

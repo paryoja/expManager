@@ -535,7 +535,7 @@ def addRelatedWork(request, pk):
     authors = request.POST['authors']
     url = request.POST['url']
     content = urlopen(url)
-    #name = getPDFName(url)
+    # name = getPDFName(url)
     related = RelatedWork(project=project, title=title, authors=authors, url=url)
     related.pdf_path.save(name, content)
     related.save()
@@ -548,24 +548,24 @@ def graph(request, pk):
     paramFilter = project.getParamFilter()
     algorithmList = project.algorithm_set.all()
     serverList = Server.objects.all().order_by('server_name')
-        
-    return render(request, 'projectManager/graph.html', { 'project': project,
-        'resultFilter': resultFilter,
-        'paramFilter' : paramFilter,
-        'algorithmList' : algorithmList,
-        'serverList': serverList,
-        })
+
+    return render(request, 'projectManager/graph.html', {'project': project,
+                                                         'resultFilter': resultFilter,
+                                                         'paramFilter': paramFilter,
+                                                         'algorithmList': algorithmList,
+                                                         'serverList': serverList,
+                                                         })
 
 
 def addGraph(request, pk):
     project = get_object_or_404(Project, pk=pk)
-    selected_result = request.POST['result'] 
+    selected_result = request.POST['result']
     selected_param = request.POST['param']
     selected_algorithm = request.POST.getlist('algorithm')
     selected_server = request.POST['server']
 
     param_filter = project.getParamFilter()
-    exclude = { param_filter.index( selected_param ) }
+    exclude = {param_filter.index(selected_param)}
 
     distinct_options = {}
     server = Server.objects.filter(id=selected_server)
@@ -576,19 +576,19 @@ def addGraph(request, pk):
         for exp in exp_list:
             param_list = exp.toParamValueList()
             param_str = exp.toOptionString(selected_param, param_filter)
-            
+
             if param_str in distinct_options.keys():
-                distinct_options[ param_str ].append(exp.id)
+                distinct_options[param_str].append(exp.id)
             else:
-                distinct_options[ param_str ] = [exp.id]
+                distinct_options[param_str] = [exp.id]
             result_list = exp.toResultValueList()
 
-    return render(request, 'projectManager/addGraph.html', 
-            {'project': project,
-                'selected_result': selected_result,
-                'selected_param': selected_param,
-                'distinct_options': sorted(distinct_options.items()),
-                })
+    return render(request, 'projectManager/addGraph.html',
+                  {'project': project,
+                   'selected_result': selected_result,
+                   'selected_param': selected_param,
+                   'distinct_options': sorted(distinct_options.items()),
+                   })
 
 
 def graphExp(request, pk):
@@ -597,11 +597,11 @@ def graphExp(request, pk):
 
     selected_param = get['selected_param']
     selected_result = get['selected_result']
-    
+
     param_filter = project.getParamFilter()
     exps = get['exp'].split(',')
     exp_list = []
-    
+
     algorithm_map = {}
     param_set = set()
 
@@ -613,9 +613,9 @@ def graphExp(request, pk):
         algorithm = exp_model.algorithm
 
         if algorithm not in algorithm_map:
-            algorithm_map[ algorithm ] = {}
-            
-        mapping = algorithm_map[ algorithm ]
+            algorithm_map[algorithm] = {}
+
+        mapping = algorithm_map[algorithm]
 
         param_set.update({param})
 
@@ -643,5 +643,4 @@ def graphExp(request, pk):
         'exp_list': exp_list,
         'algorithms': algorithm_list,
         'exp_result': exp_result,
-        })
-
+    })

@@ -1,0 +1,26 @@
+{% extends "projectManager/base.html" %}
+{% block title %}Experimental results of {{ project.project_text }}{% endblock %}
+
+{% block body %}
+<h2>{{ selected_result }}</h2>
+<table>
+	<tr>
+		<td>{{ selected_param }}</td>
+		{% for algorithm in algorithms %}
+		<td>{{ algorithm.name }}</td>
+		{% endfor %}
+
+	</tr>
+	
+	{% for result in exp_result %}
+	<tr>
+		{% for value in result %}
+		<td>{{ value|floatformat }}</td>
+		{% endfor %}
+	</tr>
+	{% endfor %}
+
+</table>
+
+{% include 'projectManager/expListTemplate.html' %}
+{% endblock %}

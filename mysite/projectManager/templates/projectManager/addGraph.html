@@ -1,0 +1,16 @@
+{% extends "projectManager/base.html" %}
+{% block title %}{{ project.project_text }} Add Graph{% endblock %}
+
+{% block body %}
+{% load staticfiles %}
+
+Selected Result: {{ selected_result }}<br/>
+Selected Param : {{ selected_param }}<br/>
+
+<ul>
+{% for option in distinct_options %}
+<li><a href="{% url 'project:graphExp' project.id %}?selected_result={{ selected_result }}&selected_param={{ selected_param }}&exp={% for exp in option.1 %}{% if forloop.counter != 1 %},{% endif %}{{ exp }}{% endfor %}">{{ option.0 }}: {{ option.1|length }}</li>
+{% endfor %}
+</ul>
+
+{% endblock %}

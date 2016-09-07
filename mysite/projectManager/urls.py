@@ -35,6 +35,11 @@ urlpatterns = [
     url(r'^(?P<pk>[0-9]+)/expListAll/$', views.expListAll, name='expListAll'),
     url(r'^(?P<project_id>[0-9]+)/(?P<exp_id>[0-9]+)/modifyExp/$', views.modifyExp, name='modifyExp'),
 
+    # related with graphs
+    url(r'^(?P<pk>[0-9]+)/graph/$', views.graph, name='graph'),
+    url(r'^(?P<pk>[0-9]+)/addGraph/$', views.addGraph, name='addGraph'),
+    url(r'^(?P<pk>[0-9]+)/graphExp/$', views.graphExp, name='graphExp'),
+
     # related with todo
     url(r'^(?P<project_id>[0-9]+)/addTodo/$', views.addTodo, name='addTodo'),
     url(r'^(?P<project_id>[0-9]+)/(?P<todo_id>[0-9]+)/modifyTodo/$', views.modifyTodo, name='modifyTodo'),

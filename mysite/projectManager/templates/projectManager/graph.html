@@ -1,0 +1,31 @@
+{% extends "projectManager/base.html" %}
+{% block title %}{{ project.project_text }} Graph{% endblock %}
+
+{% block body %}
+{% load staticfiles %}
+
+<form action="{% url 'project:addGraph' project.id %}" method="post"> {% csrf_token %}
+	<h2>Variable</h2>
+	{% for param in paramFilter %}
+	<input type="radio" name="param" value="{{ param }}" {% if forloop.counter == 1 %} checked {% endif %}>{{ param }}</input><br/>
+	{% endfor %}
+
+	<h2>Output Value</h2>
+	{% for result in resultFilter %}
+	<input type="radio" name="result" value="{{ result }}" {% if forloop.counter == 1 %} checked {% endif %}>{{ result }}</input><br/>
+	{% endfor %}
+
+	<h2>Server</h2>
+	{% for server in serverList %}
+	<input type="radio" name="server" value="{{ server.id }}" {% if forloop.counter == 1 %} checked {% endif %}>{{ server.server_name }}</input><br/>
+	{% endfor %}
+
+	<h2>Algorithm</h2>
+	{% for algorithm in algorithmList %}
+	<input type="checkbox" name="algorithm" value="{{ algorithm.id }}">{{ algorithm }}</input><br/>
+	{% endfor %}
+	<input type="submit" value="Add"/>
+</form>
+
+
+{% endblock %}

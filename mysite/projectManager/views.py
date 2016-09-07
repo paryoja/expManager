@@ -540,3 +540,108 @@ def addRelatedWork(request, pk):
     related.pdf_path.save(name, content)
     related.save()
     return HttpResponseRedirect(reverse('project:detail', args=(project.id,)))
+
+
+def graph(request, pk):
+    project = get_object_or_404(Project, pk=pk)
+    resultFilter = project.getResultFilter()
+    paramFilter = project.getParamFilter()
+    algorithmList = project.algorithm_set.all()
+    serverList = Server.objects.all().order_by('server_name')
+        
+    return render(request, 'projectManager/graph.html', { 'project': project,
+        'resultFilter': resultFilter,
+        'paramFilter' : paramFilter,
+        'algorithmList' : algorithmList,
+        'serverList': serverList,
+        })
+
+
+def addGraph(request, pk):
+    project = get_object_or_404(Project, pk=pk)
+    selected_result = request.POST['result'] 
+    selected_param = request.POST['param']
+    selected_algorithm = request.POST.getlist('algorithm')
+    selected_server = request.POST['server']
+
+    param_filter = project.getParamFilter()
+    exclude = { param_filter.index( selected_param ) }
+
+    distinct_options = {}
+    server = Server.objects.filter(id=selected_server)
+    for algorithm_id in selected_algorithm:
+        algorithm = Algorithm.objects.get(id=algorithm_id)
+        exp_list = project.expitem_set.filter(invalid=False).filter(algorithm=algorithm).filter(server=server)
+
+        for exp in exp_list:
+            param_list = exp.toParamValueList()
+            param_str = exp.toOptionString(selected_param, param_filter)
+            
+            if param_str in distinct_options.keys():
+                distinct_options[ param_str ].append(exp.id)
+            else:
+                distinct_options[ param_str ] = [exp.id]
+            result_list = exp.toResultValueList()
+
+    return render(request, 'projectManager/addGraph.html', 
+            {'project': project,
+                'selected_result': selected_result,
+                'selected_param': selected_param,
+                'distinct_options': sorted(distinct_options.items()),
+                })
+
+
+def graphExp(request, pk):
+    project = get_object_or_404(Project, pk=pk)
+    get = request.GET
+
+    selected_param = get['selected_param']
+    selected_result = get['selected_result']
+    
+    param_filter = project.getParamFilter()
+    exps = get['exp'].split(',')
+    exp_list = []
+    
+    algorithm_map = {}
+    param_set = set()
+
+    for exp in exps:
+        exp_model = get_object_or_404(ExpItem, pk=exp)
+        exp_list.append(exp_model)
+        result = float(toDictionary(exp_model.result)[selected_result])
+        param = float(toDictionary(exp_model.parameter)[selected_param])
+        algorithm = exp_model.algorithm
+
+        if algorithm not in algorithm_map:
+            algorithm_map[ algorithm ] = {}
+            
+        mapping = algorithm_map[ algorithm ]
+
+        param_set.update({param})
+
+        if param not in mapping:
+            mapping[param] = result
+        else:
+            mapping[param] += result
+
+    param_list = sorted(list(param_set))
+    exp_result = []
+
+    algorithm_list = sorted(list(algorithm_map.keys()))
+
+    for param in param_list:
+        entry = [param]
+        for algorithm in algorithm_list:
+            entry.append(algorithm_map[algorithm][param])
+
+        exp_result.append(entry)
+
+    return render(request, 'projectManager/graphExp.html', {
+        'selected_param': selected_param,
+        'selected_result': selected_result,
+        'project': project,
+        'exp_list': exp_list,
+        'algorithms': algorithm_list,
+        'exp_result': exp_result,
+        })
+

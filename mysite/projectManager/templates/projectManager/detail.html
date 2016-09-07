@@ -75,11 +75,11 @@ Experimental setting <br/>
 <a href="{% url 'project:exp' project.id %}">Experimental results</a><br/>
 
 
+<h2>Draw a graph</h2>
+<a href="{% url 'project:graph' project.id %}">Draw a graph</a>
+
 <h2>Execute experiment</h2>
 
-Variables Range<br/>
-Download source codes<br/>
-Implemented algorithms - version, current state (implementing, testing, bug fixing, complemeted)<br/>
 
 <h2>Related works</h2>
 <form action="{% url 'project:addRelatedWork' project.id %}" method="post">

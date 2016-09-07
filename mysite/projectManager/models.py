@@ -118,6 +118,14 @@ class Dataset(models.Model):
     def parameterToList(self):
         return toList(self.synthetic_parameters)
 
+    def toOptionString(self, exclude):
+        param_list = self.parameterToList()
+        result_list = []
+        for param in param_list:
+            if param[0] != exclude:
+                result_list.append(param[0] + '=' + param[1])
+        return result_list
+
 
 class ExpItem(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
@@ -135,6 +143,15 @@ class ExpItem(models.Model):
         local_time = timezone.localtime(self.exp_date)
         return local_time.strftime("%y-%m-%d %H:%M:%S")
 
+    def toOptionString(self, exclude, param_name):
+        return_list = []
+        param_list = self.toParamValueList()
+        for i in range(len(param_name)):
+            if param_name[i] != exclude:
+                return_list.append(param_name[i] + '=' + param_list[i])
+
+        return ' '.join(sorted(return_list + self.dataset.toOptionString(exclude)))
+
     def toParamValueList(self):
         params = self.project.getParamFilter()
         values = toDictionary(self.parameter)
@@ -146,15 +163,15 @@ class ExpItem(models.Model):
         return self.toMatchedList(params, values)
 
     def toMatchedList(self, params, values):
-        l = []
+        array = []
         for par in params:
             if ':' in par:
                 par = par.split(':')[0]
             try:
-                l.append(values[par.strip()])
+                array.append(values[par.strip()])
             except KeyError:
-                l.append('Null')
-        return l
+                array.append('Null')
+        return array
 
 
 class ExpTodo(models.Model):

@@ -76,5 +76,5 @@ urlpatterns = [
     # related with bookmark
     url(r'^addBookMark/$', views.addBookMark, name='addBookMark'),
     url(r'redirectBookMark/(?P<bookmark_id>[0-9]+)/$', views.redirectBookMark, name='redirectBookMark'),
-    url(r'^map/$', views.map, name='map'),
+    url(r'^map/$', views.showMap, name='map'),
 ]

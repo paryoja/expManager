@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils import timezone
 
-from .utils import *
+from projectManager.utils import splitColon, toList, toDictionary
 
 
 # Create your models here.

@@ -2,7 +2,6 @@ import sys
 from urllib.request import urlopen
 from wsgiref.util import FileWrapper
 
-import git
 from dateutil.parser import parse
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
@@ -14,6 +13,7 @@ from django.shortcuts import get_object_or_404, render, redirect
 from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views import generic
+import git
 
 from .forms import *
 from .models import Algorithm, TodoItem, Dataset, ExpItem, Server, RelatedWork
@@ -21,7 +21,6 @@ from .utils import *
 
 
 # Create your views here.
-
 @login_required
 def index(request):
     unfinished = TodoItem.objects.filter(done=False)
@@ -258,7 +257,7 @@ def addProjectWithForm(request):
         edit_form = ProjectEditForm(request.POST)
 
         if edit_form.is_valid():
-            new_project = edit_form.save()
+            edit_form.save()
 
             return HttpResponseRedirect(reverse('project:index'))
     return render(request, 'projectManager/form/addProjectForm.html',
@@ -376,7 +375,7 @@ def addGitUrl(request, project_id):
         returnValue = call(['git', 'ls-remote', request.POST['url']])
 
         if returnValue != 0:
-            message = request.POST['url'] + ' is not a valid url'
+            # message = request.POST['url'] + ' is not a valid url'
             return HttpResponseRedirect(reverse('project:detail', args=(project_id,)))
 
         project.git_url = url
@@ -511,7 +510,7 @@ def addBookMark(request):
         edit_form = BookMarkEditForm(request.POST)
 
         if edit_form.is_valid():
-            new_project = edit_form.save()
+            edit_form.save()
 
             return HttpResponseRedirect(reverse('project:index'))
 
@@ -525,7 +524,7 @@ def redirectBookMark(request, bookmark_id):
     return redirect(bookmark.url, permanent=True)
 
 
-def map(request):
+def showMap(request):
     return render(request, 'projectManager/map.html')
 
 
@@ -535,7 +534,7 @@ def addRelatedWork(request, pk):
     authors = request.POST['authors']
     url = request.POST['url']
     content = urlopen(url)
-    # name = getPDFName(url)
+    name = getPDFName(url)
     related = RelatedWork(project=project, title=title, authors=authors, url=url)
     related.pdf_path.save(name, content)
     related.save()
@@ -565,7 +564,7 @@ def addGraph(request, pk):
     selected_server = request.POST['server']
 
     param_filter = project.getParamFilter()
-    exclude = {param_filter.index(selected_param)}
+    # exclude = {param_filter.index(selected_param)}
 
     distinct_options = {}
     server = Server.objects.filter(id=selected_server)
@@ -598,7 +597,7 @@ def graphExp(request, pk):
     selected_param = get['selected_param']
     selected_result = get['selected_result']
 
-    param_filter = project.getParamFilter()
+    # param_filter = project.getParamFilter()
     exps = get['exp'].split(',')
     exp_list = []
 

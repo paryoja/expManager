@@ -1,8 +1,10 @@
 from django.contrib import admin
 
-# Register your models here.
-from .models import *
+from projectManager.models import Algorithm, BookMark, Dataset, ExpItem, Project, \
+    RelatedWork, SettingFiles, TodoItem, Server
 
+
+# Register your models here.
 admin.site.register(Algorithm)
 admin.site.register(BookMark)
 admin.site.register(Dataset)

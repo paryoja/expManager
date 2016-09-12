@@ -3,6 +3,10 @@
 
 {% block body %}
 {% load staticfiles %}
+<a href="http://hadoop.apache.org/releases.html" target="_blank">Hadoop Homepage</a><br/>
+<a href={% static 'projectManager/install/install_hadoop.sh' %} download>Installer Download</a><br/>
+
+
 wget http://apache.mirror.cdnetworks.com/hadoop/common/hadoop-2.6.4/hadoop-2.6.4.tar.gz<br/>
 wget http://d3kbcqa49mib13.cloudfront.net/spark-2.0.0-bin-hadoop2.6.tgz<br/>
 sudo mkdir /usr/local/hadoop-datastore

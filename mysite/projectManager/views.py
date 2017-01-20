@@ -488,7 +488,7 @@ def ubuntuPreseed(request):
 
 
 def jupyterSetting(request):
-    return render(request, 'projectManager/setting/jupyterSEtting.html')
+    return render(request, 'projectManager/setting/jupyterSetting.html')
 
 
 def expUploader(request):

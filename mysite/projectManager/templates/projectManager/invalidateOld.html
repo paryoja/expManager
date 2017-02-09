@@ -1,0 +1,41 @@
+{% extends "projectManager/base.html" %}
+{% block title %}Invalidating old experimental results of {{ project.project_text }}{% endblock %}
+{% block additionalStyle %}
+{% load staticfiles %}
+<link rel="stylesheet" type="text/css" href="{% static 'projectManager/css/style.css' %}"/>
+{% endblock %}
+
+{% block body %}
+{% if alg_list %}
+<table>
+	<tr>
+		<td>Name</td>
+		<td>Newest Version</td>
+		<td>Old Versions</td>
+	</tr>
+{% for alg in alg_list %}
+<tr>
+	<td>{{ alg.0 }}</td>
+	<td>{{ alg.1.version }}</td>
+	<td>
+		{% for old in alg.2 %}
+			{{ old.version }}	
+			{% if not forloop.last %}
+			,
+			{% endif %}
+		{% endfor %}
+	</td>
+</tr>
+
+
+
+{% endfor %}
+</table>
+<form id="invalidate" action="{% url 'project:invalidateOldAction' project.id %}" method="post">
+	{% csrf_token %}<input type="submit" value="Invalidate" />
+</form>
+
+{% else %}
+There is no algorithms of {{ project.project_text }} 
+{% endif %}
+{% endblock %}

@@ -34,6 +34,8 @@ urlpatterns = [
     url(r'^(?P<project_id>[0-9]+)/expForm/$', views.expForm, name='expForm'),
     url(r'^(?P<pk>[0-9]+)/expListAll/$', views.expListAll, name='expListAll'),
     url(r'^(?P<project_id>[0-9]+)/(?P<exp_id>[0-9]+)/modifyExp/$', views.modifyExp, name='modifyExp'),
+    url(r'^(?P<project_id>[0-9]+)/InvalidateOld/$', views.invalidateOld, name='invalidateOld'),
+    url(r'^(?P<project_id>[0-9]+)/InvalidateOldAction/$', views.invalidateOldAction, name='invalidateOldAction'),
 
     # related with graphs
     url(r'^(?P<pk>[0-9]+)/graph/$', views.graph, name='graph'),

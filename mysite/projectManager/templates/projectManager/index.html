@@ -85,7 +85,9 @@
 {% if algorithm_list %}
 <ul>
 	{% for algorithm in algorithm_list %}
-	<li>{{ algorithm.name }} {{ algorithm.version }} (Status: {{ algorithm.status }})</li>
+		{% if algorithm.isNewest %}
+		<li>{{ algorithm.project }}: {{ algorithm.name }} {{ algorithm.version }}</li>
+		{% endif %}
 	{% endfor %}
 </ul>
 {% endif %}

@@ -19,6 +19,7 @@ from .forms import *
 from .models import Algorithm, TodoItem, Dataset, ExpItem, Server, RelatedWork
 from .utils import *
 
+from collections import defaultdict
 
 # Create your views here.
 @login_required
@@ -28,7 +29,7 @@ def index(request):
         'project_list': Project.objects.all(),
         'todo_list': unfinished.filter(level=0).order_by('deadline_date'),
         'overdued_todo_list': unfinished.filter(deadline_date__lt=timezone.now()).order_by('deadline_date'),
-        'algorithm_list': Algorithm.objects.all(),
+        'algorithm_list': Algorithm.objects.all().order_by('project'),
         'server_list': Server.objects.all().order_by('server_ip'),
         'bookmark_list': BookMark.objects.all().order_by('-times_visited')
     })
@@ -365,6 +366,42 @@ def modifyExp(request, project_id, exp_id):
 
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
+
+def invalidateOld(request, project_id):
+    project = get_object_or_404(Project, pk=project_id)
+    all_alg = Algorithm.objects.filter(project=project)
+
+    alg_map = defaultdict(list)
+    new_alg_list = []
+    
+    for alg in all_alg:
+        if not alg.isNewest():
+            old = alg_map[ alg.name ]
+            old.append( alg )
+        else:
+            new_alg_list.append( alg )
+
+    alg_list = []
+    for alg in new_alg_list:
+        alg_list.append((alg.name, alg, alg_map[alg.name])) 
+
+    alg_list = sorted( alg_list, key=lambda x : x[0] )
+
+    return render(request, 'projectManager/invalidateOld.html',
+            {'project': project, 'alg_list': alg_list})
+
+def invalidateOldAction(request, project_id):
+    project = get_object_or_404(Project, pk=project_id)
+    all_alg = Algorithm.objects.filter(project=project)
+
+    for alg in all_alg:
+        if not alg.isNewest():
+            exps = ExpItem.objects.filter(algorithm = alg)
+            for exp in exps:
+                if not exp.invalid:
+                    exp.invalid = True
+                    exp.save()
+    return HttpResponseRedirect(reverse('project:exp', args=(project_id,)))
 
 def addGitUrl(request, project_id):
     project = get_object_or_404(Project, pk=project_id)

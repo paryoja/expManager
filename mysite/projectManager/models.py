@@ -79,6 +79,13 @@ class Algorithm(models.Model):
             return self.version < other.version
         return self.name < other.name
 
+    def isNewest(self):
+        other_version = Algorithm.objects.filter(name=self.name)
+        for other in other_version:
+            if other.version > self.version:
+                return False
+        return True
+
 
 class Server(models.Model):
     server_name = models.CharField(max_length=20)

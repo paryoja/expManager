@@ -18,7 +18,14 @@
 <a href="{% url 'project:expListAll' project.id %}">See all</a></h3>
 
 {% include 'projectManager/expListTemplate.html' %}
+
+
+<form id="Invalidate old algorithms" action="{% url 'project:invalidateOld' project.id %}" method="post">
+	{% csrf_token %}<input type="submit" value="Invalidate Old" />
+</form>
 {% endif %}
+
+
 
 <h2>List of graphs </h2>
 

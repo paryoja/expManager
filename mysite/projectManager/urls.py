@@ -36,6 +36,7 @@ urlpatterns = [
     url(r'^(?P<project_id>[0-9]+)/(?P<exp_id>[0-9]+)/modifyExp/$', views.modifyExp, name='modifyExp'),
     url(r'^(?P<project_id>[0-9]+)/InvalidateOld/$', views.invalidateOld, name='invalidateOld'),
     url(r'^(?P<project_id>[0-9]+)/InvalidateOldAction/$', views.invalidateOldAction, name='invalidateOldAction'),
+    url(r'^(?P<project_id>[0-9]+)/(?P<dataset_id>[0-9]+)/(?P<algorithm_id>[0-9]+)/listSameExp/$', views.listSameExp, name='listSameExp'),
 
     # related with graphs
     url(r'^(?P<pk>[0-9]+)/graph/$', views.graph, name='graph'),

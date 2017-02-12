@@ -131,6 +131,37 @@ def exp(request, pk):
         'parsedResult': parsedResult
     })
 
+def listSameExp(request, project_id, dataset_id, algorithm_id):
+    project = get_object_or_404(Project, pk=project_id)
+    dataset = get_object_or_404(Dataset, pk=dataset_id)
+    algorithm = get_object_or_404(Algorithm, pk=algorithm_id)
+
+    param_filter = project.getParamFilter()
+    param_list = []
+    for par in param_filter:
+        param = request.GET.get( par )
+        param_list.append( param )
+
+    exp_all_list = ExpItem.objects.filter( project = project ).filter( algorithm = algorithm ).filter( dataset = dataset )
+    exp_list = []
+
+    for exp in exp_all_list:
+        skip = False
+        param_exp = exp.toParamValueList()
+        for par, val in zip(param_list, param_exp):
+            if par != val:
+                skip = True
+                break
+        if not skip:
+            exp_list.append( exp )
+
+    result_filter = project.getResultFilter()
+
+    return render(request, 'projectManager/listSameExp.html', {
+        'exp_list': exp_list, 
+        'param_filter': param_filter,
+        'result_filter': result_filter} )
+
 
 def expCompare(request, project_id):
     project = get_object_or_404(Project, pk=project_id)

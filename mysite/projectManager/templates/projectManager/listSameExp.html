@@ -1,0 +1,38 @@
+{% extends "projectManager/base.html" %}
+{% block title %}Same Exp Trends{% endblock %}
+{% block additionalStyle %}
+{% load staticfiles %}
+<link rel="stylesheet" type="text/css" href="{% static 'projectManager/css/style.css' %}"/>
+{% endblock %}
+
+
+{% block body %}
+{% load humanize %}
+<table>
+	<tr>
+		<td>Algorithm</td>
+		<td>Server</td>
+		<td>Date</td>
+		{% for param in param_filter %}
+		<td>{{ param }}</td>
+		{% endfor %}
+		{% for result in result_filter %}
+		<td>{{ result }}</td>
+		{% endfor %}
+	</tr>
+	{% for exp in exp_list %}
+	<tr>
+		<td>{{ exp.algorithm.name }}</td>
+		<td>{{ exp.server }}</td>
+		<td>{{ exp.exp_date }}</td>
+		{% for value in exp.toParamValueList %}
+			<td>{{ value | floatformat | intcomma }}</td>
+		{% endfor %}
+		{% for value in exp.toResultValueList %}
+			<td>{{ value | floatformat | intcomma }}</td>
+		{% endfor %}
+	</tr>
+	{% endfor %}
+</table>
+
+{% endblock %}

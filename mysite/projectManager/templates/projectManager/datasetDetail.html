@@ -39,7 +39,7 @@
 		{% for result in result_filter %}
 		<td>{{ result }}</td>
 		{% endfor %}
-		<td>Link</td>
+		<td>Exps Link</td>
 	</tr>
 
 	{% for alg, exp in avg_alg_list %}
@@ -53,9 +53,8 @@
 		{% for value in exp %}
 		<td>{{ value | floatformat | intcomma }}</td>
 		{% endfor %}
-		<td>{{ alg.0.0.name }} {{ alg.0.0.version }}
-			<a href="{% url 'project:listSameExp' project.id dataset.id alg.0.0.id %}?{% for value, key in alg.1|zip:param_filter %}
-			{{ key }}={{ value }}{% if not forloop.last %}&{% endif %}{% endfor %}">Link</a>
+		<td>
+			<a href="{% url 'project:listSameExp' project.id dataset.id alg.0.0.id %}?{% for value, key in alg.1|zip:param_filter %}{{ key }}={{ value }}{% if not forloop.last %}&{% endif %}{% endfor %}">Link</a>
 		</td>
 	</tr>
 	{% endfor %}

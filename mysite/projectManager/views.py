@@ -1,7 +1,9 @@
 import sys
+from collections import defaultdict
 from urllib.request import urlopen
 from wsgiref.util import FileWrapper
 
+import git
 from dateutil.parser import parse
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
@@ -13,13 +15,11 @@ from django.shortcuts import get_object_or_404, render, redirect
 from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views import generic
-import git
 
 from .forms import *
 from .models import Algorithm, TodoItem, Dataset, ExpItem, Server, RelatedWork
 from .utils import *
 
-from collections import defaultdict
 
 # Create your views here.
 @login_required
@@ -73,7 +73,7 @@ class ExpView(generic.DetailView):
         context = super(ExpView, self).get_context_data(**kwargs)
         context['exp_list'] = context['project'].expitem_set.order_by('-exp_date')[:10]
         context['dataset_list'] = context['project'].dataset_set.order_by('name')
-        #print( type( context[ 'project' ].dataset_set.order_by('name') ) )
+        # print( type( context[ 'project' ].dataset_set.order_by('name') ) )
 
         return context
 
@@ -132,6 +132,7 @@ def exp(request, pk):
         'parsedResult': parsedResult
     })
 
+
 def listSameExp(request, project_id, dataset_id, algorithm_id):
     project = get_object_or_404(Project, pk=project_id)
     dataset = get_object_or_404(Dataset, pk=dataset_id)
@@ -140,10 +141,10 @@ def listSameExp(request, project_id, dataset_id, algorithm_id):
     param_filter = project.getParamFilter()
     param_list = []
     for par in param_filter:
-        param = request.GET.get( par )
-        param_list.append( param )
+        param = request.GET.get(par)
+        param_list.append(param)
 
-    exp_all_list = ExpItem.objects.filter( project = project ).filter( algorithm = algorithm ).filter( dataset = dataset )
+    exp_all_list = ExpItem.objects.filter(project=project).filter(algorithm=algorithm).filter(dataset=dataset)
     exp_list = []
 
     for exp in exp_all_list:
@@ -154,14 +155,14 @@ def listSameExp(request, project_id, dataset_id, algorithm_id):
                 skip = True
                 break
         if not skip:
-            exp_list.append( exp )
+            exp_list.append(exp)
 
     result_filter = project.getResultFilter()
 
     return render(request, 'projectManager/listSameExp.html', {
-        'exp_list': exp_list, 
+        'exp_list': exp_list,
         'param_filter': param_filter,
-        'result_filter': result_filter} )
+        'result_filter': result_filter})
 
 
 def expCompare(request, project_id):
@@ -405,22 +406,23 @@ def invalidateOld(request, project_id):
 
     alg_map = defaultdict(list)
     new_alg_list = []
-    
+
     for alg in all_alg:
         if not alg.isNewest():
-            old = alg_map[ alg.name ]
-            old.append( alg )
+            old = alg_map[alg.name]
+            old.append(alg)
         else:
-            new_alg_list.append( alg )
+            new_alg_list.append(alg)
 
     alg_list = []
     for alg in new_alg_list:
-        alg_list.append((alg.name, alg, alg_map[alg.name])) 
+        alg_list.append((alg.name, alg, alg_map[alg.name]))
 
-    alg_list = sorted( alg_list, key=lambda x : x[0] )
+    alg_list = sorted(alg_list, key=lambda x: x[0])
 
     return render(request, 'projectManager/invalidateOld.html',
-            {'project': project, 'alg_list': alg_list})
+                  {'project': project, 'alg_list': alg_list})
+
 
 def invalidateOldAction(request, project_id):
     project = get_object_or_404(Project, pk=project_id)
@@ -428,12 +430,13 @@ def invalidateOldAction(request, project_id):
 
     for alg in all_alg:
         if not alg.isNewest():
-            exps = ExpItem.objects.filter(algorithm = alg)
+            exps = ExpItem.objects.filter(algorithm=alg)
             for exp in exps:
                 if not exp.invalid:
                     exp.invalid = True
                     exp.save()
     return HttpResponseRedirect(reverse('project:exp', args=(project_id,)))
+
 
 def addGitUrl(request, project_id):
     project = get_object_or_404(Project, pk=project_id)

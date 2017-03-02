@@ -15,4 +15,5 @@ mysite/pdf_files
 .idea/inspectionProfiles/Project_Default.xml
 .idea/inspectionProfiles/profiles_settings.xml
 *.swp
+*.pyc
 mysite/projectManager/static/projectManager/expUploader

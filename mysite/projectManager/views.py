@@ -715,3 +715,8 @@ def graphExp(request, pk):
         'algorithms': algorithm_list,
         'exp_result': exp_result,
     })
+
+
+def glossary(request):
+    return render(request, 'projectManager/glossary/glossary_main.html')
+

@@ -81,4 +81,6 @@ urlpatterns = [
     url(r'^addBookMark/$', views.addBookMark, name='addBookMark'),
     url(r'redirectBookMark/(?P<bookmark_id>[0-9]+)/$', views.redirectBookMark, name='redirectBookMark'),
     url(r'^map/$', views.showMap, name='map'),
+
+    url(r'glossary/$', views.glossary, name='glossary'),
 ]

@@ -259,8 +259,6 @@ def expCompare(request, project_id):
             sameValue.update({key})
 
     zippedResult = zip(sortedResultList, minMaxList)
-    print( similarValue )
-    print( singleValue )
     return render(request, 'projectManager/expCompare.html', {
         'project': project,
         'expList': expList,

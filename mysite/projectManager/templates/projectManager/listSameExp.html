@@ -26,7 +26,11 @@
 		<td>{{ exp.server }}</td>
 		<td>{{ exp.exp_date }}</td>
 		{% for value in exp.toParamValueList %}
+			{% if value.isDigit %}
 			<td>{{ value | floatformat | intcomma }}</td>
+			{% else %}
+			<td>{{ value }}</td>
+			{% endif %}
 		{% endfor %}
 		{% for value in exp.toResultValueList %}
 			<td>{{ value | floatformat | intcomma }}</td>

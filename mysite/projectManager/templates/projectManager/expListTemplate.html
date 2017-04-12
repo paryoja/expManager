@@ -42,7 +42,11 @@
 		<td><a href="{% url 'project:datasetDetail' project.id exp.dataset.id %}">{{ exp.dataset.name }}</a></td>
 		{% endif %}
 		{% for value in exp.toParamValueList %}
+		{% if value.isdigit %}
 		<td>{{ value | floatformat | intcomma }}</td>
+		{% else %}
+		<td>{{ value }}</td>
+		{% endif %}
 		{% endfor %}
         {% for value in exp.toResultValueList %}
         <td>{{ value | floatformat | intcomma }}</td>

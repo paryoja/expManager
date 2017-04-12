@@ -47,7 +47,11 @@
 		<td>{{ alg.0.0.name }} {{ alg.0.0.version }}</td>
 		<td>{{ alg.0.1.server_name }}</td>
 		{% for value in alg.1 %}
+		{% if value.isdigit %}
 		<td>{{ value | floatformat | intcomma }}</td>
+		{% else %}
+		<td>{{ value }}</td>
+		{% endif %}
 		{% endfor %}
 		
 		{% for value in exp %}

@@ -135,7 +135,8 @@
 		{% endif %}
 		{% endfor %}
 		{% if attr.0 in sameValue %}
-		<td colspan="4"><font color="green">Same</font></td>
+		<td><font color="green">Same</font></td>
+		<td colspan="3"></td>
 		{% elif attr.0 in similarValue %}
 		<td><font color="gray">Similar</font></td>
 		<td>{% if minmax.0 != "" %}{{ minmax.0.0 | floatformat | intcomma }} (idx: {{ minmax.0.1 }}){% endif %}</td>
@@ -148,9 +149,13 @@
 		<td></td>
 		{% else %}
 		<td><font color="red">Different</font></td>
-		<td>{% if minmax.0 != "" %}{{ minmax.0.0 | floatformat | intcomma }} (idx: {{ minmax.0.1 }}){% endif %}</td>
-		<td>{% if minmax.1 != "" %}{{ minmax.1.0 | floatformat | intcomma }} (idx: {{ minmax.1.1 }}){% endif %}</td>
+		{% if minmax.0 != "" %}
+		<td>{{ minmax.0.0 | floatformat | intcomma }} (idx: {{ minmax.0.1 }})</td>
+		<td>{{ minmax.1.0 | floatformat | intcomma }} (idx: {{ minmax.1.1 }})</td>
 		<td>{{ minmax.2 | floatformat | intcomma }}</td>
+		{% else %}
+		<td colspan="3"></td>
+		{% endif %}
 		{% endif %}
     </tr>
     {% endfor %}

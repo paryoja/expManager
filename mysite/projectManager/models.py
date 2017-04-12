@@ -127,7 +127,11 @@ class Dataset(models.Model):
         return toList(self.synthetic_parameters)
 
     def infoToList(self):
-        return toList(self.data_info)
+        if self.data_info is not None:
+            return toList(self.data_info)
+        else:
+            return []
+        
 
     def toOptionString(self, exclude):
         param_list = self.parameterToList()

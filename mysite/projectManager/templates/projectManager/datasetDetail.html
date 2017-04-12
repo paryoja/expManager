@@ -27,6 +27,7 @@
 
 <h2>Dataset Information</h2>
 
+{% if dataset.infoToList %} 
 <table>
 {% for attribute, value in dataset.infoToList %}
 <tr>
@@ -35,6 +36,7 @@
 <tr>
 {% endfor %}
 </table>
+{% endif %}
 
 
 {% load humanize %}

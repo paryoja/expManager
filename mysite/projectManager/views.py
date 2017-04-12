@@ -189,6 +189,7 @@ def expCompare(request, project_id):
     sortedResultList = sorted(list(resultListMap.items()), key=lambda x: x[0])
     sameValue = set()
     similarValue = set()
+    singleValue = set()
     for (key, valueList) in sortedParameterList:
         startValue = valueList[0]
         same = True
@@ -215,7 +216,10 @@ def expCompare(request, project_id):
             minValue = sys.maxsize
             maxValue = -sys.maxsize
 
+        nonEmptyCount = 0
         for idx, value in enumerate(valueList):
+            if value != "":
+                nonEmptyCount += 1
             if startValue != value:
                 same = False
 
@@ -244,7 +248,9 @@ def expCompare(request, project_id):
         else:
             maxValue = (maxValue, maxId)
 
-        if isinstance(ratio, float) and ratio < 1.1:
+        if nonEmptyCount <= 1:
+            singleValue.update({key})
+        elif isinstance(ratio, float) and ratio < 1.1:
             similarValue.update({key})
 
         minMaxList.append((minValue, maxValue, ratio))
@@ -253,6 +259,8 @@ def expCompare(request, project_id):
             sameValue.update({key})
 
     zippedResult = zip(sortedResultList, minMaxList)
+    print( similarValue )
+    print( singleValue )
     return render(request, 'projectManager/expCompare.html', {
         'project': project,
         'expList': expList,
@@ -260,6 +268,7 @@ def expCompare(request, project_id):
         'resultList': zippedResult,
         'sameValue': sameValue,
         'similarValue': similarValue,
+        'singleValue': singleValue,
     })
 
 

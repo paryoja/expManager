@@ -344,14 +344,18 @@ def addDataset(request, project_id):
     elif is_synthetic == 'false':
         is_synthetic = 'False'
 
-    synthetic_parameters = request.POST['synthetic_parameters']
+    if 'synthetic_parameters' in request.POST:
+        synthetic_parameters = request.POST['synthetic_parameters']
+    else:
+        synthetic_parameters = ""
+    data_info = request.POST['data_info']
 
     if 'file_size' in request.POST.keys():
         file_size = int(request.POST['file_size'])
     else:
         file_size = 0
 
-    dataset = Dataset(project=project, name=name, is_synthetic=is_synthetic, synthetic_parameters=synthetic_parameters,
+    dataset = Dataset(project=project, name=name, is_synthetic=is_synthetic, synthetic_parameters=synthetic_parameters, data_info=data_info,
                       size=file_size)
 
     dataset.save()

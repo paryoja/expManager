@@ -25,6 +25,18 @@
 
 {% endif %}
 
+<h2>Dataset Information</h2>
+
+<table>
+{% for attribute, value in dataset.infoToList %}
+<tr>
+	<td align="left">{{ attribute }}</td>
+	<td align="right">{{ value }}</td>
+<tr>
+{% endfor %}
+</table>
+
+
 {% load humanize %}
 {% load my_extras %}
 <h2>Averaged Result</h2>

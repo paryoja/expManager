@@ -117,6 +117,7 @@ class Dataset(models.Model):
     name = models.TextField(null=True)
     is_synthetic = models.BooleanField(default=False)
     synthetic_parameters = models.TextField(null=True)
+    data_info = models.TextField(null=True)
     size = models.FloatField(null=True)
 
     def __str__(self):
@@ -124,6 +125,9 @@ class Dataset(models.Model):
 
     def parameterToList(self):
         return toList(self.synthetic_parameters)
+
+    def infoToList(self):
+        return toList(self.data_info)
 
     def toOptionString(self, exclude):
         param_list = self.parameterToList()

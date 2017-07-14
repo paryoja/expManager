@@ -49,6 +49,19 @@ List experiments to do <br/>
 
 </table>
 
+<h2>List of Dataset List</h2>
+TODO: Add a new Dataset List<br/><br/>
+<table>
+	<tr>
+		<td>Name</td>
+	</tr>
+
+	{% for datasetlist in datasetlist_list %}
+	<tr>
+	</tr>
+	{% endfor %}
+</table>
+
 <h2>List of Dataset</h2>
 <a href="{% url 'project:datasetForm' project.id %}">Add a dataset</a><br/><br/>
 <table>

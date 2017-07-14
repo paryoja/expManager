@@ -2,6 +2,7 @@ import django.contrib.auth.views as auth_views
 from django.conf.urls import url
 
 from . import views
+from . import exp_views
 
 app_name = 'project'
 urlpatterns = [
@@ -28,15 +29,15 @@ urlpatterns = [
 
     # related with experiments
     url(r'^(?P<pk>[0-9]+)/exp/$', views.ExpView.as_view(), name='exp'),
-    url(r'^(?P<pk>[0-9]+)/expDetail/$', views.exp, name='expDetail'),
-    url(r'^(?P<project_id>[0-9]+)/expCompare/$', views.expCompare, name='expCompare'),
-    url(r'^(?P<project_id>[0-9]+)/addExp/$', views.addExp, name='addExp'),
-    url(r'^(?P<project_id>[0-9]+)/expForm/$', views.expForm, name='expForm'),
-    url(r'^(?P<pk>[0-9]+)/expListAll/$', views.expListAll, name='expListAll'),
-    url(r'^(?P<project_id>[0-9]+)/(?P<exp_id>[0-9]+)/modifyExp/$', views.modifyExp, name='modifyExp'),
+    url(r'^(?P<pk>[0-9]+)/expDetail/$', exp_views.exp, name='expDetail'),
+    url(r'^(?P<project_id>[0-9]+)/expCompare/$', exp_views.expCompare, name='expCompare'),
+    url(r'^(?P<project_id>[0-9]+)/addExp/$', exp_views.addExp, name='addExp'),
+    url(r'^(?P<project_id>[0-9]+)/expForm/$', exp_views.expForm, name='expForm'),
+    url(r'^(?P<pk>[0-9]+)/expListAll/$', exp_views.expListAll, name='expListAll'),
+    url(r'^(?P<project_id>[0-9]+)/(?P<exp_id>[0-9]+)/modifyExp/$', exp_views.modifyExp, name='modifyExp'),
     url(r'^(?P<project_id>[0-9]+)/InvalidateOld/$', views.invalidateOld, name='invalidateOld'),
     url(r'^(?P<project_id>[0-9]+)/InvalidateOldAction/$', views.invalidateOldAction, name='invalidateOldAction'),
-    url(r'^(?P<project_id>[0-9]+)/(?P<dataset_id>[0-9]+)/(?P<algorithm_id>[0-9]+)/listSameExp/$', views.listSameExp,
+    url(r'^(?P<project_id>[0-9]+)/(?P<dataset_id>[0-9]+)/(?P<algorithm_id>[0-9]+)/listSameExp/$', exp_views.listSameExp,
         name='listSameExp'),
 
     # related with graphs

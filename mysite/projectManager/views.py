@@ -1,4 +1,4 @@
-import sys
+import os
 from collections import defaultdict
 from urllib.request import urlopen
 from wsgiref.util import FileWrapper
@@ -7,7 +7,6 @@ import git
 from dateutil.parser import parse
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.urlresolvers import reverse
 from django.db.models import Q
 from django.http import HttpResponse, HttpResponseRedirect
@@ -16,9 +15,9 @@ from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views import generic
 
-from .forms import *
-from .models import Algorithm, TodoItem, Dataset, ExpItem, Server, RelatedWork
-from .utils import *
+from .forms import ProjectEditForm, BookMarkEditForm
+from .models import Algorithm, TodoItem, Dataset, ExpItem, Server, RelatedWork, Project, BookMark
+from .utils import getPDFName, getDatasetContextData, toDictionary
 
 
 # Create your views here.
@@ -103,8 +102,6 @@ class DatasetDetailView(generic.DetailView):
         context['project'] = context['dataset'].project
         context['skip_dataset'] = True
         return context
-
-
 
 
 # add items
@@ -199,7 +196,8 @@ def addDataset(request, project_id):
     else:
         file_size = 0
 
-    dataset = Dataset(project=project, name=name, is_synthetic=is_synthetic, synthetic_parameters=synthetic_parameters, data_info=data_info,
+    dataset = Dataset(project=project, name=name, is_synthetic=is_synthetic, synthetic_parameters=synthetic_parameters,
+                      data_info=data_info,
                       size=file_size)
 
     dataset.save()
@@ -218,7 +216,6 @@ def modifyTodo(request, project_id, todo_id):
         todo.delete()
 
     return HttpResponseRedirect(reverse('project:detail', args=(project_id,)))
-
 
 
 def invalidateOld(request, project_id):
@@ -533,4 +530,3 @@ def graphExp(request, pk):
 
 def glossary(request):
     return render(request, 'projectManager/glossary/glossary_main.html')
-

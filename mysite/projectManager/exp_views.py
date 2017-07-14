@@ -1,24 +1,13 @@
 import sys
-from collections import defaultdict
-from urllib.request import urlopen
-from wsgiref.util import FileWrapper
 
-import git
 from dateutil.parser import parse
-from django.contrib.auth.decorators import login_required
-from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.urlresolvers import reverse
-from django.db.models import Q
-from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import get_object_or_404, render, redirect
-from django.utils import timezone
-from django.utils.decorators import method_decorator
-from django.views import generic
+from django.http import HttpResponseRedirect
+from django.shortcuts import get_object_or_404, render
 
-from .forms import *
-from .models import Algorithm, TodoItem, Dataset, ExpItem, Server, RelatedWork
-from .utils import *
+from .models import Algorithm, Dataset, ExpItem, Server, Project
+from .utils import toList, toDictionary, appendDict
 
 
 def exp(request, pk):
@@ -30,7 +19,6 @@ def exp(request, pk):
         'parameterList': parameterList,
         'parsedResult': parsedResult
     })
-
 
 
 def expListAll(request, pk):
@@ -80,6 +68,7 @@ def listSameExp(request, project_id, dataset_id, algorithm_id):
         'exp_list': exp_list,
         'param_filter': param_filter,
         'result_filter': result_filter})
+
 
 def expCompare(request, project_id):
     project = get_object_or_404(Project, pk=project_id)
@@ -201,6 +190,7 @@ def addExp(request, project_id):
 
     return HttpResponseRedirect(reverse('project:exp', args=(project_id,)))
 
+
 def modifyExp(request, project_id, exp_id):
     exp = get_object_or_404(ExpItem, pk=exp_id)
 
@@ -212,11 +202,9 @@ def modifyExp(request, project_id, exp_id):
 
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
+
 def expForm(request, project_id):
     project = get_object_or_404(Project, pk=project_id)
     return render(request, 'projectManager/form/addExpForm.html', {
         'project': project
     })
-
-
-

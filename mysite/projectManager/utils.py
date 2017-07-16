@@ -52,6 +52,8 @@ def getDatasetContextData(context):
     expList = ExpItem.objects.filter(dataset=dataset).filter(invalid=False)
 
     paramFilter = dataset.project.getParamFilter()
+    queryFilter = dataset.project.getQueryFilter()
+    paramFilter = queryFilter + paramFilter
 
     exp_alg_list = {}
     for exp in expList:
@@ -63,7 +65,7 @@ def getDatasetContextData(context):
             alg_param = {}
             exp_alg_list[(alg, server)] = alg_param
 
-        exp_param = tuple(exp.toParamValueList())
+        exp_param = tuple(exp.toQueryValueList() + exp.toParamValueList())
 
         if exp_param in alg_param:
             alg_param[exp_param].append(exp)

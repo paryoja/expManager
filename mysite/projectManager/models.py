@@ -142,7 +142,7 @@ class Dataset(models.Model):
         return result_list
 
 
-class DataSetList(models.Model):
+class DataList(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     name = models.TextField(null=False)
     description = models.TextField(null=True)
@@ -153,7 +153,8 @@ class DataSetList(models.Model):
 
 class DataContainment(models.Model):
     dataset = models.ForeignKey(Dataset, on_delete=models.CASCADE)
-    dataset_list = models.ForeignKey(DataSetList, on_delete=models.CASCADE)
+    #dataset_list = models.ForeignKey(DataList, on_delete=models.CASCADE)
+    data_list = models.ForeignKey(DataList)
 
 
 

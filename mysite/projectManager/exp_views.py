@@ -3,10 +3,10 @@ import sys
 from dateutil.parser import parse
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.urlresolvers import reverse
-from django.http import HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 
-from .models import Algorithm, Dataset, ExpItem, Server, Project
+from .models import Algorithm, Dataset, ExpItem, Server, Project, DataList, DataContainment
 from .utils import toList, toDictionary, appendDict
 
 
@@ -207,4 +207,13 @@ def expForm(request, project_id):
     project = get_object_or_404(Project, pk=project_id)
     return render(request, 'projectManager/form/addExpForm.html', {
         'project': project
+    })
+
+
+def datalistConfigure(request, project_id, datalist_id):
+    project = get_object_or_404(Project, pk=project_id)
+    datalist = get_object_or_404(DataList, pk=datalist_id)
+    dataset_list = DataContainment.objects.filter(data_list=datalist)
+    return render(request, 'projectManager/datalist/configure.html', {
+        'project': project, 'dataset_list': dataset_list
     })

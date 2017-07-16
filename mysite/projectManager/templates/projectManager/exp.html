@@ -49,15 +49,20 @@ List experiments to do <br/>
 
 </table>
 
-<h2>List of Dataset List</h2>
-TODO: Add a new Dataset List<br/><br/>
+<h2>List of Data List</h2>
+<a href="{% url 'project:addDataList' project.id %}">Add a new Dataset List</a><br/><br/>
 <table>
 	<tr>
 		<td>Name</td>
+		<td>Description</td>
+		<td></td>
 	</tr>
 
-	{% for datasetlist in datasetlist_list %}
+	{% for datalist in datalist_list %}
 	<tr>
+		<td>{{ datalist.name }}</td>
+		<td>{{ datalist.description }}</td>
+		<td><a href="{% url 'project:datalistConfigure' project.id datalist.id %}">Configure</a></td>
 	</tr>
 	{% endfor %}
 </table>

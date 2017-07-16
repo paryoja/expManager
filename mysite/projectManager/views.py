@@ -15,7 +15,7 @@ from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views import generic
 
-from .forms import ProjectEditForm, BookMarkEditForm
+from .forms import ProjectEditForm, BookMarkEditForm, DatasetListForm
 from .models import Algorithm, TodoItem, Dataset, ExpItem, Server, RelatedWork, Project, BookMark
 from .utils import getPDFName, getDatasetContextData, toDictionary
 
@@ -72,7 +72,7 @@ class ExpView(generic.DetailView):
         context = super(ExpView, self).get_context_data(**kwargs)
         context['exp_list'] = context['project'].expitem_set.order_by('-exp_date')[:10]
         context['dataset_list'] = context['project'].dataset_set.order_by('name')
-        context['datasetlist_list'] = context['project'].datasetlist_set.order_by('name')
+        context['datalist_list'] = context['project'].datalist_set.order_by('name')
 
         return context
 
@@ -385,6 +385,19 @@ def expUploader(request):
     response['Content-Disposition'] = 'attachment; filename="uploadExperiment.py"'
     return response
 
+
+def addDataList(request, project_id):
+    project = get_object_or_404(Project, pk=project_id)
+    if request.method == 'GET':
+        edit_form = DatasetListForm(initial={'project': project})
+    elif request.method == 'POST':
+        edit_form = DatasetListForm(request.POST)
+
+        if edit_form.is_valid():
+            edit_form.save()
+
+            return HttpResponseRedirect(reverse('project:exp', args=(project_id,)))
+    return render(request, 'projectManager/form/addDataList.html', {'form': edit_form, 'project': project})
 
 def addBookMark(request):
     if request.method == 'GET':

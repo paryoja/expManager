@@ -43,6 +43,9 @@ urlpatterns = [
     #related with datasetlist
     url(r'^(?P<project_id>[0-9]+)/addDataList/$', views.addDataList, name='addDataList'),
     url(r'^(?P<project_id>[0-9]+)/(?P<datalist_id>[0-9]+)/datalistConfigure/$', exp_views.datalistConfigure, name='datalistConfigure'),
+    url(r'^(?P<project_id>[0-9]+)/(?P<datalist_id>[0-9]+)/datalistResult/$', exp_views.datalistResult, name='datalistResult'),
+    url(r'^(?P<project_id>[0-9]+)/(?P<datalist_id>[0-9]+)/(?P<dataset_id>[0-9]+)/addToDataList/$', exp_views.addToDataList, name='addToDataList'),
+    url(r'^(?P<project_id>[0-9]+)/(?P<datalist_id>[0-9]+)/(?P<dataset_id>[0-9]+)/removeFromDataList/$', exp_views.removeFromDataList, name='removeFromDataList'),
 
     # related with graphs
     url(r'^(?P<pk>[0-9]+)/graph/$', views.graph, name='graph'),

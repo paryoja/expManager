@@ -14,6 +14,9 @@
 		{% if not skip_dataset %}
         <td>Dataset</td>
 		{% endif %}
+		{% for param in project.getQueryFilterName %}
+		<td>{{ param }}</td>
+		{% endfor %}
 		{% for param in project.getParamFilterName %}
 		<td>{{ param }}</td>
 		{% endfor %}
@@ -41,6 +44,13 @@
 		{% if not skip_dataset %}
 		<td><a href="{% url 'project:datasetDetail' project.id exp.dataset.id %}">{{ exp.dataset.name }}</a></td>
 		{% endif %}
+		{% for value in exp.toQueryValueList %}
+		{% if value.isdigit %}
+		<td>{{ value | floatformat | intcomma }}</td>
+		{% else %}
+		<td>{{ value }}</td>
+		{% endif %}
+		{% endfor %}
 		{% for value in exp.toParamValueList %}
 		{% if value.isdigit %}
 		<td>{{ value | floatformat | intcomma }}</td>

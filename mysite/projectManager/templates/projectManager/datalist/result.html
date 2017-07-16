@@ -1,0 +1,68 @@
+{% extends "projectManager/base.html" %}
+{% block title %}Experimental results of {{ project.project_text }}{% endblock %}
+{% block additionalStyle %}
+{% load staticfiles %}
+<link rel="stylesheet" type="text/css" href="{% static 'projectManager/css/style.css' %}"/>
+{% endblock %}
+
+{% block body %}
+<h2>List of Dataset contained in this DataList</h2>
+{% if dataset_list %}
+<table>
+	<tr>
+		<td>Name</td>
+		<td>Is synthetic</td>
+		<td>Size</td>
+		<td>Remove</td>
+    </tr>
+
+    {% for dataset in dataset_list %}
+    <tr>
+        <td><a href="{% url 'project:datasetDetail' project.id dataset.dataset.id %}">{{ dataset.dataset.name }}</td>
+        <td>{{ dataset.dataset.is_synthetic }}</td>
+		{% if dataset.dataset.size %}
+		<td>{{ dataset.dataset.size|filesizeformat }}</td>
+		{% else %}
+		<td></td>
+		{% endif %}
+		<td><form action="{% url 'project:removeFromDataList' project.id datalist.id dataset.dataset.id %}" method="POST">{% csrf_token %}<input type="submit" name="method" value="remove"></form></td>
+    </tr>
+    {% endfor %}
+</table>
+<br/>
+{% endif %}
+
+
+<h1>Summary for {{ result_title }}</h1>
+
+{% for query, value_query in value_list %}
+<h2>Result for query {{ query }}</h2>
+	{% for alg, param_list, value_alg in value_query %}
+	<h3>{{ alg }}</h3>
+
+	<table>
+		<tr>
+			<td>Parameters</td>
+			{% for param in param_list %}
+				<td>{{ param }}</td>
+			{% endfor %}
+		</tr>
+		{% for dataset, value_data in value_alg %}
+			<tr>
+				<td>{{ dataset }}</td>
+				{% for value in value_data %}
+					<td>{{ value }}</td>
+				{% endfor %}
+			</tr>
+		{% endfor %}
+	</table>
+	{% endfor %}
+
+<br/>
+{% endfor %}
+
+<br/>
+<h2>
+<a href="{% url 'project:exp' project.id %}">To experiments</a>
+</h2>
+{% endblock %}

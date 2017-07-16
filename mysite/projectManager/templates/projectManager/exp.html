@@ -55,7 +55,8 @@ List experiments to do <br/>
 	<tr>
 		<td>Name</td>
 		<td>Description</td>
-		<td></td>
+		<td>Configure</td>
+		<td>Results</td>
 	</tr>
 
 	{% for datalist in datalist_list %}
@@ -63,6 +64,7 @@ List experiments to do <br/>
 		<td>{{ datalist.name }}</td>
 		<td>{{ datalist.description }}</td>
 		<td><a href="{% url 'project:datalistConfigure' project.id datalist.id %}">Configure</a></td>
+		<td><a href="{% url 'project:datalistResult' project.id datalist.id %}">Results</a></td>
 	</tr>
 	{% endfor %}
 </table>

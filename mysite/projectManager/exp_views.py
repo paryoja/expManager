@@ -8,6 +8,7 @@ from django.shortcuts import get_object_or_404, render
 
 from .models import Algorithm, Dataset, ExpItem, Server, Project, DataList, DataContainment
 from .utils import toList, toDictionary, appendDict
+from .misc import ExpContainer
 
 
 def exp(request, pk):
@@ -214,6 +215,51 @@ def datalistConfigure(request, project_id, datalist_id):
     project = get_object_or_404(Project, pk=project_id)
     datalist = get_object_or_404(DataList, pk=datalist_id)
     dataset_list = DataContainment.objects.filter(data_list=datalist)
+    dataset_id_list = []
+    for dataset in dataset_list:
+        dataset_id_list.append( dataset.dataset.id )
+    other_dataset = Dataset.objects.filter(project=project).exclude(id__in=dataset_id_list)
+
     return render(request, 'projectManager/datalist/configure.html', {
-        'project': project, 'dataset_list': dataset_list
+        'project': project, 'datalist': datalist, 'dataset_list': dataset_list, 'other_dataset_list': other_dataset
     })
+
+
+def addToDataList(request, project_id, datalist_id, dataset_id):
+    datalist = get_object_or_404(DataList, pk=datalist_id)
+    dataset = get_object_or_404(Dataset, pk=dataset_id)
+    contain = DataContainment(data_list=datalist, dataset=dataset)
+    contain.save()
+
+    return datalistConfigure(request, project_id, datalist_id)
+
+
+def removeFromDataList(request, project_id, datalist_id, dataset_id):
+    datalist = get_object_or_404(DataList, pk=datalist_id)
+    dataset = get_object_or_404(Dataset, pk=dataset_id)
+    contain = get_object_or_404(DataContainment, data_list=datalist, dataset=dataset)
+    contain.delete()
+
+    return datalistConfigure(request, project_id, datalist_id)
+   
+
+def datalistResult(request, project_id, datalist_id):
+    project = get_object_or_404(Project, pk=project_id)
+    datalist = get_object_or_404(DataList, pk=datalist_id)
+    dataset_list = DataContainment.objects.filter(data_list=datalist)
+
+    param_name_list = project.getParamFilterOriginalName()
+    query_name_list = project.getQueryFilterOriginalName()
+    result_title = "Result_0_Total_Time"
+
+    exp_cont = ExpContainer(dataset_list, query_name_list, param_name_list, result_title)
+    query_list, param_list, alg_list, value_list = exp_cont.getResult()
+
+    # TODO need algorithm selector
+    # need value selector
+
+    return render(request, 'projectManager/datalist/result.html', {
+        'project': project, 'datalist': datalist, 'dataset_list': dataset_list,
+        'value_list': value_list, 'result_title': result_title,
+    })
+

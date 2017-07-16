@@ -1,0 +1,61 @@
+{% extends "projectManager/base.html" %}
+{% block title %}Configure {{ datalist.name }}{% endblock %}
+{% block additionalStyle %}
+{% load staticfiles %}
+<link rel="stylesheet" type="text/css" href="{% static 'projectManager/css/style.css' %}"/>
+{% endblock %}
+
+{% block body %}
+<h2>List of Dataset contained in this DataList</h2>
+{% if dataset_list %}
+<table>
+	<tr>
+		<td>Name</td>
+		<td>Is synthetic</td>
+		<td>Size</td>
+		<td>Remove</td>
+    </tr>
+
+    {% for dataset in dataset_list %}
+    <tr>
+        <td><a href="{% url 'project:datasetDetail' project.id dataset.id %}">{{ dataset.dataset.name }}</td>
+        <td>{{ dataset.dataset.is_synthetic }}</td>
+		{% if dataset.dataset.size %}
+		<td>{{ dataset.dataset.size|filesizeformat }}</td>
+		{% else %}
+		<td></td>
+		{% endif %}
+		<td><form action="{% url 'project:removeFromDataList' project.id datalist.id dataset.dataset.id %}" method="POST">{% csrf_token %}<input type="submit" name="method" value="remove"></form></td>
+    </tr>
+    {% endfor %}
+</table>
+{% endif %}
+
+{% if other_dataset_list %}
+<h2>Add new dataset to DataList</h2>
+<table>
+	<tr>
+		<td>Name</td>
+		<td>Is synthetic</td>
+		<td>Size</td>
+		<td>Add</td>
+    </tr>
+	{% for dataset in other_dataset_list %}
+    <tr>
+        <td><a href="{% url 'project:datasetDetail' project.id dataset.id %}">{{ dataset.name }}</td>
+        <td>{{ dataset.is_synthetic }}</td>
+		{% if dataset.size %}
+		<td>{{ dataset.size|filesizeformat }}</td>
+		{% else %}
+		<td></td>
+		{% endif %}
+		<td><form action="{% url 'project:addToDataList' project.id datalist.id dataset.id %}" method="POST">{% csrf_token %}<input type="submit" name="method" value="add"></form></td>
+    </tr>
+    {% endfor %}
+</table>
+{% endif %}
+<br/>
+<h2>
+<a href="{% url 'project:exp' project.id %}">To experiments</a>
+</h2>
+{% endblock %}

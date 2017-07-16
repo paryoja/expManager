@@ -11,6 +11,7 @@ class Project(models.Model):
     has_experiments = models.BooleanField(default=False)
     git_url = models.TextField(null=True, blank=True)
     paramFilter = models.TextField(null=True, blank=True)
+    queryFilter = models.TextField(null=True, blank=True)
     resultFilter = models.TextField(null=True, blank=True)
 
     def getParamFilter(self):
@@ -23,6 +24,21 @@ class Project(models.Model):
     def getParamFilterName(self):
         split = self.paramFilter.split(',')
         return splitColon(split, 1)
+
+    def getQueryFilter(self):
+        if self.queryFilter is not None:
+            return self.queryFilter.split(',')
+        return None
+
+    def getQueryFilterOriginalName(self):
+        split = self.queryFilter.split(',')
+        return splitColon(split, 0)
+
+    def getQueryFilterName(self):
+        if self.queryFilter is not None:
+            split = self.queryFilter.split(',')
+            return splitColon(split, 1)
+        return None
 
     def getResultFilter(self):
         return self.resultFilter.split(',')
@@ -185,6 +201,13 @@ class ExpItem(models.Model):
 
     def toParamValueList(self):
         params = self.project.getParamFilter()
+        values = toDictionary(self.parameter)
+        return self.toMatchedList(params, values)
+
+    def toQueryValueList(self):
+        params = self.project.getQueryFilter()
+        if params is None:
+            return None
         values = toDictionary(self.parameter)
         return self.toMatchedList(params, values)
 

@@ -250,13 +250,13 @@ def datalistResult(request, project_id, datalist_id):
 
     param_name_list = project.getParamFilterOriginalName()
     query_name_list = project.getQueryFilterOriginalName()
+    # TODO need value selector
     result_title = "Result_0_Total_Time"
 
     exp_cont = ExpContainer(dataset_list, query_name_list, param_name_list, result_title)
     query_list, param_list, alg_list, value_list = exp_cont.getResult()
 
     # TODO need algorithm selector
-    # need value selector
 
     return render(request, 'projectManager/datalist/result.html', {
         'project': project, 'datalist': datalist, 'dataset_list': dataset_list,

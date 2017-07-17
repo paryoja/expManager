@@ -30,8 +30,11 @@ class ExpContainer:
                     param.append( param_dict[p] )
 
                 query = []
-                for q in query_name_list:
-                    query.append( param_dict[q] )
+                if query_name_list is not None:
+                    for q in query_name_list:
+                        query.append( param_dict[q] )
+                else:
+                    query.append("None")
 
                 self.add_result(query, param, alg, toDictionary(exp.result), value_map, self.result_title, data_index)
             data_index += 1

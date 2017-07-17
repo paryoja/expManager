@@ -31,8 +31,10 @@ class Project(models.Model):
         return None
 
     def getQueryFilterOriginalName(self):
-        split = self.queryFilter.split(',')
-        return splitColon(split, 0)
+        if self.queryFilter is not None:
+            split = self.queryFilter.split(',')
+            return splitColon(split, 0)
+        return None
 
     def getQueryFilterName(self):
         if self.queryFilter is not None:

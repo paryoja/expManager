@@ -14,7 +14,7 @@
 
 <h2>Result List</h2>
 {% for result in project.getSummaryFilter %}
-<input type="radio" name="summary" value="{{ forloop.counter}}" form="ResultForm"/>{{ result }}<br/>
+<input type="radio" name="summary" value="{{ forloop.counter }}" form="ResultForm"/>{{ result }}<br/>
 {% endfor %}
 
 <input type="submit" value="Get Result" form="ResultForm"/>

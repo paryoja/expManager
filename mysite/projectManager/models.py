@@ -13,6 +13,7 @@ class Project(models.Model):
     paramFilter = models.TextField(null=True, blank=True)
     queryFilter = models.TextField(null=True, blank=True)
     resultFilter = models.TextField(null=True, blank=True)
+    summaryFilter = models.TextField(null=True, blank=True)
 
     def getParamFilter(self):
         return self.paramFilter.split(',')
@@ -52,6 +53,12 @@ class Project(models.Model):
     def getResultFilterName(self):
         split = self.resultFilter.split(',')
         return splitColon(split, 1)
+
+    def getSummaryFilter(self):
+        if self.summaryFilter is not None:
+            split = self.summaryFilter.split(',')
+            return split
+        return None
 
     def __str__(self):
         return self.project_text

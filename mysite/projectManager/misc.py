@@ -1,8 +1,8 @@
-from .models import Dataset, ExpItem, DataList, DataContainment
+from .models import Dataset, ExpItem, DataList, DataContainment, Server
 from projectManager.utils import toDictionary
 
 class ExpContainer:
-    def __init__(self, cont_list, query_name_list, param_list, result_title):
+    def __init__(self, cont_list, query_name_list, param_list, result_title, server_id):
         self.alg_list = []
         self.query_list = []
         self.param_list = []
@@ -11,11 +11,12 @@ class ExpContainer:
         self.data_length = len(cont_list)
         self.result_title = result_title
 
+        server = Server.objects.get(pk=server_id)
         # for each dataset in the datalist
         data_index = 0
         value_map = {}
         for cont in cont_list:
-            exp_items = ExpItem.objects.filter(dataset=cont.dataset)
+            exp_items = ExpItem.objects.filter(dataset=cont.dataset, server=server)
             self.data_list.append( cont.dataset.name ) 
 
             

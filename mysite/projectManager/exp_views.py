@@ -243,6 +243,17 @@ def removeFromDataList(request, project_id, datalist_id, dataset_id):
     return datalistConfigure(request, project_id, datalist_id)
    
 
+def datalistResultSelect(request, project_id, datalist_id):
+    project = get_object_or_404(Project, pk=project_id)
+    datalist = get_object_or_404(DataList, pk=datalist_id)
+
+    server_list = Server.objects.all()
+
+    return render(request, 'projectManager/datalist/resultSelect.html', {
+        'project':project, 'datalist': datalist, 'server_list':server_list
+    })
+
+
 def datalistResult(request, project_id, datalist_id):
     project = get_object_or_404(Project, pk=project_id)
     datalist = get_object_or_404(DataList, pk=datalist_id)
@@ -251,15 +262,17 @@ def datalistResult(request, project_id, datalist_id):
     param_name_list = project.getParamFilterOriginalName()
     query_name_list = project.getQueryFilterOriginalName()
     # TODO need value selector
-    result_title = "Result_0_Total_Time"
 
-    exp_cont = ExpContainer(dataset_list, query_name_list, param_name_list, result_title)
+    server_id = request.GET.get('server')
+    result_title = project.getSummaryFilter()[ int(request.GET.get('summary')) ]
+
+    exp_cont = ExpContainer(dataset_list, query_name_list, param_name_list, result_title, server_id)
     query_list, param_list, alg_list, value_list = exp_cont.getResult()
 
     # TODO need algorithm selector
 
     return render(request, 'projectManager/datalist/result.html', {
         'project': project, 'datalist': datalist, 'dataset_list': dataset_list,
-        'value_list': value_list, 'result_title': result_title,
+        'value_list': value_list, 'result_title': result_title, 'server_name': Server.objects.get(pk=server_id).server_name
     })
 

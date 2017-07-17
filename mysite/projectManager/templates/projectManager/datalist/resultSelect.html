@@ -1,0 +1,22 @@
+{% extends "projectManager/base.html" %}
+{% block title %}Experimental results of {{ project.project_text }}{% endblock %}
+{% block additionalStyle %}
+{% load staticfiles %}
+<link rel="stylesheet" type="text/css" href="{% static 'projectManager/css/style.css' %}"/>
+{% endblock %}
+
+{% block body %}
+<form id="ResultForm" action="{% url 'project:datalistResult' project.id datalist.id %}" method="get"></form>
+<h2>Server List</h2>
+{% for server in server_list %}
+<input type="radio" name="server" value="{{ server.id }}" form="ResultForm"/>{{ server.server_name }}<br/>
+{% endfor %}
+
+<h2>Result List</h2>
+{% for result in project.getSummaryFilter %}
+<input type="radio" name="summary" value="{{ forloop.counter}}" form="ResultForm"/>{{ result }}<br/>
+{% endfor %}
+
+<input type="submit" value="Get Result" form="ResultForm"/>
+
+{% endblock %}

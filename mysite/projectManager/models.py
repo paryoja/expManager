@@ -156,7 +156,6 @@ class Dataset(models.Model):
             return toList(self.data_info)
         else:
             return []
-        
 
     def toOptionString(self, exclude):
         param_list = self.parameterToList()
@@ -178,9 +177,8 @@ class DataList(models.Model):
 
 class DataContainment(models.Model):
     dataset = models.ForeignKey(Dataset, on_delete=models.CASCADE)
-    #dataset_list = models.ForeignKey(DataList, on_delete=models.CASCADE)
+    # dataset_list = models.ForeignKey(DataList, on_delete=models.CASCADE)
     data_list = models.ForeignKey(DataList)
-
 
 
 class ExpItem(models.Model):

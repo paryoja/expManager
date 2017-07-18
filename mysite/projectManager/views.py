@@ -399,6 +399,7 @@ def addDataList(request, project_id):
             return HttpResponseRedirect(reverse('project:exp', args=(project_id,)))
     return render(request, 'projectManager/form/addDataList.html', {'form': edit_form, 'project': project})
 
+
 def addBookMark(request):
     if request.method == 'GET':
         edit_form = BookMarkEditForm()

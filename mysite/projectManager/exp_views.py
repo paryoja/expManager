@@ -3,12 +3,12 @@ import sys
 from dateutil.parser import parse
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.urlresolvers import reverse
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 
+from .misc import ExpContainer
 from .models import Algorithm, Dataset, ExpItem, Server, Project, DataList, DataContainment
 from .utils import toList, toDictionary, appendDict
-from .misc import ExpContainer
 
 
 def exp(request, pk):
@@ -217,7 +217,7 @@ def datalistConfigure(request, project_id, datalist_id):
     dataset_list = DataContainment.objects.filter(data_list=datalist)
     dataset_id_list = []
     for dataset in dataset_list:
-        dataset_id_list.append( dataset.dataset.id )
+        dataset_id_list.append(dataset.dataset.id)
     other_dataset = Dataset.objects.filter(project=project).exclude(id__in=dataset_id_list)
 
     return render(request, 'projectManager/datalist/configure.html', {
@@ -241,7 +241,7 @@ def removeFromDataList(request, project_id, datalist_id, dataset_id):
     contain.delete()
 
     return datalistConfigure(request, project_id, datalist_id)
-   
+
 
 def datalistResultSelect(request, project_id, datalist_id):
     project = get_object_or_404(Project, pk=project_id)
@@ -250,19 +250,19 @@ def datalistResultSelect(request, project_id, datalist_id):
     server_list = Server.objects.all()
     filtered_server_list = []
 
-    cont = DataContainment.objects.filter( data_list = datalist )
+    cont = DataContainment.objects.filter(data_list=datalist)
 
     for server in server_list:
         count = 0
         for dataset in cont:
-            count += ExpItem.objects.filter( project=project, dataset=dataset.dataset, server=server, failed=False, invalid=False ).count()
+            count += ExpItem.objects.filter(project=project, dataset=dataset.dataset, server=server, failed=False,
+                                            invalid=False).count()
 
         if count != 0:
-            filtered_server_list.append( (server, count) )
-
+            filtered_server_list.append((server, count))
 
     return render(request, 'projectManager/datalist/resultSelect.html', {
-        'project':project, 'datalist': datalist, 'server_list':filtered_server_list
+        'project': project, 'datalist': datalist, 'server_list': filtered_server_list
     })
 
 
@@ -277,13 +277,13 @@ def datalistResult(request, project_id, datalist_id):
     # TODO sanity check of GET parameters
     server_id = request.GET.get('server')
     # since forloop.counter in template starts with 1 
-    result_title = project.getSummaryFilter()[ int(request.GET.get('summary')) - 1 ]
+    result_title = project.getSummaryFilter()[int(request.GET.get('summary')) - 1]
 
     exp_cont = ExpContainer(dataset_list, query_name_list, param_name_list, result_title, server_id)
     query_list, param_list, alg_list, value_list = exp_cont.getResult()
 
     return render(request, 'projectManager/datalist/result.html', {
         'project': project, 'datalist': datalist, 'dataset_list': dataset_list,
-        'value_list': value_list, 'result_title': result_title, 'server_name': Server.objects.get(pk=server_id).server_name
+        'value_list': value_list, 'result_title': result_title,
+        'server_name': Server.objects.get(pk=server_id).server_name
     })
-

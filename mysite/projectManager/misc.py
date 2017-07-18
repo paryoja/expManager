@@ -1,7 +1,9 @@
-from .models import Dataset, ExpItem, DataList, DataContainment, Server
+import sys
+
 from projectManager.utils import toDictionary
 
-import sys
+from .models import ExpItem, Server
+
 
 class ExpContainer:
     def __init__(self, cont_list, query_name_list, param_list, result_title, server_id):
@@ -19,23 +21,22 @@ class ExpContainer:
         value_map = {}
         for cont in cont_list:
             exp_items = ExpItem.objects.filter(dataset=cont.dataset, server=server, invalid=False, failed=False)
-            self.data_list.append( cont.dataset.name ) 
+            self.data_list.append(cont.dataset.name)
 
-            
             # for each exp for the dataset 
             for exp in exp_items:
                 # parameter consists of algorithm, version, and project specific parameters
-                alg = [ exp.algorithm.name, exp.algorithm.version ]
+                alg = [exp.algorithm.name, exp.algorithm.version]
 
                 param_dict = toDictionary(exp.parameter)
                 param = []
                 for p in param_list:
-                    param.append( param_dict[p] )
+                    param.append(param_dict[p])
 
                 query = []
                 if query_name_list is not None:
                     for q in query_name_list:
-                        query.append( param_dict[q] )
+                        query.append(param_dict[q])
                 else:
                     query.append("None")
 
@@ -44,45 +45,43 @@ class ExpContainer:
 
         self.value_list = self.toValueList(value_map)
 
-
     def toValueList(self, value_map):
         value_list = []
-        
+
         for query in range(len(self.query_list)):
-            #print( "query " + str(self.query_list[ query ]) )
+            # print( "query " + str(self.query_list[ query ]) )
             value_query = []
 
             for alg in range(len(self.alg_list)):
-                #print( "alg " + str(self.alg_list[alg]))
+                # print( "alg " + str(self.alg_list[alg]))
                 value_alg = []
 
                 for data in range(self.data_length):
-                    #print( "data " + str(data))
+                    # print( "data " + str(data))
                     value_data = []
-                    
+
                     min_value = sys.maxsize
                     max_value = 0
 
                     for param in range(len(self.param_list[alg])):
-                        #print( "param " + str(self.param_list[alg][param]))
+                        # print( "param " + str(self.param_list[alg][param]))
                         try:
                             value = int(value_map[(query, param, alg, data)])
                             if value < min_value:
                                 min_value = value
                             if value > max_value:
                                 max_value = value
-                            value_data.append( value )  
+                            value_data.append(value)
                         except KeyError:
-                            value_data.append( "" )
+                            value_data.append("")
 
-                    value_alg.append( (self.data_list[data], value_data, min_value, max_value) )
-                value_query.append((str(self.alg_list[alg]),self.param_list[alg],value_alg))
-            value_list.append((str(self.query_list[query]),value_query))
+                    value_alg.append((self.data_list[data], value_data, min_value, max_value))
+                value_query.append((str(self.alg_list[alg]), self.param_list[alg], value_alg))
+            value_list.append((str(self.query_list[query]), value_query))
         return value_list
 
     def getResult(self):
         return self.query_list, self.param_list, self.alg_list, self.value_list
-
 
     def add_result(self, query, param, alg, result, value_map, result_title, data_index):
         if alg not in self.alg_list:
@@ -102,5 +101,3 @@ class ExpContainer:
             value_map[(query_index, param_index, alg_index, data_index)] = result[result_title]
         except KeyError:
             value_map[(query_index, param_index, alg_index, data_index)] = ""
-
-

@@ -51,6 +51,16 @@ class ExpContainer:
         for query in range(len(self.query_list)):
             # print( "query " + str(self.query_list[ query ]) )
             value_query = []
+            query_min_list = []
+            
+            query_min_list.append([['Algorithm'],""])
+            for alg in self.alg_list:
+                query_min_list[0][0].append(alg)
+
+            for data in range(self.data_length):
+                query_min_list.append([[self.data_list[data]],sys.maxsize])
+
+            print(query_min_list)
 
             for alg in range(len(self.alg_list)):
                 # print( "alg " + str(self.alg_list[alg]))
@@ -71,13 +81,23 @@ class ExpContainer:
                                 min_value = value
                             if value > max_value:
                                 max_value = value
+
+                            if value < query_min_list[data + 1][1]:
+                                query_min_list[data + 1][1] = value
+
                             value_data.append(value)
                         except KeyError:
                             value_data.append("")
 
                     value_alg.append((self.data_list[data], value_data, min_value, max_value))
+                    if min_value is not sys.maxsize:
+                        query_min_list[data + 1][0].append(min_value)
+                    else:
+                        query_min_list[data + 1][0].append("")
                 value_query.append((str(self.alg_list[alg]), self.param_list[alg], value_alg))
-            value_list.append((str(self.query_list[query]), value_query))
+            for m in query_min_list:
+                print(m)
+            value_list.append((str(self.query_list[query]), value_query, query_min_list))
         return value_list
 
     def getResult(self):

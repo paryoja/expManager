@@ -36,8 +36,26 @@
 <h1>Summary for {{ result_title }} on {{ server_name }}</h1>
 
 {% load humanize %}
-{% for query, value_query in value_list %}
+{% for query, value_query, query_min_list in value_list %}
 <h2>Result for query {{ query }}</h2>
+	<table>
+	{% for min_list in query_min_list %}
+	<tr>
+		{% for min in min_list.0 %}
+		{% if min == min_list.1 %}
+		<td bgcolor="#00ff00">
+		{% else %}
+		<td>
+		{% endif %}
+		{{ min }}</td>
+		{% endfor %}
+	</tr>
+	{% endfor %}
+	</table></br>
+
+
+
+
 	{% for alg, param_list, value_alg in value_query %}
 	<h3>{{ alg }}</h3>
 

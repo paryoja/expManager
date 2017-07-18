@@ -60,7 +60,7 @@ class ExpContainer:
             for data in range(self.data_length):
                 query_min_list.append([[self.data_list[data]],sys.maxsize])
 
-            print(query_min_list)
+            # print(query_min_list)
 
             for alg in range(len(self.alg_list)):
                 # print( "alg " + str(self.alg_list[alg]))
@@ -95,8 +95,6 @@ class ExpContainer:
                     else:
                         query_min_list[data + 1][0].append("")
                 value_query.append((str(self.alg_list[alg]), self.param_list[alg], value_alg))
-            for m in query_min_list:
-                print(m)
             value_list.append((str(self.query_list[query]), value_query, query_min_list))
         return value_list
 

@@ -8,8 +8,8 @@
 {% block body %}
 <form id="ResultForm" action="{% url 'project:datalistResult' project.id datalist.id %}" method="get"></form>
 <h2>Server List</h2>
-{% for server in server_list %}
-<input type="radio" name="server" value="{{ server.id }}" form="ResultForm"/>{{ server.server_name }}<br/>
+{% for server, count in server_list %}
+<input type="radio" name="server" value="{{ server.id }}" form="ResultForm"/>{{ server.server_name }}({{ count }})<br/>
 {% endfor %}
 
 <h2>Result List</h2>

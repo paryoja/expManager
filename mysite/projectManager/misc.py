@@ -18,7 +18,7 @@ class ExpContainer:
         data_index = 0
         value_map = {}
         for cont in cont_list:
-            exp_items = ExpItem.objects.filter(dataset=cont.dataset, server=server)
+            exp_items = ExpItem.objects.filter(dataset=cont.dataset, server=server, invalid=False, failed=False)
             self.data_list.append( cont.dataset.name ) 
 
             

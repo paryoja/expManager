@@ -248,9 +248,21 @@ def datalistResultSelect(request, project_id, datalist_id):
     datalist = get_object_or_404(DataList, pk=datalist_id)
 
     server_list = Server.objects.all()
+    filtered_server_list = []
+
+    cont = DataContainment.objects.filter( data_list = datalist )
+
+    for server in server_list:
+        count = 0
+        for dataset in cont:
+            count += ExpItem.objects.filter( project=project, dataset=dataset.dataset, server=server, failed=False, invalid=False ).count()
+
+        if count != 0:
+            filtered_server_list.append( (server, count) )
+
 
     return render(request, 'projectManager/datalist/resultSelect.html', {
-        'project':project, 'datalist': datalist, 'server_list':server_list
+        'project':project, 'datalist': datalist, 'server_list':filtered_server_list
     })
 
 

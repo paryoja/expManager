@@ -35,6 +35,7 @@
 
 <h1>Summary for {{ result_title }} on {{ server_name }}</h1>
 
+{% load humanize %}
 {% for query, value_query in value_list %}
 <h2>Result for query {{ query }}</h2>
 	{% for alg, param_list, value_alg in value_query %}
@@ -47,11 +48,18 @@
 				<td>{{ param }}</td>
 			{% endfor %}
 		</tr>
-		{% for dataset, value_data in value_alg %}
+		{% for dataset, value_data, min_value, max_value in value_alg %}
 			<tr>
 				<td>{{ dataset }}</td>
 				{% for value in value_data %}
-					<td>{{ value }}</td>
+					{% if value == min_value %}
+					<td align="right" bgcolor="#00FF00">
+					{% elif value == max_value %}
+					<td align="right" bgcolor="#FF0000">
+					{% else %}
+					<td align="right">
+					{% endif %}
+					{{ value | intcomma }}</td>
 				{% endfor %}
 			</tr>
 		{% endfor %}

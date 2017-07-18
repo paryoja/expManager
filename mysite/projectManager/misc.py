@@ -1,6 +1,8 @@
 from .models import Dataset, ExpItem, DataList, DataContainment, Server
 from projectManager.utils import toDictionary
 
+import sys
+
 class ExpContainer:
     def __init__(self, cont_list, query_name_list, param_list, result_title, server_id):
         self.alg_list = []
@@ -57,15 +59,23 @@ class ExpContainer:
                 for data in range(self.data_length):
                     #print( "data " + str(data))
                     value_data = []
+                    
+                    min_value = sys.maxsize
+                    max_value = 0
 
                     for param in range(len(self.param_list[alg])):
                         #print( "param " + str(self.param_list[alg][param]))
                         try:
-                            value_data.append( value_map[(query, param, alg, data)] )  
+                            value = int(value_map[(query, param, alg, data)])
+                            if value < min_value:
+                                min_value = value
+                            if value > max_value:
+                                max_value = value
+                            value_data.append( value )  
                         except KeyError:
                             value_data.append( "" )
 
-                    value_alg.append( (self.data_list[data], value_data) )
+                    value_alg.append( (self.data_list[data], value_data, min_value, max_value) )
                 value_query.append((str(self.alg_list[alg]),self.param_list[alg],value_alg))
             value_list.append((str(self.query_list[query]),value_query))
         return value_list
@@ -88,5 +98,9 @@ class ExpContainer:
             self.param_list[alg_index].append(param)
         param_index = self.param_list[alg_index].index(param)
 
-        value_map[(query_index, param_index, alg_index, data_index)] = result[result_title]
+        try:
+            value_map[(query_index, param_index, alg_index, data_index)] = result[result_title]
+        except KeyError:
+            value_map[(query_index, param_index, alg_index, data_index)] = ""
+
 

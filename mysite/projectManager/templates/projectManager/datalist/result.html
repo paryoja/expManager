@@ -58,6 +58,11 @@
 	</tr>
 	{% endfor %}
 	</table>
+	<h3>Graph options</h3>
+	<input form="DrawForm{{ query }}" type="checkbox" name="logscale" value="x" checked> logscale x </input>&nbsp;&nbsp;
+	<input form="DrawForm{{ query }}" type="checkbox" name="logscale" value="y" checked> logscale y </input>&nbsp;&nbsp;
+	<input form="DrawForm{{ query }}" type="checkbox" name="ms_to_s" value="on" checked> msec to sec </input>
+	<br/>
 	<input form="DrawForm{{ query }}" type="submit" name="method" value="Draw"/><br/>
 {% endfor %}
 <br/>

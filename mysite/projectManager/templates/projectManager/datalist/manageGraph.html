@@ -1,0 +1,15 @@
+{% extends "projectManager/base.html" %}
+{% block title %}Configure {{ datalist.name }}{% endblock %}
+{% block additionalStyle %}
+{% load staticfiles %}
+<link rel="stylesheet" type="text/css" href="{% static 'projectManager/css/style.css' %}"/>
+{% endblock %}
+
+{% block body %}
+<h2>List of Graphs</h2>
+
+{% for graph in project.graph_set.all %}
+<a href="{{ graph.graph_file.url }}">{{ graph.description }}</a><br/>
+{% endfor %}
+
+{% endblock %}

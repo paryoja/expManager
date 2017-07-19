@@ -87,7 +87,8 @@ class Algorithm(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE, null=True)
     name = models.TextField('Algorithm name')
     version = models.CharField(max_length=10)
-    status = models.CharField(max_length=20)
+    status = models.CharField(max_length=20, blank=True, null=True)
+    color = models.CharField(max_length=20, blank=True, null=True)
 
     def __str__(self):
         return self.name + ':' + self.project.project_text + ":" + self.version

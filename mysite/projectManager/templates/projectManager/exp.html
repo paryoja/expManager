@@ -28,9 +28,7 @@
 
 
 <h2>List of graphs </h2>
-{% for graph in project.graph_set.all %}
-<a href="{{ graph.graph_file.url }}">{{ graph.description }}</a>
-{% endfor %}
+<a href="{% url 'project:manageGraph' project.id %}">Manage graphs</a><br/><br/>
 
 
 <h2>List of algorithms</h2>

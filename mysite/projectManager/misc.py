@@ -2,12 +2,13 @@ import sys
 
 from projectManager.utils import toDictionary
 from django.conf import settings
+from django.shortcuts import get_object_or_404
 
 import os 
 import re
 from subprocess import call
 import datetime
-from .models import ExpItem, Server, Graph
+from .models import ExpItem, Server, Graph, Algorithm
 
 
 class ExpContainer:
@@ -125,7 +126,6 @@ class ExpContainer:
                     else:
                         query_min_list[data + 1][0].append("")
 
-                print(min_index+1)
                 value_query.append((self.alg_list[alg], self.param_list[alg], value_alg, min_index+1))
             value_list.append((str(self.query_list[query]), value_query, query_min_list))
         return value_list
@@ -152,7 +152,7 @@ class ExpContainer:
         except KeyError:
             self.value_map[(query_index, param_index, alg_index, data_index)] = ""
 
-    def save_to_graph(self, project, datalist):
+    def save_to_graph(self, project, datalist, log_scale, ms_to_s):
         for query_idx, query in enumerate(self.query_list):
             file_path = os.path.join(settings.MEDIA_ROOT, 'graphs', 'data_file')
             if not os.path.exists(file_path):
@@ -165,23 +165,40 @@ class ExpContainer:
                         for param_idx, param in enumerate(self.param_list[alg_idx]):
                             try:
                                 value = self.value_map[(query_idx, param_idx, alg_idx, data_idx)]
+                                if ms_to_s:
+                                    value = float(value) / 1000
                                 w.write( str(self.getSize(data)) + '\t')
-                                w.write( value + '\n' )
-                            except:
+                                w.write( str(value) + '\n' )
+                            except KeyError:
                                 pass
+                            except:
+                                e = sys.exc_info()[0]
+                                print(e)
                     w.write( "\n\n" ) 
             plot_name = re.sub(r'\.txt', '.plot', file_name)
             graph_name = re.sub(r'\.txt', '.png', file_name)
             with open( plot_name, 'w') as w:
                 w.write('set xlabel \"Number of strings\"\n')
-                w.write('set ylabel \"Execution time \(sec\)\"\n')
+                w.write('set key top left\n')
+                if ms_to_s:
+                    w.write('set ylabel \"Execution time \(sec\)\"\n')
+                else:
+                    w.write('set ylabel \"Execution time \(msec\)\"\n')
                 w.write('set term png\n')
-                w.write('set logscale x\n')
+                if log_scale is not None:
+                    if 'x' in log_scale:
+                        w.write('set logscale x\n')
+                    if 'y' in log_scale:
+                        w.write('set logscale y\n')
                 w.write('set output \"' + graph_name + '\"\n') 
 
                 w.write('plot ')
                 for alg_idx, alg in enumerate(self.alg_list):
-                    w.write('\"' + file_name + '\" index ' + str(alg_idx) + ' with linespoints title \"' + alg[0] + '\"')
+                    alg_obj = get_object_or_404(Algorithm, pk=alg[2])
+                    w.write('\"' + file_name + '\" index ' + str(alg_idx) + ' with linespoints ')
+                    if alg_obj.color is not None:
+                        w.write( 'lt rgb "' + alg_obj.color + '" ' ) 
+                    w.write( 'title \"' + alg[0] + '\"')
                     if alg_idx != len(self.alg_list) - 1:
                         w.write(',\\\n')
                     else:
@@ -202,4 +219,8 @@ class ExpContainer:
         if string.startswith('aol') or string.startswith('SPROT'):
             m = re.search('[0-9]+',string)
             return m.group(0)
+        if string.startswith('usps_s_'):
+            size_array = [10000, 15848, 25118, 39810, 63095, 100000, 158489, 251188, 398107, 630957, 1000000]
+            m = re.search('[0-9]+', string)
+            return size_array[int(m.group(0)) - 1]
         return "1"

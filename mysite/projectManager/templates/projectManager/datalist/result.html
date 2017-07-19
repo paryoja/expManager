@@ -52,7 +52,7 @@
 		<!-- parameter selecting radio buttons -->
 		{% for param in param_list %}
 		<td>
-			<input form="DrawForm{{ query }}" type="radio" name="param_{{ alg.0 }}_{{ alg.1 }}" value="{{ param.0 }}" {% if forloop.counter == min_index %}checked{% endif %}>{{ param.0 }}</input>
+			<input form="DrawForm{{ query }}" type="radio" name="param_{{ alg.0 }}_{{ alg.1 }}" value="{{ param.0.0 }}" {% if param.1 == min_index %}checked{% endif %}>{{ param.0 }}</input>
 		</td>
 		{% endfor %}
 	</tr>
@@ -109,7 +109,7 @@
 		<tr>
 			<td>Parameters</td>
 			{% for param in param_list %}
-				<td>{{ param }}</td>
+				<td>{{ param.0 }}</td>
 			{% endfor %}
 		</tr>
 		{% for dataset, value_data, min_value, max_value in value_alg %}

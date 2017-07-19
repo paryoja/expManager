@@ -76,6 +76,10 @@ class ExpContainer:
 
     def toValueList(self, value_map):
         value_list = []
+        
+        int_list = list(range(len(self.alg_list)))
+        alg_sorted = list(sorted(zip(self.alg_list, int_list)))
+        #print(alg_sorted)
 
         for query in range(len(self.query_list)):
             # print( "query " + str(self.query_list[ query ]) )
@@ -83,16 +87,21 @@ class ExpContainer:
             query_min_list = []
             
             query_min_list.append([['Algorithm'],""])
-            for alg in self.alg_list:
-                query_min_list[0][0].append(alg)
+            #for alg in self.alg_list:
+            for alg in alg_sorted:
+                query_min_list[0][0].append(alg[0])
+            
+            #print(query_min_list)
 
             for data in range(self.data_length):
                 query_min_list.append([[self.data_list[data]],sys.maxsize])
 
             # print(query_min_list)
 
-            for alg in range(len(self.alg_list)):
-                # print( "alg " + str(self.alg_list[alg]))
+            #for alg in range(len(self.alg_list)):
+            for alg_name, alg in alg_sorted:
+
+                #print( "alg " + str(self.alg_list[alg]))
                 value_alg = []
                 min_index = -1
 
@@ -103,8 +112,12 @@ class ExpContainer:
                     min_value = sys.maxsize
                     max_value = 0
 
-                    for param in range(len(self.param_list[alg])):
-                        # print( "param " + str(self.param_list[alg][param]))
+                    int_list = list(range(len(self.param_list[alg])))
+                    param_sorted = list(sorted(zip(self.param_list[alg],int_list)))
+                    print(param_sorted)
+
+                    for param_name, param in param_sorted:
+                        print( "param " + str(self.param_list[alg][param]))
                         try:
                             value = int(self.value_map[(query, param, alg, data)])
                             if value < min_value:
@@ -126,7 +139,7 @@ class ExpContainer:
                     else:
                         query_min_list[data + 1][0].append("")
 
-                value_query.append((self.alg_list[alg], self.param_list[alg], value_alg, min_index+1))
+                value_query.append((self.alg_list[alg], param_sorted, value_alg, min_index))
             value_list.append((str(self.query_list[query]), value_query, query_min_list))
         return value_list
 
@@ -196,7 +209,7 @@ class ExpContainer:
                 for alg_idx, alg in enumerate(self.alg_list):
                     alg_obj = get_object_or_404(Algorithm, pk=alg[2])
                     w.write('\"' + file_name + '\" index ' + str(alg_idx) + ' with linespoints ')
-                    if alg_obj.color is not None:
+                    if alg_obj.color is not None and alg_obj.color != "":
                         w.write( 'lt rgb "' + alg_obj.color + '" ' ) 
                     w.write( 'title \"' + alg[0] + '\"')
                     if alg_idx != len(self.alg_list) - 1:
@@ -223,4 +236,7 @@ class ExpContainer:
             size_array = [10000, 15848, 25118, 39810, 63095, 100000, 158489, 251188, 398107, 630957, 1000000]
             m = re.search('[0-9]+', string)
             return size_array[int(m.group(0)) - 1]
+        if string.startswith('1'): # synthetic
+            splitted = string.split('_')
+            return int(splitted[2])
         return "1"

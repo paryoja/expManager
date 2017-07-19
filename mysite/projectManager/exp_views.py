@@ -324,7 +324,7 @@ def drawGraph(request, project_id, datalist_id, server_id):
 
     return render(request, 'projectManager/datalist/drawGraph.html', {
         'project': project, 'datalist': datalist, 'server': server, 'query': query, 'algorithm_list': alg_list,
-        'value_list': debug_list, 'graph': graph
+        'value_list': debug_list, 'graph': graph, 'result_title': result_title
         })
 
 def manageGraph(request, project_id):

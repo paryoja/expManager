@@ -25,6 +25,10 @@ class ExpContainer:
         self.server = Server.objects.get(pk=server_id)
 
     def load(self, alg_id_list=None, selected_query=None, alg_param_map=None):
+        self.alg_id_list = alg_id_list
+        self.selected_query = selected_query
+        self.alg_param_map = alg_param_map
+
         # for each dataset in the datalist
         data_index = 0
         self.value_map = {}
@@ -89,6 +93,7 @@ class ExpContainer:
             for alg in range(len(self.alg_list)):
                 # print( "alg " + str(self.alg_list[alg]))
                 value_alg = []
+                min_index = -1
 
                 for data in range(self.data_length):
                     # print( "data " + str(data))
@@ -103,6 +108,7 @@ class ExpContainer:
                             value = int(self.value_map[(query, param, alg, data)])
                             if value < min_value:
                                 min_value = value
+                                min_index = param
                             if value > max_value:
                                 max_value = value
 
@@ -118,7 +124,9 @@ class ExpContainer:
                         query_min_list[data + 1][0].append(min_value)
                     else:
                         query_min_list[data + 1][0].append("")
-                value_query.append((self.alg_list[alg], self.param_list[alg], value_alg))
+
+                print(min_index+1)
+                value_query.append((self.alg_list[alg], self.param_list[alg], value_alg, min_index+1))
             value_list.append((str(self.query_list[query]), value_query, query_min_list))
         return value_list
 
@@ -181,17 +189,17 @@ class ExpContainer:
             call(["gnuplot", plot_name])        
 
             new_graph = Graph( project=project, datalist=datalist)
-            new_graph.description = str(self.query_list) + ":" + str(self.data_list) + ":" + str(self.alg_list) + ":" + str(self.param_list) + ":" +  str(self.value_map)
+            #new_graph.description = str(self.query_list) + ":" + str(self.data_list) + ":" + str(self.alg_list) + ":" + str(self.param_list) + ":" +  str(self.value_map)
+            new_graph.description = str(self.alg_id_list) + ":" + str(self.selected_query) + ":" + str(self.alg_param_map)
+
             new_graph.data_file.name = re.sub(settings.MEDIA_ROOT, '', file_name)
             new_graph.plot_file.name = re.sub(settings.MEDIA_ROOT, '', plot_name)
             new_graph.graph_file.name = re.sub(settings.MEDIA_ROOT, '', graph_name)
             new_graph.save()
-
-
-
+        return new_graph
 
     def getSize(self, string):
-        if string.startswith('aol'):
+        if string.startswith('aol') or string.startswith('SPROT'):
             m = re.search('[0-9]+',string)
             return m.group(0)
         return "1"

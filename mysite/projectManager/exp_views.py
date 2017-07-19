@@ -313,9 +313,10 @@ def drawGraph(request, project_id, datalist_id, server_id):
     exp_cont.load(alg_id_list=alg_id_list,selected_query=query, alg_param_map=alg_param_map)
     query_list, param_list, alg_list, debug_list = exp_cont.getResult()
 
-    exp_cont.save_to_graph(project, datalist)
+    graph = exp_cont.save_to_graph(project, datalist)
+    print(graph.graph_file.url)
 
     return render(request, 'projectManager/datalist/drawGraph.html', {
         'project': project, 'datalist': datalist, 'server': server, 'query': query, 'algorithm_list': alg_list,
-        'value_list': debug_list,
+        'value_list': debug_list, 'graph': graph
         })

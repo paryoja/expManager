@@ -1,0 +1,57 @@
+{% extends "projectManager/base.html" %}
+{% block title %}Experimental results of {{ project.project_text }}{% endblock %}
+{% block additionalStyle %}
+{% load staticfiles %}
+<link rel="stylesheet" type="text/css" href="{% static 'projectManager/css/style.css' %}"/>
+{% endblock %}
+
+{% block body %}
+
+<h2>Graph for query {{ query }}</h2>
+
+<h3>Used algorithms</h3>
+{% for alg in algorithm_list %}
+{{ alg.0 }} {{ alg.1 }}<br/>
+{% endfor %}
+
+<br/>
+
+<h1>Summary for {{ result_title }} on {{ server.server_name }}</h1>
+
+{% load humanize %}
+{% for query, value_query, query_min_list in value_list %}
+<h2>Result for query {{ query }}</h2>
+	<!-- summary table -->
+	<table>
+	{% for min_list in query_min_list %}
+	<tr>
+	{% if forloop.counter == 1 %}
+		{% for min in min_list.0 %}
+		{% if forloop.counter == 1 %}
+		<td>{{ min }}</td>
+		{% else %}
+		<td>{{ min.0 }} {{ min.1 }}</td>
+		{% endif %}
+		{% endfor %}
+	{% else %}
+		{% for min in min_list.0 %}
+		{% if min == min_list.1 %}
+		<td align="right" bgcolor="#00ff00">
+		{% elif forloop.counter == 1 %}
+		<td>
+		{% else %}
+		<td align="right">
+		{% endif %}
+		{{ min | intcomma }}</td>
+		{% endfor %}
+	{% endif %}
+	</tr>
+
+	{% endfor %}
+	</table></br>
+{% endfor %}
+
+<h2>
+<a href="{% url 'project:exp' project.id %}">To experiments</a>
+</h2>
+{% endblock %}

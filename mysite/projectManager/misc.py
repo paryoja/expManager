@@ -1,49 +1,73 @@
 import sys
 
 from projectManager.utils import toDictionary
+from django.conf import settings
 
-from .models import ExpItem, Server
+import os 
+import re
+from subprocess import call
+import datetime
+from .models import ExpItem, Server, Graph
 
 
 class ExpContainer:
-    def __init__(self, cont_list, query_name_list, param_list, result_title, server_id):
+    def __init__(self, cont_list, query_name_list, param_name_list, result_title, server_id):
         self.alg_list = []
         self.query_list = []
+        self.query_name_list = query_name_list
         self.param_list = []
+        self.param_name_list = param_name_list
         self.value_list = []
         self.data_list = []
         self.data_length = len(cont_list)
+        self.cont_list = cont_list
         self.result_title = result_title
+        self.server = Server.objects.get(pk=server_id)
 
-        server = Server.objects.get(pk=server_id)
+    def load(self, alg_id_list=None, selected_query=None, alg_param_map=None):
         # for each dataset in the datalist
         data_index = 0
-        value_map = {}
-        for cont in cont_list:
-            exp_items = ExpItem.objects.filter(dataset=cont.dataset, server=server, invalid=False, failed=False)
+        self.value_map = {}
+        for cont in self.cont_list:
+            exp_items = ExpItem.objects.filter(dataset=cont.dataset, server=self.server, invalid=False, failed=False)
             self.data_list.append(cont.dataset.name)
 
             # for each exp for the dataset 
             for exp in exp_items:
                 # parameter consists of algorithm, version, and project specific parameters
-                alg = [exp.algorithm.name, exp.algorithm.version]
+                if alg_id_list is not None:
+                    if str(exp.algorithm.id) not in alg_id_list:
+                        # skip this exp item
+                        continue
+                alg = [exp.algorithm.name, exp.algorithm.version, exp.algorithm.id]
 
                 param_dict = toDictionary(exp.parameter)
+
                 param = []
-                for p in param_list:
+                for p in self.param_name_list:
                     param.append(param_dict[p])
 
+                # check skip conditions based on alg_param_map
+                if alg_param_map is not None:
+                    if str(param[0]) != alg_param_map[exp.algorithm.id]:
+                        continue
+
                 query = []
-                if query_name_list is not None:
-                    for q in query_name_list:
+                if self.query_name_list is not None:
+                    for q in self.query_name_list:
                         query.append(param_dict[q])
                 else:
                     query.append("None")
 
-                self.add_result(query, param, alg, toDictionary(exp.result), value_map, self.result_title, data_index)
+                # check skip conditions based on selected_query
+                if selected_query is not None:
+                    if str(query) != selected_query:
+                        continue
+
+                self.add_result(query, param, alg, toDictionary(exp.result), self.result_title, data_index)
             data_index += 1
 
-        self.value_list = self.toValueList(value_map)
+        self.value_list = self.toValueList(self.value_map)
 
     def toValueList(self, value_map):
         value_list = []
@@ -76,7 +100,7 @@ class ExpContainer:
                     for param in range(len(self.param_list[alg])):
                         # print( "param " + str(self.param_list[alg][param]))
                         try:
-                            value = int(value_map[(query, param, alg, data)])
+                            value = int(self.value_map[(query, param, alg, data)])
                             if value < min_value:
                                 min_value = value
                             if value > max_value:
@@ -86,7 +110,7 @@ class ExpContainer:
                                 query_min_list[data + 1][1] = value
 
                             value_data.append(value)
-                        except KeyError:
+                        except (KeyError, ValueError):
                             value_data.append("")
 
                     value_alg.append((self.data_list[data], value_data, min_value, max_value))
@@ -94,14 +118,14 @@ class ExpContainer:
                         query_min_list[data + 1][0].append(min_value)
                     else:
                         query_min_list[data + 1][0].append("")
-                value_query.append((str(self.alg_list[alg]), self.param_list[alg], value_alg))
+                value_query.append((self.alg_list[alg], self.param_list[alg], value_alg))
             value_list.append((str(self.query_list[query]), value_query, query_min_list))
         return value_list
 
     def getResult(self):
         return self.query_list, self.param_list, self.alg_list, self.value_list
 
-    def add_result(self, query, param, alg, result, value_map, result_title, data_index):
+    def add_result(self, query, param, alg, result, result_title, data_index):
         if alg not in self.alg_list:
             self.alg_list.append(alg)
             self.param_list.append([])
@@ -116,6 +140,58 @@ class ExpContainer:
         param_index = self.param_list[alg_index].index(param)
 
         try:
-            value_map[(query_index, param_index, alg_index, data_index)] = result[result_title]
+            self.value_map[(query_index, param_index, alg_index, data_index)] = result[result_title]
         except KeyError:
-            value_map[(query_index, param_index, alg_index, data_index)] = ""
+            self.value_map[(query_index, param_index, alg_index, data_index)] = ""
+
+    def save_to_graph(self, project, datalist):
+        for query_idx, query in enumerate(self.query_list):
+            file_path = os.path.join(settings.MEDIA_ROOT, 'graphs', 'data_file')
+            if not os.path.exists(file_path):
+                os.makedirs(file_path)
+            file_name = re.sub(r'\'|\[|\]| ', '_', os.path.join( file_path, datetime.datetime.now().strftime('%Y%m%d-%H%M%S') + str(query) + '_' + datalist.name + '.txt'))
+            with open( file_name, 'w') as w:
+                for alg_idx, alg in enumerate(self.alg_list):
+                    w.write( "#" + str(alg) + '\n' )
+                    for data_idx, data in enumerate(self.data_list):
+                        for param_idx, param in enumerate(self.param_list[alg_idx]):
+                            try:
+                                value = self.value_map[(query_idx, param_idx, alg_idx, data_idx)]
+                                w.write( str(self.getSize(data)) + '\t')
+                                w.write( value + '\n' )
+                            except:
+                                pass
+                    w.write( "\n\n" ) 
+            plot_name = re.sub(r'\.txt', '.plot', file_name)
+            graph_name = re.sub(r'\.txt', '.png', file_name)
+            with open( plot_name, 'w') as w:
+                w.write('set xlabel \"Number of strings\"\n')
+                w.write('set ylabel \"Execution time \(sec\)\"\n')
+                w.write('set term png\n')
+                w.write('set logscale x\n')
+                w.write('set output \"' + graph_name + '\"\n') 
+
+                w.write('plot ')
+                for alg_idx, alg in enumerate(self.alg_list):
+                    w.write('\"' + file_name + '\" index ' + str(alg_idx) + ' with linespoints title \"' + alg[0] + '\"')
+                    if alg_idx != len(self.alg_list) - 1:
+                        w.write(',\\\n')
+                    else:
+                        w.write('\n')
+            call(["gnuplot", plot_name])        
+
+            new_graph = Graph( project=project, datalist=datalist)
+            new_graph.description = str(self.query_list) + ":" + str(self.data_list) + ":" + str(self.alg_list) + ":" + str(self.param_list) + ":" +  str(self.value_map)
+            new_graph.data_file.name = re.sub(settings.MEDIA_ROOT, '', file_name)
+            new_graph.plot_file.name = re.sub(settings.MEDIA_ROOT, '', plot_name)
+            new_graph.graph_file.name = re.sub(settings.MEDIA_ROOT, '', graph_name)
+            new_graph.save()
+
+
+
+
+    def getSize(self, string):
+        if string.startswith('aol'):
+            m = re.search('[0-9]+',string)
+            return m.group(0)
+        return "1"

@@ -241,6 +241,17 @@ class ExpTodo(models.Model):
     pub_date = models.DateTimeField('date published')
 
 
+class Graph(models.Model):
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    datalist = models.ForeignKey(DataList, on_delete=models.CASCADE)
+    description = models.TextField(null=True, blank=True)
+    pub_date = models.DateTimeField('date published', auto_now_add=True)
+    data_file = models.FileField(null=True)
+    plot_file = models.FileField(null=True)
+    graph_file = models.FileField(null=True)
+
+
+
 class RelatedWork(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     title = models.TextField(null=False)
@@ -271,3 +282,5 @@ class SettingFiles(models.Model):
 
     def __str__(self):
         return self.name
+
+

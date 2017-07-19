@@ -3,7 +3,7 @@ import sys
 from dateutil.parser import parse
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.urlresolvers import reverse
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import get_object_or_404, render
 
 from .misc import ExpContainer
@@ -280,10 +280,42 @@ def datalistResult(request, project_id, datalist_id):
     result_title = project.getSummaryFilter()[int(request.GET.get('summary')) - 1]
 
     exp_cont = ExpContainer(dataset_list, query_name_list, param_name_list, result_title, server_id)
+    exp_cont.load()
     query_list, param_list, alg_list, value_list = exp_cont.getResult()
 
     return render(request, 'projectManager/datalist/result.html', {
         'project': project, 'datalist': datalist, 'dataset_list': dataset_list,
         'value_list': value_list, 'result_title': result_title,
-        'server_name': Server.objects.get(pk=server_id).server_name
+        'server': Server.objects.get(pk=server_id)
     })
+
+
+def drawGraph(request, project_id, datalist_id, server_id):
+    project = get_object_or_404(Project, pk=project_id)
+    datalist = get_object_or_404(DataList, pk=datalist_id)
+    server = get_object_or_404(Server, pk=server_id)
+    dataset_list = DataContainment.objects.filter(data_list=datalist)
+
+    post = request.POST
+    query = post['query']
+    alg_id_list = post.getlist('algorithm')
+    result_title = post['result_title']
+
+    alg_param_map = {}
+    for alg in alg_id_list:
+        algorithm = get_object_or_404(Algorithm, pk=alg)
+        alg_param_map[algorithm.id] = post['param_' + algorithm.name + '_' + algorithm.version]
+
+    param_name_list = project.getParamFilterOriginalName()
+    query_name_list = project.getQueryFilterOriginalName()
+
+    exp_cont = ExpContainer(dataset_list, query_name_list, param_name_list, result_title, server_id)
+    exp_cont.load(alg_id_list=alg_id_list,selected_query=query, alg_param_map=alg_param_map)
+    query_list, param_list, alg_list, debug_list = exp_cont.getResult()
+
+    exp_cont.save_to_graph(project, datalist)
+
+    return render(request, 'projectManager/datalist/drawGraph.html', {
+        'project': project, 'datalist': datalist, 'server': server, 'query': query, 'algorithm_list': alg_list,
+        'value_list': debug_list,
+        })

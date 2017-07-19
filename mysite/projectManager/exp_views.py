@@ -320,7 +320,7 @@ def drawGraph(request, project_id, datalist_id, server_id):
     query_list, param_list, alg_list, debug_list = exp_cont.getResult()
 
     graph = exp_cont.save_to_graph(project, datalist, log_scale, ms_to_s)
-    print(graph.graph_file.url)
+    #print(graph.graph_file.url)
 
     return render(request, 'projectManager/datalist/drawGraph.html', {
         'project': project, 'datalist': datalist, 'server': server, 'query': query, 'algorithm_list': alg_list,

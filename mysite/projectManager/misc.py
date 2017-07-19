@@ -114,10 +114,10 @@ class ExpContainer:
 
                     int_list = list(range(len(self.param_list[alg])))
                     param_sorted = list(sorted(zip(self.param_list[alg],int_list)))
-                    print(param_sorted)
+                    #print(param_sorted)
 
                     for param_name, param in param_sorted:
-                        print( "param " + str(self.param_list[alg][param]))
+                        #print( "param " + str(self.param_list[alg][param]))
                         try:
                             value = int(self.value_map[(query, param, alg, data)])
                             if value < min_value:

@@ -120,14 +120,15 @@
 			<tr>
 				<td>{{ dataset }}</td>
 				{% for value in value_data %}
+				<td align="right">
 					{% if value == min_value %}
-					<td align="right" bgcolor="#00FF00">
+					<font color="blue">
 					{% elif value == max_value %}
-					<td align="right" bgcolor="#FF0000">
+					<font color="red">
 					{% else %}
-					<td align="right">
+					<font color="black">
 					{% endif %}
-					{{ value | intcomma }}</td>
+					{{ value | intcomma }}</font></td>
 				{% endfor %}
 			</tr>
 		{% endfor %}

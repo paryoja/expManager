@@ -242,6 +242,10 @@ class ExpContainer:
             size_array = [10000, 15848, 25118, 39810, 63095, 100000, 158489, 251188, 398107, 630957, 1000000]
             m = re.search('[0-9]+', string)
             return size_array[int(m.group(0)) - 1]
+        if string.startswith('sample_sprot'):
+            size_array = [10000, 15848, 25118, 39810, 63095, 100000, 158489, 251188, 466158 ]
+            m = re.search('[0-9]+', string)
+            return size_array[int(m.group(0)) - 1]
         if string.startswith('1'): # synthetic
             splitted = string.split('_')
             if datalist.variable is not None:

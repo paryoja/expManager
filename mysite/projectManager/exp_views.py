@@ -259,7 +259,9 @@ def datalistResultSelect(request, project_id, datalist_id):
                                             invalid=False).count()
 
         if count != 0:
-            filtered_server_list.append((server, count))
+            filtered_server_list.append((count, server))
+
+    filtered_server_list.sort(reverse=True)
 
     return render(request, 'projectManager/datalist/resultSelect.html', {
         'project': project, 'datalist': datalist, 'server_list': filtered_server_list

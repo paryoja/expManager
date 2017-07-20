@@ -3,7 +3,7 @@ import sys
 from dateutil.parser import parse
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.urlresolvers import reverse
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 
 from .misc import ExpContainer
@@ -318,16 +318,17 @@ def drawGraph(request, project_id, datalist_id, server_id):
         ms_to_s = False
 
     exp_cont = ExpContainer(dataset_list, query_name_list, param_name_list, result_title, server_id)
-    exp_cont.load(alg_id_list=alg_id_list,selected_query=query, alg_param_map=alg_param_map)
+    exp_cont.load(alg_id_list=alg_id_list, selected_query=query, alg_param_map=alg_param_map)
     query_list, param_list, alg_list, debug_list = exp_cont.getResult()
 
     graph = exp_cont.save_to_graph(project, datalist, log_scale, ms_to_s)
-    #print(graph.graph_file.url)
+    # print(graph.graph_file.url)
 
     return render(request, 'projectManager/datalist/drawGraph.html', {
         'project': project, 'datalist': datalist, 'server': server, 'query': query, 'algorithm_list': alg_list,
         'value_list': debug_list, 'graph': graph, 'result_title': result_title
-        })
+    })
+
 
 def manageGraph(request, project_id):
     project = get_object_or_404(Project, pk=project_id)

@@ -1,13 +1,13 @@
+import datetime
+import os
+import re
 import sys
+from subprocess import call
 
-from projectManager.utils import toDictionary
 from django.conf import settings
 from django.shortcuts import get_object_or_404
+from projectManager.utils import toDictionary
 
-import os 
-import re
-from subprocess import call
-import datetime
 from .models import ExpItem, Server, Graph, Algorithm
 
 
@@ -76,32 +76,32 @@ class ExpContainer:
 
     def toValueList(self, value_map):
         value_list = []
-        
+
         int_list = list(range(len(self.alg_list)))
         alg_sorted = list(sorted(zip(self.alg_list, int_list)))
-        #print(alg_sorted)
+        # print(alg_sorted)
 
         for query in range(len(self.query_list)):
             # print( "query " + str(self.query_list[ query ]) )
             value_query = []
             query_min_list = []
-            
-            query_min_list.append([['Algorithm'],""])
-            #for alg in self.alg_list:
+
+            query_min_list.append([['Algorithm'], ""])
+            # for alg in self.alg_list:
             for alg in alg_sorted:
                 query_min_list[0][0].append(alg[0])
-            
-            #print(query_min_list)
-
-            for data in range(self.data_length):
-                query_min_list.append([[self.data_list[data]],sys.maxsize])
 
             # print(query_min_list)
 
-            #for alg in range(len(self.alg_list)):
+            for data in range(self.data_length):
+                query_min_list.append([[self.data_list[data]], sys.maxsize])
+
+            # print(query_min_list)
+
+            # for alg in range(len(self.alg_list)):
             for alg_name, alg in alg_sorted:
 
-                #print( "alg " + str(self.alg_list[alg]))
+                # print( "alg " + str(self.alg_list[alg]))
                 value_alg = []
                 min_index = -1
 
@@ -113,11 +113,11 @@ class ExpContainer:
                     max_value = 0
 
                     int_list = list(range(len(self.param_list[alg])))
-                    param_sorted = list(sorted(zip(self.param_list[alg],int_list)))
-                    #print(param_sorted)
+                    param_sorted = list(sorted(zip(self.param_list[alg], int_list)))
+                    # print(param_sorted)
 
                     for param_name, param in param_sorted:
-                        #print( "param " + str(self.param_list[alg][param]))
+                        # print( "param " + str(self.param_list[alg][param]))
                         try:
                             value = int(self.value_map[(query, param, alg, data)])
                             if value < min_value:
@@ -178,27 +178,29 @@ class ExpContainer:
             file_path = os.path.join(settings.MEDIA_ROOT, 'graphs', 'data_file')
             if not os.path.exists(file_path):
                 os.makedirs(file_path)
-            file_name = re.sub(r'\'|\[|\]| ', '_', os.path.join( file_path, datetime.datetime.now().strftime('%Y%m%d-%H%M%S') + str(query) + '_' + datalist.name + '.txt'))
-            with open( file_name, 'w') as w:
+            file_name = re.sub(r'\'|\[|\]| ', '_', os.path.join(file_path,
+                                                                datetime.datetime.now().strftime('%Y%m%d-%H%M%S') + str(
+                                                                    query) + '_' + datalist.name + '.txt'))
+            with open(file_name, 'w') as w:
                 for alg_idx, alg in enumerate(self.alg_list):
-                    w.write( "#" + str(alg) + '\n' )
+                    w.write("#" + str(alg) + '\n')
                     for data_idx, data in enumerate(self.data_list):
                         for param_idx, param in enumerate(self.param_list[alg_idx]):
                             try:
                                 value = self.value_map[(query_idx, param_idx, alg_idx, data_idx)]
                                 if ms_to_s:
                                     value = float(value) / 1000
-                                w.write( str(self.getSize(data, datalist)) + '\t')
-                                w.write( str(value) + '\n' )
+                                w.write(str(self.getSize(data, datalist)) + '\t')
+                                w.write(str(value) + '\n')
                             except KeyError:
                                 pass
                             except:
                                 e = sys.exc_info()[0]
                                 print(e)
-                    w.write( "\n\n" ) 
+                    w.write("\n\n")
             plot_name = re.sub(r'\.txt', '.plot', file_name)
             graph_name = re.sub(r'\.txt', '.png', file_name)
-            with open( plot_name, 'w') as w:
+            with open(plot_name, 'w') as w:
                 if datalist.variable is not None:
                     if datalist.variable == 'rules':
                         w.write('set xlabel \"Number of rules\"\n')
@@ -217,24 +219,25 @@ class ExpContainer:
                         w.write('set logscale x\n')
                     if 'y' in log_scale:
                         w.write('set logscale y\n')
-                w.write('set output \"' + graph_name + '\"\n') 
+                w.write('set output \"' + graph_name + '\"\n')
 
                 w.write('plot ')
                 for alg_idx, alg in enumerate(self.alg_list):
                     alg_obj = get_object_or_404(Algorithm, pk=alg[2])
                     w.write('\"' + file_name + '\" index ' + str(alg_idx) + ' with linespoints ')
                     if alg_obj.color is not None and alg_obj.color != "":
-                        w.write( 'lt rgb "' + alg_obj.color + '" ' ) 
-                    w.write( 'title \"' + alg[0] + '\"')
+                        w.write('lt rgb "' + alg_obj.color + '" ')
+                    w.write('title \"' + alg[0] + '\"')
                     if alg_idx != len(self.alg_list) - 1:
                         w.write(',\\\n')
                     else:
                         w.write('\n')
-            call(["gnuplot", plot_name])        
+            call(["gnuplot", plot_name])
 
-            new_graph = Graph( project=project, datalist=datalist)
-            #new_graph.description = str(self.query_list) + ":" + str(self.data_list) + ":" + str(self.alg_list) + ":" + str(self.param_list) + ":" +  str(self.value_map)
-            new_graph.description = str(self.alg_id_list) + ":" + str(self.selected_query) + ":" + str(self.alg_param_map)
+            new_graph = Graph(project=project, datalist=datalist)
+            # new_graph.description = str(self.query_list) + ":" + str(self.data_list) + ":" + str(self.alg_list) + ":" + str(self.param_list) + ":" +  str(self.value_map)
+            new_graph.description = str(self.alg_id_list) + ":" + str(self.selected_query) + ":" + str(
+                self.alg_param_map)
 
             new_graph.data_file.name = re.sub(settings.MEDIA_ROOT, '', file_name)
             new_graph.plot_file.name = re.sub(settings.MEDIA_ROOT, '', plot_name)
@@ -244,17 +247,17 @@ class ExpContainer:
 
     def getSize(self, string, datalist):
         if string.startswith('aol') or string.startswith('SPROT'):
-            m = re.search('[0-9]+',string)
+            m = re.search('[0-9]+', string)
             return m.group(0)
         if string.startswith('usps_s_'):
             size_array = [10000, 15848, 25118, 39810, 63095, 100000, 158489, 251188, 398107, 630957, 1000000]
             m = re.search('[0-9]+', string)
             return size_array[int(m.group(0)) - 1]
         if string.startswith('sample_sprot'):
-            size_array = [10000, 15848, 25118, 39810, 63095, 100000, 158489, 251188, 466158 ]
+            size_array = [10000, 15848, 25118, 39810, 63095, 100000, 158489, 251188, 466158]
             m = re.search('[0-9]+', string)
             return size_array[int(m.group(0)) - 1]
-        if string.startswith('1'): # synthetic
+        if string.startswith('1'):  # synthetic
             splitted = string.split('_')
             if datalist.variable is not None:
                 if datalist.variable == "rules":

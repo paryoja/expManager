@@ -253,7 +253,6 @@ class Graph(models.Model):
     graph_file = models.FileField(null=True)
 
 
-
 class RelatedWork(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     title = models.TextField(null=False)
@@ -284,5 +283,3 @@ class SettingFiles(models.Model):
 
     def __str__(self):
         return self.name
-
-

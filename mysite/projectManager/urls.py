@@ -57,7 +57,8 @@ urlpatterns = [
     url(r'^(?P<pk>[0-9]+)/graph/$', views.graph, name='graph'),
     url(r'^(?P<pk>[0-9]+)/addGraph/$', views.addGraph, name='addGraph'),
     url(r'^(?P<pk>[0-9]+)/graphExp/$', views.graphExp, name='graphExp'),
-    url(r'^(?P<project_id>[0-9]+)/(?P<datalist_id>[0-9]+)/(?P<server_id>[0-9]+)/drawGraph', exp_views.drawGraph, name='drawGraph'),
+    url(r'^(?P<project_id>[0-9]+)/(?P<datalist_id>[0-9]+)/(?P<server_id>[0-9]+)/drawGraph', exp_views.drawGraph,
+        name='drawGraph'),
     url(r'^(?P<project_id>[0-9]+)/manageGraph/$', exp_views.manageGraph, name='manageGraph'),
 
     # related with todo

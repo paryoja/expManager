@@ -116,6 +116,7 @@ class ExpContainer:
                     param_sorted = list(sorted(zip(self.param_list[alg], int_list)))
                     # print(param_sorted)
 
+                    is_failed = False
                     for param_name, param in param_sorted:
                         # print( "param " + str(self.param_list[alg][param]))
                         try:
@@ -134,6 +135,7 @@ class ExpContainer:
                             value_data.append("")
                         except ValueError:
                             if self.value_map[(query, param, alg, data)] == "failed":
+                                is_failed = True
                                 value_data.append( "failed" )
                             else:
                                 value_data.append("")
@@ -141,6 +143,8 @@ class ExpContainer:
                     value_alg.append((self.data_list[data], value_data, min_value, max_value))
                     if min_value is not sys.maxsize:
                         query_min_list[data + 1][0].append(min_value)
+                    elif is_failed:
+                        query_min_list[data + 1][0].append("failed")
                     else:
                         query_min_list[data + 1][0].append("")
 

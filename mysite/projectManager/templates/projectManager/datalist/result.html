@@ -94,6 +94,8 @@
 		<td align="right" bgcolor="#00ff00">
 		{% elif forloop.counter == 1 %}
 		<td>
+		{% elif min == "failed" %}
+		<td align="right" bgcolor="#ff0000">
 		{% else %}
 		<td align="right">
 		{% endif %}
@@ -124,6 +126,8 @@
 					{% if value == min_value %}
 					<font color="blue">
 					{% elif value == max_value %}
+					<font color="red">
+					{% elif value == "failed" %}
 					<font color="red">
 					{% else %}
 					<font color="black">

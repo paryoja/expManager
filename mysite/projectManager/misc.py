@@ -34,7 +34,7 @@ class ExpContainer:
         data_index = 0
         self.value_map = {}
         for cont in self.cont_list:
-            exp_items = ExpItem.objects.filter(dataset=cont.dataset, server=self.server, invalid=False, failed=False)
+            exp_items = ExpItem.objects.filter(dataset=cont.dataset, server=self.server, invalid=False)
             self.data_list.append(cont.dataset.name)
 
             # for each exp for the dataset 
@@ -69,7 +69,7 @@ class ExpContainer:
                     if str(query) != selected_query:
                         continue
 
-                self.add_result(query, param, alg, toDictionary(exp.result), self.result_title, data_index)
+                self.add_result(query, param, alg, toDictionary(exp.result), self.result_title, data_index, exp)
             data_index += 1
 
         self.value_list = self.toValueList(self.value_map)
@@ -130,8 +130,13 @@ class ExpContainer:
                                 query_min_list[data + 1][1] = value
 
                             value_data.append(value)
-                        except (KeyError, ValueError):
+                        except KeyError:
                             value_data.append("")
+                        except ValueError:
+                            if self.value_map[(query, param, alg, data)] == "failed":
+                                value_data.append( "failed" )
+                            else:
+                                value_data.append("")
 
                     value_alg.append((self.data_list[data], value_data, min_value, max_value))
                     if min_value is not sys.maxsize:
@@ -146,7 +151,7 @@ class ExpContainer:
     def getResult(self):
         return self.query_list, self.param_list, self.alg_list, self.value_list
 
-    def add_result(self, query, param, alg, result, result_title, data_index):
+    def add_result(self, query, param, alg, result, result_title, data_index, exp):
         if alg not in self.alg_list:
             self.alg_list.append(alg)
             self.param_list.append([])
@@ -160,10 +165,13 @@ class ExpContainer:
             self.param_list[alg_index].append(param)
         param_index = self.param_list[alg_index].index(param)
 
-        try:
-            self.value_map[(query_index, param_index, alg_index, data_index)] = result[result_title]
-        except KeyError:
-            self.value_map[(query_index, param_index, alg_index, data_index)] = ""
+        if exp.failed:
+            self.value_map[(query_index, param_index, alg_index, data_index)] = "failed"
+        else:
+            try:
+                self.value_map[(query_index, param_index, alg_index, data_index)] = result[result_title]
+            except KeyError:
+                self.value_map[(query_index, param_index, alg_index, data_index)] = ""
 
     def save_to_graph(self, project, datalist, log_scale, ms_to_s):
         for query_idx, query in enumerate(self.query_list):

@@ -171,6 +171,7 @@ class DataList(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     name = models.TextField(null=False)
     description = models.TextField(null=True)
+    variable = models.CharField(null=True, blank=True, max_length=20)
 
     def __str__(self):
         return self.name + ':' + self.project.project_text

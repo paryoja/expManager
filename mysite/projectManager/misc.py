@@ -180,7 +180,7 @@ class ExpContainer:
                                 value = self.value_map[(query_idx, param_idx, alg_idx, data_idx)]
                                 if ms_to_s:
                                     value = float(value) / 1000
-                                w.write( str(self.getSize(data)) + '\t')
+                                w.write( str(self.getSize(data, datalist)) + '\t')
                                 w.write( str(value) + '\n' )
                             except KeyError:
                                 pass
@@ -191,7 +191,13 @@ class ExpContainer:
             plot_name = re.sub(r'\.txt', '.plot', file_name)
             graph_name = re.sub(r'\.txt', '.png', file_name)
             with open( plot_name, 'w') as w:
-                w.write('set xlabel \"Number of strings\"\n')
+                if datalist.variable is not None:
+                    if datalist.variable == 'rules':
+                        w.write('set xlabel \"Number of rules\"\n')
+                    else:
+                        w.write('set xlabel \"Number of strings\"\n')
+                else:
+                    w.write('set xlabel \"Number of strings\"\n')
                 w.write('set key top left\n')
                 if ms_to_s:
                     w.write('set ylabel \"Execution time \(sec\)\"\n')
@@ -228,7 +234,7 @@ class ExpContainer:
             new_graph.save()
         return new_graph
 
-    def getSize(self, string):
+    def getSize(self, string, datalist):
         if string.startswith('aol') or string.startswith('SPROT'):
             m = re.search('[0-9]+',string)
             return m.group(0)
@@ -238,5 +244,8 @@ class ExpContainer:
             return size_array[int(m.group(0)) - 1]
         if string.startswith('1'): # synthetic
             splitted = string.split('_')
+            if datalist.variable is not None:
+                if datalist.variable == "rules":
+                    return int(splitted[17])
             return int(splitted[2])
         return "1"

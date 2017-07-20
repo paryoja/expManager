@@ -12,8 +12,8 @@
             <td>
                 <select name="algorithm_name">
                     <option value="none">---------</option>
-                    {% for algorithm in project.algorithm_set.all %}
-                    <option value="{{ algorithm.id }}">{{ algorithm.name }}</option>
+                    {% for algorithm in algorithm_list %}
+					<option value="{{ algorithm.id }}">{{ algorithm.name }} {{ algorithm.version }}</option>
                     {% endfor %}
                 </select>
             </td>
@@ -25,7 +25,7 @@
             <td>
                 <select name="dataset_name">
                     <option value="none">---------</option>
-                    {% for dataset in project.dataset_set.all %}
+                    {% for dataset in dataset_list %}
                     <option value="{{ dataset.id }}">{{ dataset.name }}</option>
                     {% endfor %}
                 </select>
@@ -33,11 +33,23 @@
             <td><a href="{% url 'project:datasetForm' project.id %}">Add dataset</a></td>
         </tr>
 
-        <tr>
-            <td><label for="pub_date">Published date</label></td>
-            <td><input type="datetime" name="pub_date"/></td>
-        </tr>
+		<tr>
+			<td>Dataset id</td>
+			<td><input type="text" name="dataset_id"/></td>
+		</tr>
 
+		<tr>
+			<td>Server</td>
+	        <td>
+                <select name="server_name">
+                    <option value="none">---------</option>
+                    {% for server in server_list %}
+                    <option value="{{ server.id }}">{{ server.server_name }}</option>
+                    {% endfor %}
+                </select>
+            </td>
+		</tr>
+		
         <tr>
             <td><label for="parameter">Parameter</label></td>
             <td><input type="text" name="parameter"/></td>
@@ -48,8 +60,23 @@
             <td><input type="text" name="result"/></td>
         </tr>
 
+		<tr>
+			<td><label for="failed">Is failed</label></td>
+			<td><input type="checkbox" name="failed"/></td>
+		</tr>
+
         <tr>
             <td><input type="submit" name="method" value="Add"/></td>
         </tr>
+
+		{% for dataset in dataset_list %}
+		<tr>
+			<td>{{ dataset.id }}</td>
+			<td>{{ dataset.name }}</td>
+		</tr>
+		{% endfor %}
+
     </table>
-</form>
+
+
+ </form>

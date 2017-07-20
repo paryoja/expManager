@@ -5,6 +5,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
+from django.utils import timezone
 
 from .misc import ExpContainer
 from .models import Algorithm, Dataset, ExpItem, Server, Project, DataList, DataContainment
@@ -178,15 +179,30 @@ def expCompare(request, project_id):
 
 def addExp(request, project_id):
     project = get_object_or_404(Project, pk=project_id)
-    dataset = get_object_or_404(Dataset, pk=request.POST['dataset_name'])
+    if request.POST['dataset_name'] != "none":
+        dataset = get_object_or_404(Dataset, pk=request.POST['dataset_name'])
+    else:
+        dataset = get_object_or_404(Dataset, pk=request.POST['dataset_id'])
     algorithm = get_object_or_404(Algorithm, pk=request.POST['algorithm_name'])
     server = get_object_or_404(Server, pk=request.POST['server_name'])
-    exp_date = parse(request.POST['exp_date'])
+    try:
+        exp_date = parse(request.POST['exp_date'])
+    except KeyError:
+        exp_date = None
     parameter = request.POST['parameter']
     result = request.POST['result']
 
-    expitem = ExpItem(project=project, dataset=dataset, algorithm=algorithm, exp_date=exp_date, parameter=parameter,
-                      result=result, server=server)
+    try:
+        is_failed = bool(request.POST['failed'])
+    except:
+        is_failed = False
+
+    if exp_date is not None:
+        expitem = ExpItem(project=project, dataset=dataset, algorithm=algorithm, exp_date=exp_date, parameter=parameter,
+                      result=result, server=server, failed=is_failed)
+    else:
+        expitem = ExpItem(project=project, dataset=dataset, algorithm=algorithm, exp_date=timezone.now(), parameter=parameter, result=result, server=server, failed=is_failed)
+
     expitem.save()
 
     return HttpResponseRedirect(reverse('project:exp', args=(project_id,)))
@@ -206,8 +222,12 @@ def modifyExp(request, project_id, exp_id):
 
 def expForm(request, project_id):
     project = get_object_or_404(Project, pk=project_id)
+    dataset_list = project.dataset_set.all().order_by('name')
+    algorithm_list = project.algorithm_set.all().order_by('name')
+    server_list = Server.objects.all()
     return render(request, 'projectManager/form/addExpForm.html', {
-        'project': project
+        'project': project, 'dataset_list': dataset_list, 'algorithm_list': algorithm_list,
+        'server_list': server_list,
     })
 
 

@@ -110,12 +110,20 @@
 
 	{% for alg, param_list, value_alg, min_index in value_query %}
 	<h3>{{ alg.0 }} {{ alg.1 }}</h3>
+	<form id="ParamDrawForm{{ alg.2 }}" action="{% url 'project:drawParamGraph' project.id datalist.id server.id alg.2 %}" method="post">{% csrf_token %}
+		<input type="hidden" name="result_title" value="{{ result_title }}" />
+		<input type="hidden" name="query" value="{{ query }}"/>
+		<input type="checkbox" name="logscale" value="x" checked> log scale x </input>&nbsp;&nbsp;
+		<input type="checkbox" name="logscale" value="y" checked> log scale x </input>&nbsp;&nbsp;
+		<input type="checkbox" name="ms_to_s" value="on" checked> msec to sec </input>&nbsp;&nbsp;
+		<input type="submit" name="method" value="Draw"/>
+	</form>
 	<!-- individual tables -->
 	<table>
 		<tr>
 			<td>Parameters</td>
 			{% for param in param_list %}
-				<td>{{ param.0 }}</td>
+			<td><input form="ParamDrawForm{{ alg.2 }}" type="checkbox" name="selected_param" value="{{ param.0.0 }}"/>{{ param.0 }}</td>
 			{% endfor %}
 		</tr>
 		{% for dataset, value_data, min_value, max_value in value_alg %}

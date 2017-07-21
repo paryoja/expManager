@@ -54,7 +54,7 @@ class ExpContainer:
 
                 # check skip conditions based on alg_param_map
                 if alg_param_map is not None:
-                    if str(param[0]) != alg_param_map[exp.algorithm.id]:
+                    if str(param[0]) not in alg_param_map[exp.algorithm.id]:
                         continue
 
                 query = []
@@ -79,10 +79,8 @@ class ExpContainer:
 
         int_list = list(range(len(self.alg_list)))
         alg_sorted = list(sorted(zip(self.alg_list, int_list)))
-        # print(alg_sorted)
 
         for query in range(len(self.query_list)):
-            # print( "query " + str(self.query_list[ query ]) )
             value_query = []
             query_min_list = []
 
@@ -91,22 +89,18 @@ class ExpContainer:
             for alg in alg_sorted:
                 query_min_list[0][0].append(alg[0])
 
-            # print(query_min_list)
 
             for data in range(self.data_length):
                 query_min_list.append([[self.data_list[data]], sys.maxsize])
 
-            # print(query_min_list)
 
             # for alg in range(len(self.alg_list)):
             for alg_name, alg in alg_sorted:
 
-                # print( "alg " + str(self.alg_list[alg]))
                 value_alg = []
                 min_index = -1
 
                 for data in range(self.data_length):
-                    # print( "data " + str(data))
                     value_data = []
 
                     min_value = sys.maxsize
@@ -114,11 +108,9 @@ class ExpContainer:
 
                     int_list = list(range(len(self.param_list[alg])))
                     param_sorted = list(sorted(zip(self.param_list[alg], int_list)))
-                    # print(param_sorted)
 
                     is_failed = False
                     for param_name, param in param_sorted:
-                        # print( "param " + str(self.param_list[alg][param]))
                         try:
                             value = int(self.value_map[(query, param, alg, data)])
                             if value < min_value:
@@ -178,6 +170,7 @@ class ExpContainer:
                 self.value_map[(query_index, param_index, alg_index, data_index)] = ""
 
     def save_to_graph(self, project, datalist, log_scale, ms_to_s):
+        result_list = []
         for query_idx, query in enumerate(self.query_list):
             file_path = os.path.join(settings.MEDIA_ROOT, 'graphs', 'data_file')
             if not os.path.exists(file_path):
@@ -190,6 +183,8 @@ class ExpContainer:
                     w.write("#" + str(alg) + '\n')
                     for data_idx, data in enumerate(self.data_list):
                         for param_idx, param in enumerate(self.param_list[alg_idx]):
+                            if data_idx == 0:
+                                w.write("#" + str(param) + '\n')
                             try:
                                 value = self.value_map[(query_idx, param_idx, alg_idx, data_idx)]
                                 if ms_to_s:
@@ -231,7 +226,7 @@ class ExpContainer:
                     w.write('\"' + file_name + '\" index ' + str(alg_idx) + ' with linespoints ')
                     if alg_obj.color is not None and alg_obj.color != "":
                         w.write('lt rgb "' + alg_obj.color + '" ')
-                    w.write('title \"' + alg[0] + '\"')
+                    w.write('title \"' + alg[0] + " " + str(self.param_list[alg_idx][0][0]) + '\"')
                     if alg_idx != len(self.alg_list) - 1:
                         w.write(',\\\n')
                     else:
@@ -247,7 +242,83 @@ class ExpContainer:
             new_graph.plot_file.name = re.sub(settings.MEDIA_ROOT, '', plot_name)
             new_graph.graph_file.name = re.sub(settings.MEDIA_ROOT, '', graph_name)
             new_graph.save()
-        return new_graph
+            result_list.append(new_graph)
+        return result_list
+
+    def save_to_param_graph(self, project, datalist, log_scale, ms_to_s):
+        result_list = []
+        for query_idx, query in enumerate(self.query_list):
+            file_path = os.path.join(settings.MEDIA_ROOT, 'graphs', 'data_file')
+            if not os.path.exists(file_path):
+                os.makedirs(file_path)
+            file_name = re.sub(r'\'|\[|\]| ', '_', os.path.join(file_path,
+                                                                datetime.datetime.now().strftime('%Y%m%d-%H%M%S') + str(
+                                                                    query) + '_' + datalist.name + '.txt'))
+            with open(file_name, 'w') as w:
+                for alg_idx, alg in enumerate(self.alg_list):
+                    w.write("#" + str(alg) + '\n')
+                    for param_idx, param in enumerate(self.param_list[alg_idx]):
+                        w.write("#" + str(param) + '\n')
+                        for data_idx, data in enumerate(self.data_list):
+                            try:
+                                value = self.value_map[(query_idx, param_idx, alg_idx, data_idx)]
+                                if ms_to_s:
+                                    value = float(value) / 1000
+                                w.write(str(self.getSize(data, datalist)) + '\t')
+                                w.write(str(value) + '\n')
+                            except KeyError:
+                                pass
+                            except:
+                                e = sys.exc_info()[0]
+                                print(e)
+                        w.write("\n\n")
+            plot_name = re.sub(r'\.txt', '.plot', file_name)
+            graph_name = re.sub(r'\.txt', '.png', file_name)
+
+            with open(plot_name, 'w') as w:
+                if datalist.variable is not None:
+                    if datalist.variable == 'rules':
+                        w.write('set xlabel \"Number of rules\"\n')
+                    else:
+                        w.write('set xlabel \"Number of strings\"\n')
+                else:
+                    w.write('set xlabel \"Number of strings\"\n')
+                w.write('set key top left\n')
+                if ms_to_s:
+                    w.write('set ylabel \"Execution time \(sec\)\"\n')
+                else:
+                    w.write('set ylabel \"Execution time \(msec\)\"\n')
+                w.write('set term png size 1200,1000\n')
+
+                if log_scale is not None:
+                    if 'x' in log_scale:
+                        w.write('set logscale x\n')
+                    if 'y' in log_scale:
+                        w.write('set logscale y\n')
+                w.write('set output \"' + graph_name + '\"\n')
+
+                w.write('plot ')
+                int_list = list(range(len(self.param_list[0])))
+                for param, param_idx in sorted(zip(self.param_list[0], int_list)):
+                    w.write('\"' + file_name + '\" index ' + str(param_idx) + ' with linespoints ')
+                    w.write('title \"' + str(param) + '\"')
+                    if param_idx != len(self.param_list[0]) - 1:
+                        w.write(',\\\n')
+                    else:
+                        w.write('\n')
+            call(["gnuplot", plot_name])
+
+            new_graph = Graph(project=project, datalist=datalist)
+            # new_graph.description = str(self.query_list) + ":" + str(self.data_list) + ":" + str(self.alg_list) + ":" + str(self.param_list) + ":" +  str(self.value_map)
+            new_graph.description = str(self.alg_id_list) + ":" + str(self.selected_query) + ":" + str(
+                self.alg_param_map)
+
+            new_graph.data_file.name = re.sub(settings.MEDIA_ROOT, '', file_name)
+            new_graph.plot_file.name = re.sub(settings.MEDIA_ROOT, '', plot_name)
+            new_graph.graph_file.name = re.sub(settings.MEDIA_ROOT, '', graph_name)
+            new_graph.save()
+            result_list.append( new_graph )
+        return result_list
 
     def getSize(self, string, datalist):
         if string.startswith('aol') or string.startswith('SPROT'):

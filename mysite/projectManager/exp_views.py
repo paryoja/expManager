@@ -327,7 +327,8 @@ def drawGraph(request, project_id, datalist_id, server_id):
     alg_param_map = {}
     for alg in alg_id_list:
         algorithm = get_object_or_404(Algorithm, pk=alg)
-        alg_param_map[algorithm.id] = post['param_' + algorithm.name + '_' + algorithm.version]
+        alg_param_map[algorithm.id] = [post['param_' + algorithm.name + '_' + algorithm.version]]
+
 
     param_name_list = project.getParamFilterOriginalName()
     query_name_list = project.getQueryFilterOriginalName()
@@ -341,12 +342,47 @@ def drawGraph(request, project_id, datalist_id, server_id):
     exp_cont.load(alg_id_list=alg_id_list, selected_query=query, alg_param_map=alg_param_map)
     query_list, param_list, alg_list, debug_list = exp_cont.getResult()
 
-    graph = exp_cont.save_to_graph(project, datalist, log_scale, ms_to_s)
-    # print(graph.graph_file.url)
+    graph = exp_cont.save_to_graph(project, datalist, log_scale, ms_to_s)[0]
 
     return render(request, 'projectManager/datalist/drawGraph.html', {
         'project': project, 'datalist': datalist, 'server': server, 'query': query, 'algorithm_list': alg_list,
-        'value_list': debug_list, 'graph': graph, 'result_title': result_title
+        'value_list': debug_list, 'graph': graph, 'result_title': result_title, 'summary': True
+    })
+
+
+def drawParamGraph(request, project_id, datalist_id, server_id, algorithm_id):
+    project = get_object_or_404(Project, pk=project_id)
+    datalist = get_object_or_404(DataList, pk=datalist_id)
+    server = get_object_or_404(Server, pk=server_id)
+    #algorithm = get_object_or_404(Algorithm, pk=algorithm_id)
+    alg_id_list = [algorithm_id]
+    dataset_list = DataContainment.objects.filter(data_list=datalist)
+
+    post = request.POST
+    query = post['query']
+    result_title = post['result_title']
+    log_scale = post.getlist('logscale')
+
+    alg_param_map = {}
+    alg_param_map[int(algorithm_id)] = post.getlist('selected_param')
+
+    param_name_list = project.getParamFilterOriginalName()
+    query_name_list = project.getQueryFilterOriginalName()
+
+    if "ms_to_s" in post:
+        ms_to_s = True
+    else:
+        ms_to_s = False
+
+    exp_cont = ExpContainer(dataset_list, query_name_list, param_name_list, result_title, server_id)
+    exp_cont.load(alg_id_list=alg_id_list, selected_query=query, alg_param_map=alg_param_map)
+    query_list, param_list, alg_list, debug_list = exp_cont.getResult()
+
+    graph = exp_cont.save_to_param_graph(project, datalist, log_scale, ms_to_s)[0]
+
+    return render(request, 'projectManager/datalist/drawGraph.html', {
+        'project': project, 'datalist': datalist, 'server': server, 'query': query, 'algorithm_list': alg_list,
+        'value_list': debug_list, 'graph': graph, 'result_title': result_title, 'summary': False
     })
 
 

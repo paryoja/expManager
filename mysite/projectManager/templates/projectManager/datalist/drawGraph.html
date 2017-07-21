@@ -20,6 +20,7 @@
 
 {% load humanize %}
 {% for query, value_query, query_min_list in value_list %}
+{% if summary %}
 <h2>Result for query {{ query }}</h2>
 	<!-- summary table -->
 	<table>
@@ -49,6 +50,38 @@
 
 	{% endfor %}
 	</table></br>
+{% else %}
+	{% for alg, param_list, value_alg, min_index in value_query %}
+	<h3>{{ alg.0 }} {{ alg.1 }}</h3>
+	<!-- individual tables -->
+	<table>
+		<tr>
+			<td>Parameters</td>
+			{% for param in param_list %}
+				<td>{{ param.0 }}</td>
+			{% endfor %}
+		</tr>
+		{% for dataset, value_data, min_value, max_value in value_alg %}
+			<tr>
+				<td>{{ dataset }}</td>
+				{% for value in value_data %}
+				<td align="right">
+					{% if value == min_value %}
+					<font color="blue">
+					{% elif value == max_value %}
+					<font color="red">
+					{% elif value == "failed" %}
+					<font color="red">
+					{% else %}
+					<font color="black">
+					{% endif %}
+					{{ value | intcomma }}</font></td>
+				{% endfor %}
+			</tr>
+		{% endfor %}
+	</table>
+	{% endfor %}
+{% endif %}
 {% endfor %}
 <img src="{{ graph.graph_file.url }}"/>
 

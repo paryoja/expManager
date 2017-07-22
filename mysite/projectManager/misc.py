@@ -212,7 +212,8 @@ class ExpContainer:
                     w.write('set ylabel \"Execution time \(sec\)\"\n')
                 else:
                     w.write('set ylabel \"Execution time \(msec\)\"\n')
-                w.write('set term png\n')
+                #w.write('set term png\n')
+                w.write('set term png size 1200,1000\n')
                 if log_scale is not None:
                     if 'x' in log_scale:
                         w.write('set logscale x\n')

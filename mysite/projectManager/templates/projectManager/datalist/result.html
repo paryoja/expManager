@@ -4,16 +4,10 @@
 {% load staticfiles %}
 <link rel="stylesheet" type="text/css" href="{% static 'projectManager/css/style.css' %}"/>
 {% endblock %}
-
 {% block body %}
-
-<h2>
-<a href="{% url 'project:exp' project.id %}">To experiments</a>
-</h2>
+<h2><a href="{% url 'project:exp' project.id %}">To experiments</a></h2>
 
 <h2>List of Dataset contained in datalist {{ datalist.name }}</h2>
-
-
 
 {% if dataset_list %}
 <table>
@@ -49,10 +43,8 @@
 	<h3>Algorithm/Parameter</h3>
 	<table>
 	{% for alg, param_list, value_alg, min_index in value_query %}
-	<tr>
-		<!-- algorithm on/off checkbox -->
-		<td><input form="DrawForm{{ query }}" type="checkbox" name="algorithm" value="{{ alg.2 }}" checked>{{ alg.0 }}_{{ alg.1 }}</input>
-		</td>
+	<tr><!-- algorithm on/off checkbox -->
+		<td><input form="DrawForm{{ query }}" type="checkbox" name="algorithm" value="{{ alg.2 }}" checked>{{ alg.0 }}_{{ alg.1 }}</input></td>
 		<!-- parameter selecting radio buttons -->
 		{% for param in param_list %}
 		<td>
@@ -74,6 +66,7 @@
 <h1>Summary for {{ result_title }} on {{ server.server_name }}</h1>
 
 {% load humanize %}
+{% load my_extras %}
 {% for query, value_query, query_min_list in value_list %}
 <h2>Result for query {{ query }}</h2>
 	<!-- summary table -->
@@ -90,6 +83,9 @@
 		{% endfor %}
 	{% else %}
 		{% for min in min_list.0 %}
+		{% if forloop.counter == 1 %}
+		<!-- dataset name --><td>{{ min.0 }}</td>
+		{% else %}
 		{% if min == min_list.1 %}
 		<td align="right" bgcolor="#00ff00">
 		{% elif forloop.counter == 1 %}
@@ -100,13 +96,12 @@
 		<td align="right">
 		{% endif %}
 		{{ min | intcomma }}</td>
+		{% endif %}
 		{% endfor %}
 	{% endif %}
 	</tr>
-
 	{% endfor %}
 	</table></br>
-
 
 	{% for alg, param_list, value_alg, min_index in value_query %}
 	<h3>{{ alg.0 }} {{ alg.1 }}</h3>
@@ -128,7 +123,7 @@
 		</tr>
 		{% for dataset, value_data, min_value, max_value in value_alg %}
 			<tr>
-				<td>{{ dataset }}</td>
+				<td>{{ dataset.0 }}</td>
 				{% for value in value_data %}
 				<td align="right">
 					{% if value == min_value %}
@@ -140,7 +135,22 @@
 					{% else %}
 					<font color="black">
 					{% endif %}
-					{{ value | intcomma }}</font></td>
+					{% if value != "" %}
+					{{ value | intcomma }}</font>
+					{% else %}
+					<form action="{% url 'project:addExp' project.id %}" method="post">{% csrf_token %}
+						<input type="submit" name="add" value="failed"/>
+						<input type="hidden" name="dataset_name" value="none"/>
+						<input type="hidden" name="dataset_id" value="{{ dataset.1 }}"/>
+						<input type="hidden" name="server_name" value="{{ server.id }}"/>
+						<input type="hidden" name="failed" value="true"/>
+						<input type="hidden" name="algorithm_name" value="{{ alg.2 }}"/>
+						<input type="hidden" name="redirect" value="rev"/>
+						<input type="hidden" name="parameter" value="{ &quot;oneSideJoin&quot;: &quot;{{ query | list_string_to_value | return_item:0 }}&quot;, &quot;additional&quot;: &quot;{{ param_list|return_prev_item:forloop.counter | return_item:0 | return_item:0 }}&quot; }"/>
+						<input type="hidden" name="result" value="{ &quot;failed_reason&quot;: &quot;did not finished in 10 hours&quot; }"/>
+					</form>
+					{% endif %}
+				</td>
 				{% endfor %}
 			</tr>
 		{% endfor %}

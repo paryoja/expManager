@@ -75,12 +75,10 @@ class ExpView(generic.DetailView):
 
         unreferenced_dataset_list = []
         for dataset in dataset_list:
-            # print(dir(dataset.datacontainment_set))
-            # unreferenced_dataset_list.append( dataset )
             if len(dataset.datacontainment_set.all()) == 0:
                 unreferenced_dataset_list.append(dataset)
         context['dataset_list'] = unreferenced_dataset_list
-        context['datalist_list'] = context['project'].datalist_set.order_by('name')
+        context['datalist_list'] = context['project'].datalist_set.filter(deprecated=False).order_by('name')
 
         return context
 

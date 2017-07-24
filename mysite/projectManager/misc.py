@@ -35,7 +35,7 @@ class ExpContainer:
         self.value_map = {}
         for cont in self.cont_list:
             exp_items = ExpItem.objects.filter(dataset=cont.dataset, server=self.server, invalid=False)
-            self.data_list.append(cont.dataset.name)
+            self.data_list.append((cont.dataset.name,cont.dataset.id))
 
             # for each exp for the dataset 
             for exp in exp_items:
@@ -189,7 +189,7 @@ class ExpContainer:
                                 value = self.value_map[(query_idx, param_idx, alg_idx, data_idx)]
                                 if ms_to_s:
                                     value = float(value) / 1000
-                                w.write(str(self.getSize(data, datalist)) + '\t')
+                                w.write(str(self.getSize(data[0], datalist)) + '\t')
                                 w.write(str(value) + '\n')
                             except KeyError:
                                 pass
@@ -213,7 +213,7 @@ class ExpContainer:
                 else:
                     w.write('set ylabel \"Execution time \(msec\)\"\n')
                 #w.write('set term png\n')
-                w.write('set term png size 1200,1000\n')
+                w.write('set term png size 800,600\n')
                 if log_scale is not None:
                     if 'x' in log_scale:
                         w.write('set logscale x\n')
@@ -265,7 +265,7 @@ class ExpContainer:
                                 value = self.value_map[(query_idx, param_idx, alg_idx, data_idx)]
                                 if ms_to_s:
                                     value = float(value) / 1000
-                                w.write(str(self.getSize(data, datalist)) + '\t')
+                                w.write(str(self.getSize(data[0], datalist)) + '\t')
                                 w.write(str(value) + '\n')
                             except KeyError:
                                 pass

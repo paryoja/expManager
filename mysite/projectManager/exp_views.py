@@ -188,7 +188,7 @@ def addExp(request, project_id):
     try:
         exp_date = parse(request.POST['exp_date'])
     except KeyError:
-        exp_date = None
+        exp_date = timezone.now()
     parameter = request.POST['parameter']
     result = request.POST['result']
 
@@ -197,15 +197,16 @@ def addExp(request, project_id):
     except:
         is_failed = False
 
-    if exp_date is not None:
-        expitem = ExpItem(project=project, dataset=dataset, algorithm=algorithm, exp_date=exp_date, parameter=parameter,
+    expitem = ExpItem(project=project, dataset=dataset, algorithm=algorithm, exp_date=exp_date, parameter=parameter,
                       result=result, server=server, failed=is_failed)
-    else:
-        expitem = ExpItem(project=project, dataset=dataset, algorithm=algorithm, exp_date=timezone.now(), parameter=parameter, result=result, server=server, failed=is_failed)
 
     expitem.save()
-
-    return HttpResponseRedirect(reverse('project:exp', args=(project_id,)))
+    try:
+        redirect = request.POST['redirect']
+        if redirect == 'rev':
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+    except:
+        return HttpResponseRedirect(reverse('project:exp', args=(project_id,)))
 
 
 def modifyExp(request, project_id, exp_id):

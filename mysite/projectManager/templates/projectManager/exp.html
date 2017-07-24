@@ -26,28 +26,6 @@
 {% endif %}
 
 
-
-<h2>List of graphs </h2>
-<a href="{% url 'project:manageGraph' project.id %}">Manage graphs</a><br/><br/>
-
-
-<h2>List of algorithms</h2>
-<a href="{% url 'project:algorithmForm' project.id %}">Add an algorithm</a><br/><br/>
-<table>
-    <tr>
-        <td>Name</td>
-        <td>Version</td>
-    </tr>
-
-    {% for algorithm in project.algorithm_set.all %}
-    <tr>
-        <td><a href="{% url 'project:algorithmDetail' project.id algorithm.id %}">{{ algorithm.name }}</a></td>
-        <td>{{ algorithm.version }}</td>
-    </tr>
-    {% endfor %}
-
-</table>
-
 <h2>List of Data List</h2>
 <a href="{% url 'project:addDataList' project.id %}">Add a new Dataset List</a><br/><br/>
 <table>
@@ -66,6 +44,25 @@
 		<td><a href="{% url 'project:datalistResultSelect' project.id datalist.id %}">Results</a></td>
 	</tr>
 	{% endfor %}
+</table>
+
+<h2>List of graphs </h2>
+<a href="{% url 'project:manageGraph' project.id %}">Manage graphs</a><br/><br/>
+
+<h2>List of algorithms</h2>
+<a href="{% url 'project:algorithmForm' project.id %}">Add an algorithm</a><br/><br/>
+<table>
+    <tr>
+        <td>Name</td>
+        <td>Version</td>
+    </tr>
+
+    {% for algorithm in project.algorithm_set.all %}
+    <tr>
+        <td><a href="{% url 'project:algorithmDetail' project.id algorithm.id %}">{{ algorithm.name }}</a></td>
+        <td>{{ algorithm.version }}</td>
+    </tr>
+    {% endfor %}
 </table>
 
 <h2>List of Dataset</h2>

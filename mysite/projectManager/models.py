@@ -85,7 +85,7 @@ class TodoItem(models.Model):
 
 class Algorithm(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE, null=True)
-    name = models.TextField('Algorithm name')
+    name = models.TextField('Algorithm name', null=True)
     version = models.CharField(max_length=10)
     status = models.CharField(max_length=20, blank=True, null=True)
     color = models.CharField(max_length=20, blank=True, null=True)
@@ -172,6 +172,7 @@ class DataList(models.Model):
     name = models.TextField(null=False)
     description = models.TextField(null=True)
     variable = models.CharField(null=True, blank=True, max_length=20)
+    deprecated = models.BooleanField(default=False)
 
     def __str__(self):
         return self.name + ':' + self.project.project_text
@@ -239,6 +240,7 @@ class ExpItem(models.Model):
 
 class ExpTodo(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    algorithm = models.ForeignKey(Algorithm, on_delete=models.CASCADE)
     parameters = models.TextField()
     pub_date = models.DateTimeField('date published')
 

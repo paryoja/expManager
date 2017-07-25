@@ -14,7 +14,8 @@
 <div id="nav">
 	<a href="{% url 'project:index' %}">Home</a> |
 	{% if user.is_authenticated %}
-	Hello {{ user.username }}
+	Hello {{ user.username }} |
+	<a href="{% url 'project:logout' %}">Logout</a>
 	{% endif %}
 </div>
 

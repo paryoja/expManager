@@ -4,6 +4,20 @@
 {% block body %}
 
 {% load staticfiles %}
+
+<style>
+	.indent-1 section {width: 50%; float: left; border: 2px}
+	.two_column {
+    	list-style-type: disc;
+    	-webkit-columns: 2;
+    	-moz-columns: 2;
+    	columns: 2;
+    	list-style-position: inside;//this is important addition
+	}
+</style>
+
+<section class="indent-1">
+<section>
 <h1>List of Projects</h1>
 <a href="{% url 'project:projectForm' %}">Add a new project</a>
 {% if project_list %}
@@ -18,7 +32,6 @@
 
 <h1>List of Experimental Results</h1>
 <a href="{% url 'project:expUploader' %}" download>Download expUploader</a><br/>
-{% url 'project:expUploader' %}<br/><br/>
 
 {% if project_list %}
 <ul>
@@ -60,11 +73,14 @@
     {% endfor %}
 </ul>
 {% endif %}
+</section>
+
+<section>
 
 <h1>Useful Sites</h1>
 <a href="{% url 'project:addBookMark' %}">Add a bookmark</a>
 
-<ul>
+<ul class="two_column">
 {% for bookmark in bookmark_list %}
 <li><a href="{% url 'project:redirectBookMark' bookmark.id %}" target="_blank">{{ bookmark.name }}</a></li>
 {% endfor %}
@@ -80,22 +96,20 @@
 	<li><a href="{% url 'project:jupyterSetting' %}">Jupyter Setting</a></li>
 </ul>
 
-<h1>List of Algorithms</h1>
+<h1>List of ServerLists</h1>
+<a href="{% url 'project:addServerList' %}">Add a new ServerList</a>
 
-{% if algorithm_list %}
+{% if serverlist_list %}
 <ul>
-	{% for algorithm in algorithm_list %}
-		{% if algorithm.isNewest %}
-		<li>{{ algorithm.project }}: {{ algorithm.name }} {{ algorithm.version }}</li>
-		{% endif %}
+	{% for serverlist in serverlist_list %}
+	<li><a href="{% url 'project:configureServerList' serverlist.id %}">{{ serverlist.name }}</a></li>
 	{% endfor %}
 </ul>
+{% else %}
+<br/><br/>
 {% endif %}
 
-
-
 <h1>List of Servers</h1>
-
 <a href="{% url 'project:addServerForm' %}">Add a new server</a>
 
 {% if server_list %}
@@ -104,7 +118,8 @@
 	<li><a href="{% url 'project:servers' server.id %}">{{ server.server_ip }}: {{ server.server_name }}</a></li>
     {% endfor %}
 </ul>
+{% endif %}
 
 <a href="{% url 'project:logout' %}">Logout</a>
-{% endif %}
+</section>
 {% endblock %}

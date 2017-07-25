@@ -15,8 +15,8 @@ from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views import generic
 
-from .forms import ProjectEditForm, BookMarkEditForm, DatasetListForm
-from .models import Algorithm, TodoItem, Dataset, ExpItem, Server, RelatedWork, Project, BookMark
+from .forms import ProjectEditForm, BookMarkEditForm, DatasetListForm, ServerListForm
+from .models import Algorithm, TodoItem, Dataset, ExpItem, Server, RelatedWork, Project, BookMark, ServerList
 from .utils import getPDFName, getDatasetContextData, toDictionary
 
 
@@ -28,8 +28,8 @@ def index(request):
         'project_list': Project.objects.all(),
         'todo_list': unfinished.filter(level=0).order_by('deadline_date'),
         'overdued_todo_list': unfinished.filter(deadline_date__lt=timezone.now()).order_by('deadline_date'),
-        'algorithm_list': Algorithm.objects.all().order_by('project'),
-        'server_list': Server.objects.all().order_by('server_ip'),
+        'server_list': Server.objects.filter(server_list=None).order_by('server_ip'),
+        'serverlist_list': ServerList.objects.all().order_by('name'),
         'bookmark_list': BookMark.objects.all().order_by('-times_visited')
     })
 
@@ -171,6 +171,17 @@ def addServer(request):
     server.save()
     return HttpResponseRedirect(reverse('project:index'))
 
+def addServerList(request):
+    if request.method == 'GET':
+        edit_form = ServerListForm()
+    elif request.method == 'POST':
+        edit_form = ServerListForm(request.POST)
+
+        if edit_form.is_valid():
+            edit_form.save()
+
+            return HttpResponseRedirect(reverse('project:index'))
+    return render(request, 'projectManager/form/addServerList.html', {'form': edit_form})
 
 def addAlgorithm(request, project_id):
     project = get_object_or_404(Project, pk=project_id)
@@ -222,6 +233,25 @@ def modifyTodo(request, project_id, todo_id):
         todo.delete()
 
     return HttpResponseRedirect(reverse('project:detail', args=(project_id,)))
+
+
+def configureServerList(request, serverlist_id):
+    serverlist = get_object_or_404(ServerList, pk=serverlist_id)
+
+    servers = Server.objects.filter(server_list = None)
+    contained_list = Server.objects.filter(server_list = serverlist)
+
+    return render(request, 'projectManager/serverlist/configureServerList.html', {
+        'serverlist': serverlist, 'servers': servers, 'contained_list': contained_list
+        })
+
+
+def addToServerList(request, serverlist_id):
+    serverlist = get_object_or_404(ServerList, pk=serverlist_id)
+    server = get_object_or_404(Server, pk=request.POST['server_id'])
+    server.server_list = serverlist
+    server.save()
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
 def invalidateOld(request, project_id):
@@ -316,6 +346,7 @@ def listDatasets(request, project_id):
         'dataset_list': Dataset.objects.filter(project=project)})
 
 
+# getting items by ids
 def getServerId(request, server_name):
     try:
         server = Server.objects.get(server_name=server_name)

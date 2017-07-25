@@ -10,6 +10,7 @@ mysite/polls/__pycache__/
 mysite/polls/migrations/__pycache__/
 mysite/projectManager/__pycache__/
 mysite/projectManager/migrations/__pycache__/
+mysite/projectManager/static/projectManager/dataset/
 mysite/db.sqlite3.bak
 mysite/pdf_files
 .idea/inspectionProfiles/Project_Default.xml

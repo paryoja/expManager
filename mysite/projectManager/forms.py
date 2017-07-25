@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import Project, BookMark, DataList
+from .models import Project, BookMark, DataList, ServerList
 
 
 class ProjectEditForm(forms.ModelForm):
@@ -19,3 +19,9 @@ class DatasetListForm(forms.ModelForm):
     class Meta:
         model = DataList
         fields = ['project', 'name', 'description']
+
+
+class ServerListForm(forms.ModelForm):
+    class Meta:
+        model = ServerList
+        fields = ['name']

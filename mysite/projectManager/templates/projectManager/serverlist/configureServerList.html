@@ -1,0 +1,51 @@
+{% extends "projectManager/base.html" %}
+{% block title %}Configure {{ serverlist.name }}{% endblock %}
+{% block additionalStyle %}
+{% load staticfiles %}
+<link rel="stylesheet" type="text/css" href="{% static 'projectManager/css/style.css' %}"/>
+{% endblock %}
+
+{% block body %}
+<h2>List of Dataset contained in this DataList</h2>
+{% if contained_list %}
+<table>
+	<tr>
+		<td>Name</td>
+		<td>IP</td>
+		<td>Description</td>
+    </tr>
+
+    {% for server in contained_list %}
+    <tr>
+        <td><a href="{% url 'project:servers' server.id %}">{{ server.server_name }}</td>
+        <td>{{ server.server_ip }}</td>
+		<td>{{ server.description }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endif %}
+
+{% if servers %}
+<h2>Add a server to {{ serverlist.name }}</h2>
+<table>
+	<tr>
+		<td>Name</td>
+		<td>IP</td>
+		<td>Description</td>
+		<td>Add</td>
+    </tr>
+	{% for server in servers %}
+    <tr>
+        <td><a href="{% url 'project:servers' server.id %}">{{ server.server_name }}</td>
+        <td>{{ server.server_ip }}</td>
+		<td>{{ server.description }}</td>
+		<td><form action="{% url 'project:addToServerList' serverlist.id %}" method="POST">{% csrf_token %}<input type="hidden" name="server_id" value="{{ server.id }}"/><input type="submit" name="method" value="add"></form></td>
+    </tr>
+    {% endfor %}
+</table>
+{% endif %}
+<br/>
+<h2>
+<a href="{% url 'project:index' %}">To home</a>
+</h2>
+{% endblock %}

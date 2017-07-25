@@ -113,11 +113,17 @@ class Algorithm(models.Model):
         return True
 
 
+class ServerList(models.Model):
+    name = models.CharField(max_length=40)
+
+
 class Server(models.Model):
     server_name = models.CharField(max_length=20)
     server_ip = models.GenericIPAddressField()
+    server_list = models.ForeignKey(ServerList, on_delete=models.CASCADE, null=True)
     server_cpu = models.CharField(max_length=100, null=True)
     rsa_pub = models.CharField(max_length=400, null=True)
+    description = models.TextField(null=True, blank=True)
 
     # memory = models.CharField(max_length=20)
     # os = models.CharField(max_length=20)

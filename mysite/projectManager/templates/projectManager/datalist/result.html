@@ -100,7 +100,7 @@
 		{% else %}
 		<td align="right">
 		{% endif %}
-		{{ min | intcomma }}</td>
+		{{ min | to_int | intcomma }}</td>
 		{% endif %}
 		{% endfor %}
 	{% endif %}
@@ -138,17 +138,17 @@
 				<td>{{ dataset.0 }}</td>
 				{% for value in value_data %}
 				<td align="right">
-					{% if value == min_value %}
+					{% if value.0 == min_value %}
 					<font color="blue">
-					{% elif value == max_value %}
+					{% elif value.0 == max_value %}
 					<font color="red">
-					{% elif value == "failed" %}
+					{% elif value.0 == "failed" %}
 					<font color="red">
 					{% else %}
 					<font color="black">
 					{% endif %}
-					{% if value != "" %}
-					{{ value | intcomma }}</font>
+					{% if value.0 != "" %}
+					{{ value.0 | to_int | intcomma }}<br/>({{ value.1 }})</font>
 					{% elif server %}
 					<form action="{% url 'project:addExp' project.id %}" method="post">{% csrf_token %}
 						<input type="submit" name="add" value="failed"/>

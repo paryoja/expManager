@@ -29,5 +29,9 @@ def list_string_to_value(string):
     except:
         return None
 
-
-
+@register.filter
+def to_int(string):
+    try:
+        return int(string)
+    except:
+        return string

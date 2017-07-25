@@ -74,9 +74,9 @@ class ExpContainer:
                     self.add_result(query, param, alg, toDictionary(exp.result), self.result_title, data_index, exp)
             data_index += 1
 
-        self.value_list = self.toValueList(self.value_map)
+        self.value_list = self.toValueList()
 
-    def toValueList(self, value_map):
+    def toValueList(self):
         value_list = []
 
         int_list = list(range(len(self.alg_list)))
@@ -114,7 +114,7 @@ class ExpContainer:
                     is_failed = False
                     for param_name, param in param_sorted:
                         try:
-                            value = int(self.value_map[(query, param, alg, data)])
+                            value, count, total_count = self.getValue(query, param, alg, data)
                             if value < min_value:
                                 min_value = value
                                 min_index = param
@@ -124,15 +124,18 @@ class ExpContainer:
                             if value < query_min_list[data + 1][1]:
                                 query_min_list[data + 1][1] = value
 
-                            value_data.append(value)
+                            value_data.append((value, count))
                         except KeyError:
-                            value_data.append("")
-                        except ValueError:
-                            if self.value_map[(query, param, alg, data)] == "failed":
+                            try:
+                                value_data.append(("", count))
+                            except:
+                                value_data.append(("", 0))
+                        except (ValueError, TypeError):
+                            if value == "failed":
                                 is_failed = True
-                                value_data.append( "failed" )
+                                value_data.append(("failed",total_count))
                             else:
-                                value_data.append("")
+                                value_data.append(("",total_count))
 
                     value_alg.append((self.data_list[data], value_data, min_value, max_value))
                     if min_value is not sys.maxsize:
@@ -149,6 +152,84 @@ class ExpContainer:
     def getResult(self):
         return self.query_list, self.param_list, self.alg_list, self.value_list
 
+
+    def getValue(self, query_id, param_id, alg_id, data_id):
+        value_list = self.value_map[(query_id, param_id, alg_id, data_id)]
+
+        total_count = 0
+        if self.method == "avg":
+            count = 0
+            total = 0
+            is_failed = False
+            is_empty = False
+            for exp, value in value_list:
+                total_count += 1
+                if value == "failed" or value == "":
+                    if value == "failed":
+                        is_failed = True
+                    else:
+                        is_empty = True
+                    continue
+                total += float(value)
+                count += 1
+
+            if count != 0:
+                return (total / count, count, total_count)
+            if is_failed:
+                return ("failed", count, total_count)
+            if is_empty:
+                return ("", count, total_count)
+
+        elif self.method == "latest":
+            # TODO implement
+            min_date = 0
+            min_value = None
+
+            total_count += 1
+            return (min_value, count, total_count)
+
+        elif self.method == "minmax":
+            # assume 0 is minimum
+            min_value = sys.maxsize
+            max_value = 0
+
+            count = 0
+            total = 0
+            is_failed = False
+            is_empty = False
+            for exp, value in value_list:
+                total_count += 1
+                if value == "failed" or value == "":
+                    if value == "failed":
+                        is_failed = True
+                    else:
+                        is_empty = True
+                    continue
+
+                f_value = float(value)
+                if min_value > f_value:
+                    min_value = f_value
+                if max_value < f_value:
+                    max_value = f_value
+                total += f_value
+                count += 1
+
+            if count != 0:
+                if count > 2:
+                    return( (total - min_value - max_value) / (count - 2), count, total_count)
+                else:
+                    return (total / count, count, total_count)
+            if is_failed:
+                return ("failed", count, total_count)
+            if is_empty:
+                return ("", count, total_count)
+        return (None, None, None)
+
+
+
+
+
+
     def add_result(self, query, param, alg, result, result_title, data_index, exp):
         if alg not in self.alg_list:
             self.alg_list.append(alg)
@@ -163,13 +244,17 @@ class ExpContainer:
             self.param_list[alg_index].append(param)
         param_index = self.param_list[alg_index].index(param)
 
+        valuemap_key = (query_index, param_index, alg_index, data_index)
+        if valuemap_key not in self.value_map.keys():
+            self.value_map[ valuemap_key ] = []
+        
         if exp.failed:
-            self.value_map[(query_index, param_index, alg_index, data_index)] = "failed"
+            self.value_map[valuemap_key].append((exp,"failed"))
         else:
             try:
-                self.value_map[(query_index, param_index, alg_index, data_index)] = result[result_title]
+                self.value_map[valuemap_key].append((exp,result[result_title]))
             except KeyError:
-                self.value_map[(query_index, param_index, alg_index, data_index)] = ""
+                self.value_map[valuemap_key].append((exp,""))
 
     def save_to_graph(self, project, datalist, log_scale, ms_to_s):
         result_list = []
@@ -189,7 +274,7 @@ class ExpContainer:
                             if data_idx == 0:
                                 w.write("#" + str(param) + '\n')
                             try:
-                                value = self.value_map[(query_idx, param_idx, alg_idx, data_idx)]
+                                value, count, total_count = self.getValue(query_idx, param_idx, alg_idx, data_idx)
                                 if ms_to_s:
                                     value = float(value) / 1000
                                 w.write(str(self.getSize(data[0], datalist)) + '\t')
@@ -265,7 +350,7 @@ class ExpContainer:
                         w.write("#" + str(param) + '\n')
                         for data_idx, data in enumerate(self.data_list):
                             try:
-                                value = self.value_map[(query_idx, param_idx, alg_idx, data_idx)]
+                                value, count, total_count = self.getValue(query_idx, param_idx, alg_idx, data_idx)
                                 if ms_to_s:
                                     value = float(value) / 1000
                                 w.write(str(self.getSize(data[0], datalist)) + '\t')
@@ -303,10 +388,12 @@ class ExpContainer:
 
                 w.write('plot ')
                 int_list = list(range(len(self.param_list[0])))
+                line_count = 0
                 for param, param_idx in sorted(zip(self.param_list[0], int_list)):
+                    line_count += 1
                     w.write('\"' + file_name + '\" index ' + str(param_idx) + ' with linespoints ')
                     w.write('title \"' + str(param) + '\"')
-                    if param_idx != len(self.param_list[0]) - 1:
+                    if line_count != len(self.param_list[0]):
                         w.write(',\\\n')
                     else:
                         w.write('\n')

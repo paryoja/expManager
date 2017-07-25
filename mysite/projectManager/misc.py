@@ -8,11 +8,11 @@ from django.conf import settings
 from django.shortcuts import get_object_or_404
 from projectManager.utils import toDictionary
 
-from .models import ExpItem, Server, Graph, Algorithm
+from .models import ExpItem, Graph, Algorithm
 
 
 class ExpContainer:
-    def __init__(self, cont_list, query_name_list, param_name_list, result_title, server_id):
+    def __init__(self, cont_list, query_name_list, param_name_list, result_title, server_list):
         self.alg_list = []
         self.query_list = []
         self.query_name_list = query_name_list
@@ -23,7 +23,8 @@ class ExpContainer:
         self.data_length = len(cont_list)
         self.cont_list = cont_list
         self.result_title = result_title
-        self.server = Server.objects.get(pk=server_id)
+        self.server_list = server_list
+
 
     def load(self, alg_id_list=None, selected_query=None, alg_param_map=None):
         self.alg_id_list = alg_id_list
@@ -34,42 +35,43 @@ class ExpContainer:
         data_index = 0
         self.value_map = {}
         for cont in self.cont_list:
-            exp_items = ExpItem.objects.filter(dataset=cont.dataset, server=self.server, invalid=False)
             self.data_list.append((cont.dataset.name,cont.dataset.id))
+            for server in self.server_list:
+                exp_items = ExpItem.objects.filter(dataset=cont.dataset, server=server, invalid=False)
 
-            # for each exp for the dataset 
-            for exp in exp_items:
-                # parameter consists of algorithm, version, and project specific parameters
-                if alg_id_list is not None:
-                    if str(exp.algorithm.id) not in alg_id_list:
-                        # skip this exp item
-                        continue
-                alg = [exp.algorithm.name, exp.algorithm.version, exp.algorithm.id]
+                # for each exp for the dataset 
+                for exp in exp_items:
+                    # parameter consists of algorithm, version, and project specific parameters
+                    if alg_id_list is not None:
+                        if str(exp.algorithm.id) not in alg_id_list:
+                            # skip this exp item
+                            continue
+                    alg = [exp.algorithm.name, exp.algorithm.version, exp.algorithm.id]
 
-                param_dict = toDictionary(exp.parameter)
+                    param_dict = toDictionary(exp.parameter)
 
-                param = []
-                for p in self.param_name_list:
-                    param.append(param_dict[p])
+                    param = []
+                    for p in self.param_name_list:
+                        param.append(param_dict[p])
 
-                # check skip conditions based on alg_param_map
-                if alg_param_map is not None:
-                    if str(param[0]) not in alg_param_map[exp.algorithm.id]:
-                        continue
+                    # check skip conditions based on alg_param_map
+                    if alg_param_map is not None:
+                        if str(param[0]) not in alg_param_map[exp.algorithm.id]:
+                            continue
 
-                query = []
-                if self.query_name_list is not None:
-                    for q in self.query_name_list:
-                        query.append(param_dict[q])
-                else:
-                    query.append("None")
+                    query = []
+                    if self.query_name_list is not None:
+                        for q in self.query_name_list:
+                            query.append(param_dict[q])
+                    else:
+                        query.append("None")
 
-                # check skip conditions based on selected_query
-                if selected_query is not None:
-                    if str(query) != selected_query:
-                        continue
+                    # check skip conditions based on selected_query
+                    if selected_query is not None:
+                        if str(query) != selected_query:
+                            continue
 
-                self.add_result(query, param, alg, toDictionary(exp.result), self.result_title, data_index, exp)
+                    self.add_result(query, param, alg, toDictionary(exp.result), self.result_title, data_index, exp)
             data_index += 1
 
         self.value_list = self.toValueList(self.value_map)
@@ -178,6 +180,7 @@ class ExpContainer:
             file_name = re.sub(r'\'|\[|\]| ', '_', os.path.join(file_path,
                                                                 datetime.datetime.now().strftime('%Y%m%d-%H%M%S') + str(
                                                                     query) + '_' + datalist.name + '.txt'))
+
             with open(file_name, 'w') as w:
                 for alg_idx, alg in enumerate(self.alg_list):
                     w.write("#" + str(alg) + '\n')

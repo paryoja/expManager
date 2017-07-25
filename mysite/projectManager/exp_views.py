@@ -8,7 +8,7 @@ from django.shortcuts import get_object_or_404, render
 from django.utils import timezone
 
 from .misc import ExpContainer
-from .models import Algorithm, Dataset, ExpItem, Server, Project, DataList, DataContainment
+from .models import Algorithm, Dataset, ExpItem, Server, Project, DataList, DataContainment, ServerList
 from .utils import toList, toDictionary, appendDict
 
 
@@ -270,6 +270,7 @@ def datalistResultSelect(request, project_id, datalist_id):
 
     server_list = Server.objects.all()
     filtered_server_list = []
+    serverlist_list = {}
 
     cont = DataContainment.objects.filter(data_list=datalist)
 
@@ -281,11 +282,20 @@ def datalistResultSelect(request, project_id, datalist_id):
 
         if count != 0:
             filtered_server_list.append((count, server))
-
+            if server.server_list is not None:
+                if server.server_list not in serverlist_list:
+                    serverlist_list[server.server_list] = (count, [server])
+                else:
+                    prev_count, prev_list = serverlist_list[server.server_list]
+                    prev_list.append(server)
+                    serverlist_list[server.server_list] = (prev_count + count, prev_list)
     filtered_server_list.sort(reverse=True)
+    sorted_serverlist = sorted(serverlist_list.items(), key=lambda k: k[1])
+
 
     return render(request, 'projectManager/datalist/resultSelect.html', {
-        'project': project, 'datalist': datalist, 'server_list': filtered_server_list
+        'project': project, 'datalist': datalist, 'server_list': filtered_server_list,
+        'serverlist_list': sorted_serverlist
     })
 
 
@@ -297,29 +307,52 @@ def datalistResult(request, project_id, datalist_id):
     param_name_list = project.getParamFilterOriginalName()
     query_name_list = project.getQueryFilterOriginalName()
 
-    # TODO sanity check of GET parameters
-    server_id = request.GET.get('server')
+    server_or_serverlist_id = request.GET.get('server')
+
+    server_list = []
+    server = None
+    serverlist = None
+    if server_or_serverlist_id.startswith('sl_'): # sl_{{ serverlist.id }}
+        # it is serverlist id
+        serverlist = get_object_or_404(ServerList, pk=int(server_or_serverlist_id[3:]))
+        for s in serverlist.server_set.all():
+            server_list.append(s)
+    else: # s_{{ server.id }}
+        # it is server id
+        server = get_object_or_404(Server, pk=int(server_or_serverlist_id[2:]))
+        server_list.append(server)
+
     # since forloop.counter in template starts with 1 
     result_title = project.getSummaryFilter()[int(request.GET.get('summary')) - 1]
 
-    exp_cont = ExpContainer(dataset_list, query_name_list, param_name_list, result_title, server_id)
+    exp_cont = ExpContainer(dataset_list, query_name_list, param_name_list, result_title, server_list)
     exp_cont.load()
     query_list, param_list, alg_list, value_list = exp_cont.getResult()
 
     return render(request, 'projectManager/datalist/result.html', {
         'project': project, 'datalist': datalist, 'dataset_list': dataset_list,
         'value_list': value_list, 'result_title': result_title,
-        'server': Server.objects.get(pk=server_id)
+        'serverlist': serverlist, 'server': server
     })
 
 
 def drawGraph(request, project_id, datalist_id, server_id):
     project = get_object_or_404(Project, pk=project_id)
     datalist = get_object_or_404(DataList, pk=datalist_id)
-    server = get_object_or_404(Server, pk=server_id)
     dataset_list = DataContainment.objects.filter(data_list=datalist)
 
     post = request.POST
+    server = None
+    serverlist = None
+    server_list = []
+    if post['server_type'] == 'server':
+        server = get_object_or_404(Server, pk=server_id)
+        server_list.append( server )
+    else:
+        serverlist = get_object_or_404(ServerList, pk=server_id)
+        for s in serverlist.server_set.all():
+            server_list.append(s)
+
     query = post['query']
     alg_id_list = post.getlist('algorithm')
     result_title = post['result_title']
@@ -339,14 +372,14 @@ def drawGraph(request, project_id, datalist_id, server_id):
     else:
         ms_to_s = False
 
-    exp_cont = ExpContainer(dataset_list, query_name_list, param_name_list, result_title, server_id)
+    exp_cont = ExpContainer(dataset_list, query_name_list, param_name_list, result_title, server_list)
     exp_cont.load(alg_id_list=alg_id_list, selected_query=query, alg_param_map=alg_param_map)
     query_list, param_list, alg_list, debug_list = exp_cont.getResult()
 
     graph = exp_cont.save_to_graph(project, datalist, log_scale, ms_to_s)[0]
 
     return render(request, 'projectManager/datalist/drawGraph.html', {
-        'project': project, 'datalist': datalist, 'server': server, 'query': query, 'algorithm_list': alg_list,
+        'project': project, 'datalist': datalist, 'server': server, 'serverlist': serverlist, 'query': query, 'algorithm_list': alg_list,
         'value_list': debug_list, 'graph': graph, 'result_title': result_title, 'summary': True
     })
 
@@ -354,12 +387,22 @@ def drawGraph(request, project_id, datalist_id, server_id):
 def drawParamGraph(request, project_id, datalist_id, server_id, algorithm_id):
     project = get_object_or_404(Project, pk=project_id)
     datalist = get_object_or_404(DataList, pk=datalist_id)
-    server = get_object_or_404(Server, pk=server_id)
-    #algorithm = get_object_or_404(Algorithm, pk=algorithm_id)
     alg_id_list = [algorithm_id]
     dataset_list = DataContainment.objects.filter(data_list=datalist)
 
     post = request.POST
+
+    server_list = []
+    server = None
+    serverlist = None
+    if post['server_type'] == 'server':
+        server = get_object_or_404(Server, pk=server_id)
+        server_list.append( server )
+    else:
+        serverlist = get_object_or_404(ServerList, pk=server_id)
+        for s in serverlist.server_set.all():
+            server_list.append(s)
+
     query = post['query']
     result_title = post['result_title']
     log_scale = post.getlist('logscale')
@@ -375,14 +418,14 @@ def drawParamGraph(request, project_id, datalist_id, server_id, algorithm_id):
     else:
         ms_to_s = False
 
-    exp_cont = ExpContainer(dataset_list, query_name_list, param_name_list, result_title, server_id)
+    exp_cont = ExpContainer(dataset_list, query_name_list, param_name_list, result_title, server_list)
     exp_cont.load(alg_id_list=alg_id_list, selected_query=query, alg_param_map=alg_param_map)
     query_list, param_list, alg_list, debug_list = exp_cont.getResult()
 
     graph = exp_cont.save_to_param_graph(project, datalist, log_scale, ms_to_s)[0]
 
     return render(request, 'projectManager/datalist/drawGraph.html', {
-        'project': project, 'datalist': datalist, 'server': server, 'query': query, 'algorithm_list': alg_list,
+        'project': project, 'datalist': datalist, 'server': server, 'serverlist': serverlist, 'query': query, 'algorithm_list': alg_list,
         'value_list': debug_list, 'graph': graph, 'result_title': result_title, 'summary': False
     })
 

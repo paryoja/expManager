@@ -37,7 +37,11 @@
 <h2>Draw a graph</h2>
 {% for query, value_query, query_min_list in value_list %}
 	<h3>Query</h3>
-	<form id="DrawForm{{ query }}" action="{% url 'project:drawGraph' project.id datalist.id server.id %}" method="POST">{% csrf_token %}</form>
+	{% if server %}
+	<form id="DrawForm{{ query }}" action="{% url 'project:drawGraph' project.id datalist.id server.id %}" method="POST">{% csrf_token %}<input type="hidden" name="server_type" value="server"></form>
+	{% else %}
+	<form id="DrawForm{{ query }}" action="{% url 'project:drawGraph' project.id datalist.id serverlist.id %}" method="POST">{% csrf_token %}<input type="hidden" name="server_type" value="serverlist"></form>
+	{% endif %}
 	<input form="DrawForm{{ query }}" type="hidden" name="result_title" value="{{ result_title }}" />
 	<input form="DrawForm{{ query }}" type="hidden" name="query" value="{{ query }}">{{ query }}</input><br/>
 	<h3>Algorithm/Parameter</h3>
@@ -105,7 +109,13 @@
 
 	{% for alg, param_list, value_alg, min_index in value_query %}
 	<h3>{{ alg.0 }} {{ alg.1 }}</h3>
+	{% if server %}
 	<form id="ParamDrawForm{{ alg.2 }}{{ query }}" action="{% url 'project:drawParamGraph' project.id datalist.id server.id alg.2 %}" method="post">{% csrf_token %}
+		<input type="hidden" name="server_type" value="server"/>
+	{% else %}
+	<form id="ParamDrawForm{{ alg.2 }}{{ query }}" action="{% url 'project:drawParamGraph' project.id datalist.id serverlist.id alg.2 %}" method="post">{% csrf_token %}
+		<input type="hidden" name="server_type" value="serverlist"/>
+	{% endif %}
 		<input type="hidden" name="result_title" value="{{ result_title }}" />
 		<input type="hidden" name="query" value="{{ query }}"/>
 		<input type="checkbox" name="logscale" value="x" checked> log scale x </input>&nbsp;&nbsp;
@@ -137,7 +147,7 @@
 					{% endif %}
 					{% if value != "" %}
 					{{ value | intcomma }}</font>
-					{% else %}
+					{% elif server %}
 					<form action="{% url 'project:addExp' project.id %}" method="post">{% csrf_token %}
 						<input type="submit" name="add" value="failed"/>
 						<input type="hidden" name="dataset_name" value="none"/>

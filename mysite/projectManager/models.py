@@ -116,6 +116,9 @@ class Algorithm(models.Model):
 class ServerList(models.Model):
     name = models.CharField(max_length=40)
 
+    def __str__(self):
+        return self.name
+
 
 class Server(models.Model):
     server_name = models.CharField(max_length=20)

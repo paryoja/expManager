@@ -9,7 +9,12 @@
 <form id="ResultForm" action="{% url 'project:datalistResult' project.id datalist.id %}" method="get"></form>
 <h2>Server List</h2>
 {% for count, server in server_list %}
-<input type="radio" name="server" value="{{ server.id }}" form="ResultForm" {% if forloop.counter == 1 %}checked{% endif %}/>{{ server.server_name }}({{ count }})<br/>
+<input type="radio" name="server" value="s_{{ server.id }}" form="ResultForm" {% if forloop.counter == 1 %}checked{% endif %}/>{{ server.server_name }}({{ count }})<br/>
+{% endfor %}
+
+<h2>Serverlist List</h2>
+{% for serverlist, count in serverlist_list %}
+<input type="radio" name="server" value="sl_{{ serverlist.id }}" form="ResultForm" />{{ serverlist.name }}({{ count.0 }}: {% for server in count.1 %}{{ server.server_name }}{% if not forloop.last %}, {%endif%}{% endfor %})<br/>
 {% endfor %}
 
 <h2>Result List</h2>

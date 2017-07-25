@@ -12,7 +12,7 @@ from .models import ExpItem, Graph, Algorithm
 
 
 class ExpContainer:
-    def __init__(self, cont_list, query_name_list, param_name_list, result_title, server_list):
+    def __init__(self, cont_list, query_name_list, param_name_list, result_title, server_list, method):
         self.alg_list = []
         self.query_list = []
         self.query_name_list = query_name_list
@@ -24,7 +24,7 @@ class ExpContainer:
         self.cont_list = cont_list
         self.result_title = result_title
         self.server_list = server_list
-
+        self.method = method
 
     def load(self, alg_id_list=None, selected_query=None, alg_param_map=None):
         self.alg_id_list = alg_id_list

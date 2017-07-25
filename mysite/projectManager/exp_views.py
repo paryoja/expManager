@@ -308,6 +308,7 @@ def datalistResult(request, project_id, datalist_id):
     query_name_list = project.getQueryFilterOriginalName()
 
     server_or_serverlist_id = request.GET.get('server')
+    method = request.GET.get('aggregation')
 
     server_list = []
     server = None
@@ -325,14 +326,14 @@ def datalistResult(request, project_id, datalist_id):
     # since forloop.counter in template starts with 1 
     result_title = project.getSummaryFilter()[int(request.GET.get('summary')) - 1]
 
-    exp_cont = ExpContainer(dataset_list, query_name_list, param_name_list, result_title, server_list)
+    exp_cont = ExpContainer(dataset_list, query_name_list, param_name_list, result_title, server_list, method)
     exp_cont.load()
     query_list, param_list, alg_list, value_list = exp_cont.getResult()
 
     return render(request, 'projectManager/datalist/result.html', {
         'project': project, 'datalist': datalist, 'dataset_list': dataset_list,
         'value_list': value_list, 'result_title': result_title,
-        'serverlist': serverlist, 'server': server
+        'serverlist': serverlist, 'server': server, 'aggregation': method,
     })
 
 
@@ -357,6 +358,7 @@ def drawGraph(request, project_id, datalist_id, server_id):
     alg_id_list = post.getlist('algorithm')
     result_title = post['result_title']
     log_scale = post.getlist('logscale')
+    method = post['aggregation']
 
     alg_param_map = {}
     for alg in alg_id_list:
@@ -372,7 +374,7 @@ def drawGraph(request, project_id, datalist_id, server_id):
     else:
         ms_to_s = False
 
-    exp_cont = ExpContainer(dataset_list, query_name_list, param_name_list, result_title, server_list)
+    exp_cont = ExpContainer(dataset_list, query_name_list, param_name_list, result_title, server_list, method)
     exp_cont.load(alg_id_list=alg_id_list, selected_query=query, alg_param_map=alg_param_map)
     query_list, param_list, alg_list, debug_list = exp_cont.getResult()
 
@@ -406,6 +408,7 @@ def drawParamGraph(request, project_id, datalist_id, server_id, algorithm_id):
     query = post['query']
     result_title = post['result_title']
     log_scale = post.getlist('logscale')
+    method = post['aggregation']
 
     alg_param_map = {}
     alg_param_map[int(algorithm_id)] = post.getlist('selected_param')
@@ -418,7 +421,7 @@ def drawParamGraph(request, project_id, datalist_id, server_id, algorithm_id):
     else:
         ms_to_s = False
 
-    exp_cont = ExpContainer(dataset_list, query_name_list, param_name_list, result_title, server_list)
+    exp_cont = ExpContainer(dataset_list, query_name_list, param_name_list, result_title, server_list, method)
     exp_cont.load(alg_id_list=alg_id_list, selected_query=query, alg_param_map=alg_param_map)
     query_list, param_list, alg_list, debug_list = exp_cont.getResult()
 

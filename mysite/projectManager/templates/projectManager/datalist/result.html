@@ -44,6 +44,7 @@
 	{% endif %}
 	<input form="DrawForm{{ query }}" type="hidden" name="result_title" value="{{ result_title }}" />
 	<input form="DrawForm{{ query }}" type="hidden" name="query" value="{{ query }}">{{ query }}</input><br/>
+	<input form="DrawForm{{ query }}" type="hidden" name="aggregation" value="{{ aggregation }}"/>
 	<h3>Algorithm/Parameter</h3>
 	<table>
 	{% for alg, param_list, value_alg, min_index in value_query %}
@@ -118,6 +119,7 @@
 	{% endif %}
 		<input type="hidden" name="result_title" value="{{ result_title }}" />
 		<input type="hidden" name="query" value="{{ query }}"/>
+		<input type="hidden" name="aggregation" value="{{ aggregation }}"/>
 		<input type="checkbox" name="logscale" value="x" checked> log scale x </input>&nbsp;&nbsp;
 		<input type="checkbox" name="logscale" value="y" checked> log scale x </input>&nbsp;&nbsp;
 		<input type="checkbox" name="ms_to_s" value="on" checked> msec to sec </input>&nbsp;&nbsp;

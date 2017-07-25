@@ -22,6 +22,12 @@
 <input type="radio" name="summary" value="{{ forloop.counter }}" form="ResultForm" {% if forloop.counter == 1 %}checked{% endif %}/>{{ result }}<br/>
 {% endfor %}
 
+<h2>Aggregation Method</h2>
+<input form="ResultForm" type="radio" name="aggregation" value="avg" checked>Average</input><br/>
+<input form="ResultForm" type="radio" name="aggregation" value="latest">Latest</input><br/>
+<input form="ResultForm" type="radio" name="aggregation" value="minmax">Except minimum/maximum</input><br/>
+
+
 <input type="submit" value="Get Result" form="ResultForm"/>
 
 {% endblock %}

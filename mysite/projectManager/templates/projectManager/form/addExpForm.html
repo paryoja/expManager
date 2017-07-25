@@ -6,6 +6,7 @@
 {% if error_message %}<p><strong><font color="red">{{ error_message }}</font></strong></p>{% endif %}
 <form action="{% url 'project:addExp' project.id %}" method="post">
     {% csrf_token %}
+	<input type="hidden" name="redirect" value="rev"/>
     <table>
         <tr>
             <td><label for="algorithm_name">Algorithm</label></td>

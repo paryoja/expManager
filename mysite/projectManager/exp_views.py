@@ -3,7 +3,7 @@ import sys
 from dateutil.parser import parse
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.urlresolvers import reverse
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import get_object_or_404, render
 from django.utils import timezone
 
@@ -206,7 +206,7 @@ def addExp(request, project_id):
         if redirect == 'rev':
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
     except:
-        return HttpResponseRedirect(reverse('project:exp', args=(project_id,)))
+        return HttpResponse('uploaded')
 
 
 def modifyExp(request, project_id, exp_id):

@@ -1,0 +1,40 @@
+{% extends "projectManager/base.html" %}
+{% block title %}Experimental results of {{ project.project_text }}{% endblock %}
+{% block additionalStyle %}
+{% load staticfiles %}
+<link rel="stylesheet" type="text/css" href="{% static 'projectManager/css/style.css' %}"/>
+{% endblock %}
+{% block body %}
+<h2><a href="{% url 'project:exp' project.id %}">To experiments</a></h2>
+
+<h2>Experiment Format</h2>
+<form action="{% url 'project:addExpTodoDataList' project.id datalist.id %}" method="POST">{% csrf_token %}
+	<input type="hidden" name="server" value="{{ server_id }}" />
+	<h3>Select Queries</h3>
+	{% for query in query_list %}
+	<input type="checkbox" name="query" value="{{ query }}" checked>{{ query }}</input>
+	{% endfor %}
+
+	<h3>Select Datasets</h3>
+	{% for dataset in dataset_list %}
+	<input type="checkbox" name="dataset" value="{{ dataset.1 }}" checked>{{ dataset.0 }}</input><br/>
+	{% endfor %}
+
+	<h3>Select Algorithms</h3>
+	<table>
+	{% for alg, param in param_list %}
+	<tr>
+		<td>
+		<input type="checkbox" name="algorithm" value="{{ alg }}" checked>{{ alg.0 }} {{ alg.1 }}</input>
+		</td>
+		{% for p in param %}
+		<td>
+		<input type="checkbox" name="param_list" value="{{ p }}">{{ p }}</input>
+		</td>
+		{% endfor %}
+	</tr>
+	{% endfor %}
+	</table>
+	<input type="submit" name="method" value="Add" />	
+</form>
+{% endblock %}

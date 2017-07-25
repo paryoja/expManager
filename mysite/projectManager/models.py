@@ -182,6 +182,7 @@ class DataList(models.Model):
     description = models.TextField(null=True)
     variable = models.CharField(null=True, blank=True, max_length=20)
     deprecated = models.BooleanField(default=False)
+    repeat = models.IntegerField(default=3)
 
     def __str__(self):
         return self.name + ':' + self.project.project_text
@@ -250,6 +251,8 @@ class ExpItem(models.Model):
 class ExpTodo(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     algorithm = models.ForeignKey(Algorithm, on_delete=models.CASCADE)
+    datalist = models.ForeignKey(DataList, on_delete=models.CASCADE)
+    serverlist = models.ForeignKey(ServerList, on_delete=models.CASCADE)
     parameters = models.TextField()
     pub_date = models.DateTimeField('date published')
 

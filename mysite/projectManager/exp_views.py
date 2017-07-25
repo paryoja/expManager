@@ -324,7 +324,8 @@ def datalistResult(request, project_id, datalist_id):
         server_list.append(server)
 
     # since forloop.counter in template starts with 1 
-    result_title = project.getSummaryFilter()[int(request.GET.get('summary')) - 1]
+    summary = int(request.GET.get('summary')) - 1
+    result_title = project.getSummaryFilter()[summary]
 
     exp_cont = ExpContainer(dataset_list, query_name_list, param_name_list, result_title, server_list, method)
     exp_cont.load()
@@ -334,6 +335,7 @@ def datalistResult(request, project_id, datalist_id):
         'project': project, 'datalist': datalist, 'dataset_list': dataset_list,
         'value_list': value_list, 'result_title': result_title,
         'serverlist': serverlist, 'server': server, 'aggregation': method,
+        's_sl_id': server_or_serverlist_id, 'summary': summary,
     })
 
 
@@ -438,3 +440,59 @@ def manageGraph(request, project_id):
     return render(request, 'projectManager/datalist/manageGraph.html', {
         'project': project
     })
+
+
+def addExpTodo(request, project_id, datalist_id):
+    project = get_object_or_404(Project, pk=project_id)
+    datalist = get_object_or_404(DataList, pk=datalist_id)
+    dataset_list = DataContainment.objects.filter(data_list=datalist)
+
+    param_name_list = project.getParamFilterOriginalName()
+    query_name_list = project.getQueryFilterOriginalName()
+
+    if request.method == 'GET':
+        server_or_serverlist_id = request.GET.get('server')
+        method = None
+    elif request.method == 'POST':
+        server_or_serverlist_id = request.POST.get('server')
+        method = "avg"
+
+    result_title = project.getSummaryFilter()[0]
+
+    server_list = []
+    server = None
+    serverlist = None
+    if server_or_serverlist_id.startswith('sl_'): # sl_{{ serverlist.id }}
+        # it is serverlist id
+        serverlist = get_object_or_404(ServerList, pk=int(server_or_serverlist_id[3:]))
+        for s in serverlist.server_set.all():
+            server_list.append(s)
+    else: # s_{{ server.id }}
+        # it is server id
+        server = get_object_or_404(Server, pk=int(server_or_serverlist_id[2:]))
+        server_list.append(server)
+
+    # since forloop.counter in template starts with 1 
+
+    exp_cont = ExpContainer(dataset_list, query_name_list, param_name_list, result_title, server_list, method)
+    exp_cont.load()
+
+    if request.method == 'GET':
+        query_list, param_list, alg_list, data_list = exp_cont.getList()
+
+        int_list = list(range(len(alg_list)))
+        sorted_param = []
+
+        for alg_name, alg in list(sorted(zip(alg_list, int_list))):
+            sorted_param.append((alg_name,sorted(param_list[alg])))
+
+        return render(request, 'projectManager/datalist/addExpTodo.html', {
+            'project': project, 'datalist': datalist, 'server_id': server_or_serverlist_id,
+            'query_list': query_list, 'param_list': sorted_param, 'alg_list': alg_list, 'dataset_list': data_list,
+            })
+
+    else:
+        query_list, param_list, alg_list, value_list = exp_cont.getResult()
+
+        return HttpResponse("good")
+

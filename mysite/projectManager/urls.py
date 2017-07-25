@@ -43,6 +43,9 @@ urlpatterns = [
     url(r'^(?P<project_id>[0-9]+)/(?P<dataset_id>[0-9]+)/(?P<algorithm_id>[0-9]+)/listSameExp/$', exp_views.listSameExp,
         name='listSameExp'),
 
+    # related with exptodo
+    url(r'(?P<project_id>[0-9]+)/(?P<datalist_id>[0-9]+)/addExpTodo/$', exp_views.addExpTodo, name='addExpTodoDataList'),
+
     # related with datasetlist
     url(r'^(?P<project_id>[0-9]+)/addDataList/$', views.addDataList, name='addDataList'),
     url(r'^(?P<project_id>[0-9]+)/(?P<datalist_id>[0-9]+)/datalistConfigure/$', exp_views.datalistConfigure,

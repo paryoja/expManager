@@ -35,6 +35,7 @@ class ExpContainer:
         data_index = 0
         self.value_map = {}
         for cont in self.cont_list:
+            # order of data_list is depending on the id of cont
             self.data_list.append((cont.dataset.name,cont.dataset.id))
             for server in self.server_list:
                 exp_items = ExpItem.objects.filter(dataset=cont.dataset, server=server, invalid=False)
@@ -74,7 +75,6 @@ class ExpContainer:
                     self.add_result(query, param, alg, toDictionary(exp.result), self.result_title, data_index, exp)
             data_index += 1
 
-        self.value_list = self.toValueList()
 
     def toValueList(self):
         value_list = []
@@ -150,7 +150,11 @@ class ExpContainer:
         return value_list
 
     def getResult(self):
+        self.value_list = self.toValueList()
         return self.query_list, self.param_list, self.alg_list, self.value_list
+
+    def getList(self):
+        return self.query_list, self.param_list, self.alg_list, self.data_list
 
 
     def getValue(self, query_id, param_id, alg_id, data_id):
@@ -226,20 +230,19 @@ class ExpContainer:
         return (None, None, None)
 
 
-
-
-
-
     def add_result(self, query, param, alg, result, result_title, data_index, exp):
+        # add alg
         if alg not in self.alg_list:
             self.alg_list.append(alg)
             self.param_list.append([])
         alg_index = self.alg_list.index(alg)
 
+        # add query
         if query not in self.query_list:
             self.query_list.append(query)
         query_index = self.query_list.index(query)
 
+        # add param
         if param not in self.param_list[alg_index]:
             self.param_list[alg_index].append(param)
         param_index = self.param_list[alg_index].index(param)

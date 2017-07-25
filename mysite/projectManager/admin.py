@@ -1,7 +1,8 @@
 from django.contrib import admin
 
 from projectManager.models import Algorithm, BookMark, Dataset, ExpItem, Project, \
-    RelatedWork, SettingFiles, TodoItem, Server, DataList, DataContainment, Graph
+    RelatedWork, SettingFiles, TodoItem, Server, DataList, DataContainment, Graph, \
+    ExpTodo
 
 # Register your models here.
 admin.site.register(Algorithm)
@@ -16,3 +17,4 @@ admin.site.register(SettingFiles)
 admin.site.register(TodoItem)
 admin.site.register(DataContainment)
 admin.site.register(Graph)
+admin.site.register(ExpTodo)

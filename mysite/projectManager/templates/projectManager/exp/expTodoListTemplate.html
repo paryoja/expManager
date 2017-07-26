@@ -1,0 +1,59 @@
+<!-- requires project and exp_todo_list -->
+{% load humanize %}
+
+{% if exp_todo_list %}
+<table>
+    <tr>
+        <td>Date</td>
+		<td>Server</td>
+		<td>ServerList</td>
+        <td>Algorithm</td>
+        <td>Dataset</td>
+		{% for param in project.getQueryFilterName %}
+		<td>{{ param }}</td>
+		{% endfor %}
+		{% for param in project.getParamFilterName %}
+		<td>{{ param }}</td>
+		{% endfor %}
+        <td>View details</td>
+		<td>Invalidate</td>
+    </tr>
+
+    {% for exp in exp_todo_list %}
+    <tr>
+        <td>{{ exp.pub_date }}</td>
+		{% if not exp.server == None %}
+		<td><a href="{% url 'project:servers' exp.server.id %}">{{ exp.server.server_name }}</a></td>
+		{% else %}
+		<td></td>
+		{% endif %}
+		
+		{% if not exp.serverlist == None %}
+		<td><a href="{% url 'project:configureServerlist' exp.serverlist.id %}">{{ exp.serverlist.name }}</a></td>
+		{% else %}
+		<td></td>
+		{% endif %}
+
+		<td><a href="{% url 'project:algorithmDetail' project.id exp.algorithm.id %}">{{ exp.algorithm.name }} {{ exp.algorithm.version }}</a></td>
+
+		<td><a href="{% url 'project:datasetDetail' project.id exp.dataset.id %}">{{ exp.dataset.name }}</a></td>
+		{% for value in exp.toQueryValueList %}
+		{% if value.isdigit %}
+		<td>{{ value | floatformat | intcomma }}</td>
+		{% else %}
+		<td>{{ value }}</td>
+		{% endif %}
+		{% endfor %}
+		{% for value in exp.toParamValueList %}
+		{% if value.isdigit %}
+		<td>{{ value | floatformat | intcomma }}</td>
+		{% else %}
+		<td>{{ value }}</td>
+		{% endif %}
+		{% endfor %}
+		<td></td>
+		<td></td>
+    </tr>
+    {% endfor %}
+</table>
+{% endif %}

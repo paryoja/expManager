@@ -72,6 +72,7 @@ class ExpView(generic.DetailView):
         context = super(ExpView, self).get_context_data(**kwargs)
         context['exp_list'] = context['project'].expitem_set.order_by('-exp_date')[:10]
         dataset_list = context['project'].dataset_set.order_by('name')
+        context['exp_todo_list'] = context['project'].exptodo_set.order_by('pub_date')[:10]
 
         unreferenced_dataset_list = []
         for dataset in dataset_list:

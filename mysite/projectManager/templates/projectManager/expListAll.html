@@ -42,7 +42,7 @@ Page {{ exp_list.number }} of {{ exp_list.paginator.num_pages }}.
 
 
 
-{% include 'projectManager/expListTemplate.html' %}
+{% include 'projectManager/exp/expListTemplate.html' %}
 
 <center>
     <a href="{% url 'project:detail' project.id %}">To project detail</a><br/>

@@ -8,8 +8,10 @@ from django.shortcuts import get_object_or_404, render
 from django.utils import timezone
 
 from .misc import ExpContainer
-from .models import Algorithm, Dataset, ExpItem, Server, Project, DataList, DataContainment, ServerList
+from .models import Algorithm, Dataset, ExpItem, Server, Project, DataList, DataContainment, ServerList, ExpTodo
 from .utils import toList, toDictionary, appendDict
+
+import json
 
 
 def exp(request, pk):
@@ -367,7 +369,6 @@ def drawGraph(request, project_id, datalist_id, server_id):
         algorithm = get_object_or_404(Algorithm, pk=alg)
         alg_param_map[algorithm.id] = [post['param_' + algorithm.name + '_' + algorithm.version]]
 
-
     param_name_list = project.getParamFilterOriginalName()
     query_name_list = project.getQueryFilterOriginalName()
 
@@ -455,6 +456,10 @@ def addExpTodo(request, project_id, datalist_id):
         method = None
     elif request.method == 'POST':
         server_or_serverlist_id = request.POST.get('server')
+
+
+        selected_dataset_list = request.POST.getlist( 'dataset' )
+        dataset_list = [ x for x in dataset_list if str(x.dataset.id) in selected_dataset_list ]
         method = "avg"
 
     result_title = project.getSummaryFilter()[0]
@@ -475,9 +480,9 @@ def addExpTodo(request, project_id, datalist_id):
     # since forloop.counter in template starts with 1 
 
     exp_cont = ExpContainer(dataset_list, query_name_list, param_name_list, result_title, server_list, method)
-    exp_cont.load()
 
     if request.method == 'GET':
+        exp_cont.load()
         query_list, param_list, alg_list, data_list = exp_cont.getList()
 
         int_list = list(range(len(alg_list)))
@@ -492,7 +497,43 @@ def addExpTodo(request, project_id, datalist_id):
             })
 
     else:
-        query_list, param_list, alg_list, value_list = exp_cont.getResult()
+        selected_query_list = request.POST[ 'query' ]
+        selected_algorithm_list = request.POST.getlist( 'algorithm' )
+        
+        selected_param_map = {}
+        for alg in selected_algorithm_list:
+            param_list = request.POST.getlist( 'param_list_' + alg )
+            selected_param_map[ int(alg) ] = param_list
+        
+        exp_cont.load( alg_id_list = selected_algorithm_list, selected_query=selected_query_list, alg_param_map=selected_param_map)
+        query_list, param_list, alg_list, data_list = exp_cont.getList()
+        repeat = datalist.repeat
 
-        return HttpResponse("good")
+        for query_id, query in enumerate(query_list):
+            for data_id, data in enumerate(data_list):
+                dataset = get_object_or_404(Dataset, pk=data[1])
+                for alg_id, alg in enumerate(alg_list):
+                    algorithm = get_object_or_404(Algorithm, pk=alg[2])
+                    for param_id, param in enumerate(param_list[alg_id]):
+                        avg, count, total_count = exp_cont.getValue(query_id, param_id, alg_id, data_id)
+                        
+                        if count < repeat:
+                            param_map = {}
+                            for param_name_idx, param_name in enumerate(param_name_list):
+                               param_map[param_name] = param[param_name_idx]
+
+                            query_map = {}
+                            for query_name_idx, query_name in enumerate(query_name_list):
+                                query_map[query_name] = query[query_name_idx]
+                            
+                            json_param = json.dumps(param_map)
+                            json_query = json.dumps(query_map)
+
+                            # add exp todo
+                            filtered = ExpTodo.objects.filter(project=project, algorithm=algorithm, dataset=dataset, serverlist=serverlist, server=server, parameter=json_param, query=json_query)
+                            if len(filtered) == 0:
+                                exp = ExpTodo(project=project, algorithm=algorithm, dataset=dataset, serverlist=serverlist, server=server, parameter=json_param, query=json_query)
+                                exp.save()
+
+        return HttpResponseRedirect(reverse('project:exp', args=(project.id,)))
 

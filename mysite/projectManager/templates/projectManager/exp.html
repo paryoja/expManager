@@ -17,7 +17,14 @@
 <h3>There are {{ project.expitem_set.all.count }} experiment{{ project.expitem_set.all.count | pluralize }}: 
 <a href="{% url 'project:expListAll' project.id %}">See all</a></h3>
 
-{% include 'projectManager/expListTemplate.html' %}
+{% include 'projectManager/exp/expListTemplate.html' %}
+
+
+<h2>List of Waiting Experiments</h2>
+<!-- add exptodo manually -->
+<h3>There are {{ project.exptodo_set.all.count }} experiment todo{{ project.exptodo_set.all.count | pluralize }}: See all</h3>
+
+{% include 'projectManager/exp/expTodoListTemplate.html' %}
 
 
 <form id="Invalidate old algorithms" action="{% url 'project:invalidateOld' project.id %}" method="post">

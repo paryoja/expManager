@@ -12,7 +12,7 @@
 	<input type="hidden" name="server" value="{{ server_id }}" />
 	<h3>Select Queries</h3>
 	{% for query in query_list %}
-	<input type="checkbox" name="query" value="{{ query }}" checked>{{ query }}</input>
+	<input type="radio" name="query" value="{{ query }}" {% if forloop.counter == 1 %}checked{% endif %}>{{ query }}</input>
 	{% endfor %}
 
 	<h3>Select Datasets</h3>
@@ -25,11 +25,11 @@
 	{% for alg, param in param_list %}
 	<tr>
 		<td>
-		<input type="checkbox" name="algorithm" value="{{ alg }}" checked>{{ alg.0 }} {{ alg.1 }}</input>
+		<input type="checkbox" name="algorithm" value="{{ alg.2 }}" checked>{{ alg.0 }} {{ alg.1 }}</input>
 		</td>
 		{% for p in param %}
 		<td>
-		<input type="checkbox" name="param_list" value="{{ p }}">{{ p }}</input>
+			<input type="checkbox" name="param_list_{{ alg.2 }}" value="{{ p.0 }}">{{ p }}</input>
 		</td>
 		{% endfor %}
 	</tr>

@@ -3,6 +3,16 @@ from django.utils import timezone
 
 from projectManager.utils import splitColon, toList, toDictionary
 
+def toMatchedList(params, values):
+    array = []
+    for par in params:
+        if ':' in par:
+            par = par.split(':')[0]
+        try:
+            array.append(values[par.strip()])
+        except KeyError:
+            array.append('Null')
+    return array
 
 # Create your models here.
 class Project(models.Model):
@@ -222,39 +232,43 @@ class ExpItem(models.Model):
     def toParamValueList(self):
         params = self.project.getParamFilter()
         values = toDictionary(self.parameter)
-        return self.toMatchedList(params, values)
+        return toMatchedList(params, values)
 
     def toQueryValueList(self):
         params = self.project.getQueryFilter()
         if params is None:
             return None
         values = toDictionary(self.parameter)
-        return self.toMatchedList(params, values)
+        return toMatchedList(params, values)
 
     def toResultValueList(self):
         params = self.project.getResultFilter()
         values = toDictionary(self.result)
-        return self.toMatchedList(params, values)
+        return toMatchedList(params, values)
 
-    def toMatchedList(self, params, values):
-        array = []
-        for par in params:
-            if ':' in par:
-                par = par.split(':')[0]
-            try:
-                array.append(values[par.strip()])
-            except KeyError:
-                array.append('Null')
-        return array
 
 
 class ExpTodo(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     algorithm = models.ForeignKey(Algorithm, on_delete=models.CASCADE)
-    datalist = models.ForeignKey(DataList, on_delete=models.CASCADE)
-    serverlist = models.ForeignKey(ServerList, on_delete=models.CASCADE)
-    parameters = models.TextField()
-    pub_date = models.DateTimeField('date published')
+    dataset = models.ForeignKey(Dataset, on_delete=models.CASCADE)
+    serverlist = models.ForeignKey(ServerList, on_delete=models.CASCADE, null=True)
+    server = models.ForeignKey(Server, on_delete=models.CASCADE, null=True)
+    parameter = models.TextField()
+    query = models.TextField()
+    pub_date = models.DateTimeField('date published', auto_now_add=True)
+
+    def toParamValueList(self):
+        params = self.project.getParamFilter()
+        values = toDictionary(self.parameter)
+        return toMatchedList(params, values)
+
+    def toQueryValueList(self):
+        params = self.project.getQueryFilter()
+        if params is None:
+            return None
+        values = toDictionary(self.query)
+        return toMatchedList(params, values)
 
 
 class Graph(models.Model):

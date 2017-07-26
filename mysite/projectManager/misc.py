@@ -27,6 +27,9 @@ class ExpContainer:
         self.method = method
 
     def load(self, alg_id_list=None, selected_query=None, alg_param_map=None):
+        # alg_id_list = [ '65', '66', ... ]
+        # selected_query = ['True']
+        # alg_param_map = { 65:["additional: "] }
         self.alg_id_list = alg_id_list
         self.selected_query = selected_query
         self.alg_param_map = alg_param_map

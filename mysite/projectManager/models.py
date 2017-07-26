@@ -103,6 +103,7 @@ class Algorithm(models.Model):
     version = models.CharField(max_length=10)
     status = models.CharField(max_length=20, blank=True, null=True)
     color = models.CharField(max_length=20, blank=True, null=True)
+    execute_script = models.TextField(null=True, blank=True)
 
     def __str__(self):
         return self.name + ':' + self.project.project_text + ":" + self.version
@@ -279,8 +280,8 @@ class ExpTodo(models.Model):
     def to_json(self):
         dic = {}
         dic['project'] = self.project.id
-        dic['algorithm'] = self.algorithm.id
-        dic['dataset'] = self.dataset.id
+        dic['algorithm'] = { 'name': self.algorithm.name, 'script': self.algorithm.execute_script }
+        dic['dataset'] = self.dataset.data_info
         dic['parameter'] = self.parameter
         dic['query'] = self.query
 

@@ -18,7 +18,7 @@
 
     {% for dataset in dataset_list %}
     <tr>
-        <td><a href="{% url 'project:datasetDetail' project.id dataset.id %}">{{ dataset.dataset.name }}</td>
+        <td><a href="{% url 'project:datasetDetail' project.id dataset.dataset.id %}">{{ dataset.dataset.name }}</td>
         <td>{{ dataset.dataset.is_synthetic }}</td>
 		{% if dataset.dataset.size %}
 		<td>{{ dataset.dataset.size|filesizeformat }}</td>

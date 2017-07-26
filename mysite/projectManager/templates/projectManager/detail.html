@@ -18,6 +18,13 @@ Source git url: {{ project.git_url }}<br/>
 </form>
 {% endif %}
 
+{% if project.project_setting_file %}
+<a href="{{ project.project_setting_file.url }}">Download Project Setting</a><br/>
+{% endif %}
+{% if project.initialize_code %}
+<a href="{{ project.initialize_code.url }}">Download Initialize Code</a><br/>
+{% endif %}
+
 <h2>Todo List</h2>
 <!-- Remaining todos -->
 <ul>

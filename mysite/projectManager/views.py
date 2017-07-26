@@ -16,7 +16,7 @@ from django.utils.decorators import method_decorator
 from django.views import generic
 
 from .forms import ProjectEditForm, BookMarkEditForm, DatasetListForm, ServerListForm
-from .models import Algorithm, TodoItem, Dataset, ExpItem, Server, RelatedWork, Project, BookMark, ServerList
+from .models import Algorithm, TodoItem, Dataset, ExpItem, Server, RelatedWork, Project, BookMark, ServerList, ExpTodo
 from .utils import getPDFName, getDatasetContextData, toDictionary
 
 
@@ -45,6 +45,11 @@ class ListProjectView(generic.ListView):
 class ServerView(generic.DetailView):
     model = Server
     template_name = 'projectManager/servers.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(ServerView, self).get_context_data(**kwargs)
+        context['exptodo_list'] = ExpTodo.objects.filter(server=context['server'])
+        return context
 
 
 class DetailView(generic.DetailView):

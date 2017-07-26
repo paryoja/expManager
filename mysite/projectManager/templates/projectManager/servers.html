@@ -10,6 +10,14 @@
 	<li>Memory: </li>
 	<li>Disk: Disk usage: 0% </li>
 </ul>
+<h2>ExpTodos</h2>
+
+<ul>
+{% for exptodo in exptodo_list %}
+<li>{{ exptodo.project }} {{ exptodo.algorithm }} {{ exptodo.dataset.name }} {{ exptodo.query }} {{ exptodo.parameter }}</li>
+{% endfor %}
+</ul>
+
 <h2>Server status</h2>
 
 <h2>List of experiments</h2>

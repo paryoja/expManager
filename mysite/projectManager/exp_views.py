@@ -537,3 +537,25 @@ def addExpTodo(request, project_id, datalist_id):
 
         return HttpResponseRedirect(reverse('project:exp', args=(project.id,)))
 
+def getExpTodoList(request, project_id):
+    # find 
+    project = get_object_or_404(Project, pk=project_id)
+    server_id = request.POST['server_id']
+    server = get_object_or_404(Server, pk = server_id)
+    
+    exp_list = ExpTodo.objects.filter(project=project, server=server, is_finished=False, is_running=False)
+    if server.server_list is not None:
+        exp_list_serverlist = ExpTodo.objects.filter(project=project, serverlist=server.server_list, is_finished = False, is_running = False)
+        if len(exp_list_serverlist) != 0:
+            exp_list = exp_list + exp_list_serverlist
+    if len(exp_list) == 0:
+        return HttpResponse("Nothing to do")
+    else:
+        return HttpResponse( ",".join(str(x.id) for x in exp_list) )
+
+
+def getExpTodo(request, project_id, todo_id):
+    project = get_object_or_404(Project, pk=project_id)
+    todo = get_object_or_404(ExpTodo, pk=todo_id)
+
+    return HttpResponse(todo.to_json())

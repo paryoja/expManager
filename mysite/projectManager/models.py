@@ -2,6 +2,7 @@ from django.db import models
 from django.utils import timezone
 
 from projectManager.utils import splitColon, toList, toDictionary
+import json
 
 def toMatchedList(params, values):
     array = []
@@ -24,6 +25,9 @@ class Project(models.Model):
     queryFilter = models.TextField(null=True, blank=True)
     resultFilter = models.TextField(null=True, blank=True)
     summaryFilter = models.TextField(null=True, blank=True)
+
+    project_setting_file = models.FileField(null=True)
+    initialize_code = models.FileField(null=True)
 
     def getParamFilter(self):
         return self.paramFilter.split(',')
@@ -257,6 +261,8 @@ class ExpTodo(models.Model):
     parameter = models.TextField()
     query = models.TextField()
     pub_date = models.DateTimeField('date published', auto_now_add=True)
+    is_finished = models.BooleanField(default=False)
+    is_running = models.BooleanField(default=False)
 
     def toParamValueList(self):
         params = self.project.getParamFilter()
@@ -269,7 +275,16 @@ class ExpTodo(models.Model):
             return None
         values = toDictionary(self.query)
         return toMatchedList(params, values)
+    
+    def to_json(self):
+        dic = {}
+        dic['project'] = self.project.id
+        dic['algorithm'] = self.algorithm.id
+        dic['dataset'] = self.dataset.id
+        dic['parameter'] = self.parameter
+        dic['query'] = self.query
 
+        return json.dumps(dic)
 
 class Graph(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)

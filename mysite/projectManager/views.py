@@ -48,7 +48,7 @@ class ServerView(generic.DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(ServerView, self).get_context_data(**kwargs)
-        context['exptodo_list'] = ExpTodo.objects.filter(server=context['server'])
+        context['exptodo_list'] = ExpTodo.objects.filter(server=context['server'], is_running=False, is_finished=False)
         return context
 
 
@@ -77,7 +77,7 @@ class ExpView(generic.DetailView):
         context = super(ExpView, self).get_context_data(**kwargs)
         context['exp_list'] = context['project'].expitem_set.order_by('-exp_date')[:10]
         dataset_list = context['project'].dataset_set.order_by('name')
-        context['exp_todo_list'] = context['project'].exptodo_set.order_by('pub_date')[:10]
+        context['exp_todo_list'] = context['project'].exptodo_set.filter(is_finished=False, is_running=False).order_by('pub_date')[:10]
 
         unreferenced_dataset_list = []
         for dataset in dataset_list:

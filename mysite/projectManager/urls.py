@@ -44,7 +44,8 @@ urlpatterns = [
         name='listSameExp'),
 
     # related with exptodo
-    url(r'(?P<project_id>[0-9]+)/(?P<datalist_id>[0-9]+)/addExpTodo/$', exp_views.addExpTodo, name='addExpTodoDataList'),
+    url(r'(?P<project_id>[0-9]+)/(?P<datalist_id>[0-9]+)/addExpTodo/$', exp_views.addExpTodo,
+        name='addExpTodoDataList'),
     url(r'(?P<project_id>[0-9]+)/getExpTodoList/$', exp_views.getExpTodoList, name='getExpTodoList'),
     url(r'(?P<project_id>[0-9]+)/(?P<todo_id>[0-9]+)/getExpTodo/$', exp_views.getExpTodo, name='getExpTodo'),
     url(r'(?P<project_id>[0-9]+)/(?P<todo_id>[0-9]+)/modExpTodo/$', exp_views.modExpTodo, name='modExpTodo'),
@@ -69,7 +70,9 @@ urlpatterns = [
     url(r'^(?P<pk>[0-9]+)/graphExp/$', views.graphExp, name='graphExp'),
     url(r'^(?P<project_id>[0-9]+)/(?P<datalist_id>[0-9]+)/(?P<server_id>[0-9]+)/drawGraph/$', exp_views.drawGraph,
         name='drawGraph'),
-    url(r'^(?P<project_id>[0-9]+)/(?P<datalist_id>[0-9]+)/(?P<server_id>[0-9]+)/(?P<algorithm_id>[0-9]+)/drawParamGraph/$', exp_views.drawParamGraph,
+    url(
+        r'^(?P<project_id>[0-9]+)/(?P<datalist_id>[0-9]+)/(?P<server_id>[0-9]+)/(?P<algorithm_id>[0-9]+)/drawParamGraph/$',
+        exp_views.drawParamGraph,
         name='drawParamGraph'),
     url(r'^(?P<project_id>[0-9]+)/manageGraph/$', exp_views.manageGraph, name='manageGraph'),
 

@@ -77,7 +77,8 @@ class ExpView(generic.DetailView):
         context = super(ExpView, self).get_context_data(**kwargs)
         context['exp_list'] = context['project'].expitem_set.order_by('-exp_date')[:10]
         dataset_list = context['project'].dataset_set.order_by('name')
-        context['exp_todo_list'] = context['project'].exptodo_set.filter(is_finished=False, is_running=False).order_by('pub_date')[:10]
+        context['exp_todo_list'] = context['project'].exptodo_set.filter(is_finished=False, is_running=False).order_by(
+            'pub_date')[:10]
 
         unreferenced_dataset_list = []
         for dataset in dataset_list:
@@ -177,6 +178,7 @@ def addServer(request):
     server.save()
     return HttpResponseRedirect(reverse('project:index'))
 
+
 def addServerList(request):
     if request.method == 'GET':
         edit_form = ServerListForm()
@@ -188,6 +190,7 @@ def addServerList(request):
 
             return HttpResponseRedirect(reverse('project:index'))
     return render(request, 'projectManager/form/addServerList.html', {'form': edit_form})
+
 
 def addAlgorithm(request, project_id):
     project = get_object_or_404(Project, pk=project_id)
@@ -244,12 +247,12 @@ def modifyTodo(request, project_id, todo_id):
 def configureServerList(request, serverlist_id):
     serverlist = get_object_or_404(ServerList, pk=serverlist_id)
 
-    servers = Server.objects.filter(server_list = None).order_by('server_name')
-    contained_list = Server.objects.filter(server_list = serverlist).order_by('server_name')
+    servers = Server.objects.filter(server_list=None).order_by('server_name')
+    contained_list = Server.objects.filter(server_list=serverlist).order_by('server_name')
 
     return render(request, 'projectManager/serverlist/configureServerList.html', {
         'serverlist': serverlist, 'servers': servers, 'contained_list': contained_list
-        })
+    })
 
 
 def addToServerList(request, serverlist_id):

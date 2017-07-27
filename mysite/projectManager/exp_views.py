@@ -561,7 +561,11 @@ def getExpTodoList(request, project_id):
 
 def getExpTodo(request, project_id, todo_id):
     project = get_object_or_404(Project, pk=project_id)
-    todo = get_object_or_404(ExpTodo, pk=todo_id)
+    try:
+        todo = ExpTodo.objects.get(pk=todo_id)
+    except:
+        return HttpResponse('skip')
+
     if not todo.is_finished and not todo.is_running:
         return HttpResponse(todo.to_json())
     else:
@@ -575,13 +579,25 @@ def getExpTodoStat(request, project_id, todo_id):
 
 def modExpTodo(request, project_id, todo_id):
 
-    todo = get_object_or_404(ExpTodo, pk=todo_id)
+    try:
+        todo = ExpTodo.objects.get(pk=todo_id)
+    except:
+        return HttpResponse('skip')
     if request.POST['method'] == 'running':
+        if todo.is_running:
+            return HttpResponse('skip')
         todo.is_running = True
         todo.save()
         return HttpResponse("running")
     elif request.POST['method'] == 'finished':
         todo.delete()
         return HttpResponse("finished")
-    return HttpResponse("method " + request.POST['method'])
+    elif request.POST['method'] == 'recover':
+        todo.is_running = False
+        todo.save()
+    elif request.POST['method'] == 'failed':
+        todo.is_running = False
+        todo.is_finished = True
+        todo.delete()
+    return HttpResponse(request.POST['method'])
         

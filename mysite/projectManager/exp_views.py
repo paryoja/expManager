@@ -517,7 +517,7 @@ def addExpTodo(request, project_id, datalist_id):
                     for param_id, param in enumerate(param_list[alg_id]):
                         avg, count, total_count = exp_cont.getValue(query_id, param_id, alg_id, data_id)
                         
-                        if count < repeat:
+                        if avg != "failed" and avg != "" and count < repeat:
                             param_map = {}
                             for param_name_idx, param_name in enumerate(param_name_list):
                                param_map[param_name] = param[param_name_idx]
@@ -581,9 +581,7 @@ def modExpTodo(request, project_id, todo_id):
         todo.save()
         return HttpResponse("running")
     elif request.POST['method'] == 'finished':
-        todo.is_finished = True
-        todo.is_running = False
-        todo.save()
+        todo.delete()
         return HttpResponse("finished")
     return HttpResponse("method " + request.POST['method'])
         

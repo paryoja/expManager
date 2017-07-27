@@ -29,7 +29,7 @@
 		{% endif %}
 		
 		{% if not exp.serverlist == None %}
-		<td><a href="{% url 'project:configureServerlist' exp.serverlist.id %}">{{ exp.serverlist.name }}</a></td>
+		<td><a href="{% url 'project:configureServerList' exp.serverlist.id %}">{{ exp.serverlist.name }}</a></td>
 		{% else %}
 		<td></td>
 		{% endif %}

@@ -543,15 +543,20 @@ def getExpTodoList(request, project_id):
     server_id = request.POST['server_id']
     server = get_object_or_404(Server, pk = server_id)
     
+    exps = []
     exp_list = ExpTodo.objects.filter(project=project, server=server, is_finished=False, is_running=False)
+    for exp in exp_list:
+        exps.append( exp )
     if server.server_list is not None:
         exp_list_serverlist = ExpTodo.objects.filter(project=project, serverlist=server.server_list, is_finished = False, is_running = False)
         if len(exp_list_serverlist) != 0:
-            exp_list = exp_list + exp_list_serverlist
-    if len(exp_list) == 0:
+            for exp in exp_list_serverlist:
+                exps.append( exp )
+            #exp_list = exp_list + exp_list_serverlist
+    if len(exps) == 0:
         return HttpResponse("Nothing to do")
     else:
-        return HttpResponse( ",".join(str(x.id) for x in exp_list) )
+        return HttpResponse( ",".join(str(x.id) for x in exps) )
 
 
 def getExpTodo(request, project_id, todo_id):

@@ -244,8 +244,8 @@ def modifyTodo(request, project_id, todo_id):
 def configureServerList(request, serverlist_id):
     serverlist = get_object_or_404(ServerList, pk=serverlist_id)
 
-    servers = Server.objects.filter(server_list = None)
-    contained_list = Server.objects.filter(server_list = serverlist)
+    servers = Server.objects.filter(server_list = None).order_by('server_name')
+    contained_list = Server.objects.filter(server_list = serverlist).order_by('server_name')
 
     return render(request, 'projectManager/serverlist/configureServerList.html', {
         'serverlist': serverlist, 'servers': servers, 'contained_list': contained_list

@@ -1,8 +1,9 @@
+import json
+
 from django.db import models
 from django.utils import timezone
-
 from projectManager.utils import splitColon, toList, toDictionary
-import json
+
 
 def toMatchedList(params, values):
     array = []
@@ -14,6 +15,7 @@ def toMatchedList(params, values):
         except KeyError:
             array.append('Null')
     return array
+
 
 # Create your models here.
 class Project(models.Model):
@@ -252,7 +254,6 @@ class ExpItem(models.Model):
         return toMatchedList(params, values)
 
 
-
 class ExpTodo(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     algorithm = models.ForeignKey(Algorithm, on_delete=models.CASCADE)
@@ -276,16 +277,17 @@ class ExpTodo(models.Model):
             return None
         values = toDictionary(self.query)
         return toMatchedList(params, values)
-    
+
     def to_json(self):
         dic = {}
         dic['project'] = self.project.id
-        dic['algorithm'] = { 'name': self.algorithm.name, 'script': self.algorithm.execute_script }
+        dic['algorithm'] = {'name': self.algorithm.name, 'script': self.algorithm.execute_script}
         dic['dataset'] = self.dataset.data_info
         dic['parameter'] = self.parameter
         dic['query'] = self.query
 
         return json.dumps(dic)
+
 
 class Graph(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)

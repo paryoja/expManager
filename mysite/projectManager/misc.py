@@ -39,7 +39,7 @@ class ExpContainer:
         self.value_map = {}
         for cont in self.cont_list:
             # order of data_list is depending on the id of cont
-            self.data_list.append((cont.dataset.name,cont.dataset.id))
+            self.data_list.append((cont.dataset.name, cont.dataset.id))
             for server in self.server_list:
                 exp_items = ExpItem.objects.filter(dataset=cont.dataset, server=server, invalid=False)
 
@@ -78,7 +78,6 @@ class ExpContainer:
                     self.add_result(query, param, alg, toDictionary(exp.result), self.result_title, data_index, exp)
             data_index += 1
 
-
     def toValueList(self):
         value_list = []
 
@@ -94,10 +93,8 @@ class ExpContainer:
             for alg in alg_sorted:
                 query_min_list[0][0].append(alg[0])
 
-
             for data in range(self.data_length):
                 query_min_list.append([[self.data_list[data]], sys.maxsize])
-
 
             # for alg in range(len(self.alg_list)):
             for alg_name, alg in alg_sorted:
@@ -136,9 +133,9 @@ class ExpContainer:
                         except (ValueError, TypeError):
                             if value == "failed":
                                 is_failed = True
-                                value_data.append(("failed",total_count))
+                                value_data.append(("failed", total_count))
                             else:
-                                value_data.append(("",total_count))
+                                value_data.append(("", total_count))
 
                     value_alg.append((self.data_list[data], value_data, min_value, max_value))
                     if min_value is not sys.maxsize:
@@ -158,7 +155,6 @@ class ExpContainer:
 
     def getList(self):
         return self.query_list, self.param_list, self.alg_list, self.data_list
-
 
     def getValue(self, query_id, param_id, alg_id, data_id):
         value_list = self.value_map[(query_id, param_id, alg_id, data_id)]
@@ -223,7 +219,7 @@ class ExpContainer:
 
             if count != 0:
                 if count > 2:
-                    return( (total - min_value - max_value) / (count - 2), count, total_count)
+                    return ((total - min_value - max_value) / (count - 2), count, total_count)
                 else:
                     return (total / count, count, total_count)
             if is_failed:
@@ -231,7 +227,6 @@ class ExpContainer:
             if is_empty:
                 return ("", count, total_count)
         return (None, None, None)
-
 
     def add_result(self, query, param, alg, result, result_title, data_index, exp):
         # add alg
@@ -252,15 +247,15 @@ class ExpContainer:
 
         valuemap_key = (query_index, param_index, alg_index, data_index)
         if valuemap_key not in self.value_map.keys():
-            self.value_map[ valuemap_key ] = []
-        
+            self.value_map[valuemap_key] = []
+
         if exp.failed:
-            self.value_map[valuemap_key].append((exp,"failed"))
+            self.value_map[valuemap_key].append((exp, "failed"))
         else:
             try:
-                self.value_map[valuemap_key].append((exp,result[result_title]))
+                self.value_map[valuemap_key].append((exp, result[result_title]))
             except KeyError:
-                self.value_map[valuemap_key].append((exp,""))
+                self.value_map[valuemap_key].append((exp, ""))
 
     def save_to_graph(self, project, datalist, log_scale, ms_to_s):
         result_list = []
@@ -306,7 +301,7 @@ class ExpContainer:
                     w.write('set ylabel \"Execution time \(sec\)\"\n')
                 else:
                     w.write('set ylabel \"Execution time \(msec\)\"\n')
-                #w.write('set term png\n')
+                # w.write('set term png\n')
                 w.write('set term png size 800,600\n')
                 if log_scale is not None:
                     if 'x' in log_scale:
@@ -414,7 +409,7 @@ class ExpContainer:
             new_graph.plot_file.name = re.sub(settings.MEDIA_ROOT, '', plot_name)
             new_graph.graph_file.name = re.sub(settings.MEDIA_ROOT, '', graph_name)
             new_graph.save()
-            result_list.append( new_graph )
+            result_list.append(new_graph)
         return result_list
 
     def getSize(self, string, datalist):

@@ -1,3 +1,4 @@
+import json
 import sys
 
 from dateutil.parser import parse
@@ -10,8 +11,6 @@ from django.utils import timezone
 from .misc import ExpContainer
 from .models import Algorithm, Dataset, ExpItem, Server, Project, DataList, DataContainment, ServerList, ExpTodo
 from .utils import toList, toDictionary, appendDict
-
-import json
 
 
 def exp(request, pk):
@@ -294,7 +293,6 @@ def datalistResultSelect(request, project_id, datalist_id):
     filtered_server_list.sort(reverse=True)
     sorted_serverlist = sorted(serverlist_list.items(), key=lambda k: k[1])
 
-
     return render(request, 'projectManager/datalist/resultSelect.html', {
         'project': project, 'datalist': datalist, 'server_list': filtered_server_list,
         'serverlist_list': sorted_serverlist
@@ -315,12 +313,12 @@ def datalistResult(request, project_id, datalist_id):
     server_list = []
     server = None
     serverlist = None
-    if server_or_serverlist_id.startswith('sl_'): # sl_{{ serverlist.id }}
+    if server_or_serverlist_id.startswith('sl_'):  # sl_{{ serverlist.id }}
         # it is serverlist id
         serverlist = get_object_or_404(ServerList, pk=int(server_or_serverlist_id[3:]))
         for s in serverlist.server_set.all():
             server_list.append(s)
-    else: # s_{{ server.id }}
+    else:  # s_{{ server.id }}
         # it is server id
         server = get_object_or_404(Server, pk=int(server_or_serverlist_id[2:]))
         server_list.append(server)
@@ -352,7 +350,7 @@ def drawGraph(request, project_id, datalist_id, server_id):
     server_list = []
     if post['server_type'] == 'server':
         server = get_object_or_404(Server, pk=server_id)
-        server_list.append( server )
+        server_list.append(server)
     else:
         serverlist = get_object_or_404(ServerList, pk=server_id)
         for s in serverlist.server_set.all():
@@ -384,7 +382,8 @@ def drawGraph(request, project_id, datalist_id, server_id):
     graph = exp_cont.save_to_graph(project, datalist, log_scale, ms_to_s)[0]
 
     return render(request, 'projectManager/datalist/drawGraph.html', {
-        'project': project, 'datalist': datalist, 'server': server, 'serverlist': serverlist, 'query': query, 'algorithm_list': alg_list,
+        'project': project, 'datalist': datalist, 'server': server, 'serverlist': serverlist, 'query': query,
+        'algorithm_list': alg_list,
         'value_list': debug_list, 'graph': graph, 'result_title': result_title, 'summary': True
     })
 
@@ -402,7 +401,7 @@ def drawParamGraph(request, project_id, datalist_id, server_id, algorithm_id):
     serverlist = None
     if post['server_type'] == 'server':
         server = get_object_or_404(Server, pk=server_id)
-        server_list.append( server )
+        server_list.append(server)
     else:
         serverlist = get_object_or_404(ServerList, pk=server_id)
         for s in serverlist.server_set.all():
@@ -431,7 +430,8 @@ def drawParamGraph(request, project_id, datalist_id, server_id, algorithm_id):
     graph = exp_cont.save_to_param_graph(project, datalist, log_scale, ms_to_s)[0]
 
     return render(request, 'projectManager/datalist/drawGraph.html', {
-        'project': project, 'datalist': datalist, 'server': server, 'serverlist': serverlist, 'query': query, 'algorithm_list': alg_list,
+        'project': project, 'datalist': datalist, 'server': server, 'serverlist': serverlist, 'query': query,
+        'algorithm_list': alg_list,
         'value_list': debug_list, 'graph': graph, 'result_title': result_title, 'summary': False
     })
 
@@ -457,9 +457,8 @@ def addExpTodo(request, project_id, datalist_id):
     elif request.method == 'POST':
         server_or_serverlist_id = request.POST.get('server')
 
-
-        selected_dataset_list = request.POST.getlist( 'dataset' )
-        dataset_list = [ x for x in dataset_list if str(x.dataset.id) in selected_dataset_list ]
+        selected_dataset_list = request.POST.getlist('dataset')
+        dataset_list = [x for x in dataset_list if str(x.dataset.id) in selected_dataset_list]
         method = "avg"
 
     result_title = project.getSummaryFilter()[0]
@@ -467,12 +466,12 @@ def addExpTodo(request, project_id, datalist_id):
     server_list = []
     server = None
     serverlist = None
-    if server_or_serverlist_id.startswith('sl_'): # sl_{{ serverlist.id }}
+    if server_or_serverlist_id.startswith('sl_'):  # sl_{{ serverlist.id }}
         # it is serverlist id
         serverlist = get_object_or_404(ServerList, pk=int(server_or_serverlist_id[3:]))
         for s in serverlist.server_set.all():
             server_list.append(s)
-    else: # s_{{ server.id }}
+    else:  # s_{{ server.id }}
         # it is server id
         server = get_object_or_404(Server, pk=int(server_or_serverlist_id[2:]))
         server_list.append(server)
@@ -489,23 +488,24 @@ def addExpTodo(request, project_id, datalist_id):
         sorted_param = []
 
         for alg_name, alg in list(sorted(zip(alg_list, int_list))):
-            sorted_param.append((alg_name,sorted(param_list[alg])))
+            sorted_param.append((alg_name, sorted(param_list[alg])))
 
         return render(request, 'projectManager/datalist/addExpTodo.html', {
             'project': project, 'datalist': datalist, 'server_id': server_or_serverlist_id,
             'query_list': query_list, 'param_list': sorted_param, 'alg_list': alg_list, 'dataset_list': data_list,
-            })
+        })
 
     else:
-        selected_query_list = request.POST[ 'query' ]
-        selected_algorithm_list = request.POST.getlist( 'algorithm' )
-        
+        selected_query_list = request.POST['query']
+        selected_algorithm_list = request.POST.getlist('algorithm')
+
         selected_param_map = {}
         for alg in selected_algorithm_list:
-            param_list = request.POST.getlist( 'param_list_' + alg )
-            selected_param_map[ int(alg) ] = param_list
-        
-        exp_cont.load( alg_id_list = selected_algorithm_list, selected_query=selected_query_list, alg_param_map=selected_param_map)
+            param_list = request.POST.getlist('param_list_' + alg)
+            selected_param_map[int(alg)] = param_list
+
+        exp_cont.load(alg_id_list=selected_algorithm_list, selected_query=selected_query_list,
+                      alg_param_map=selected_param_map)
         query_list, param_list, alg_list, data_list = exp_cont.getList()
         repeat = datalist.repeat
 
@@ -516,47 +516,53 @@ def addExpTodo(request, project_id, datalist_id):
                     algorithm = get_object_or_404(Algorithm, pk=alg[2])
                     for param_id, param in enumerate(param_list[alg_id]):
                         avg, count, total_count = exp_cont.getValue(query_id, param_id, alg_id, data_id)
-                        
+
                         if avg != "failed" and avg != "" and count < repeat:
                             param_map = {}
                             for param_name_idx, param_name in enumerate(param_name_list):
-                               param_map[param_name] = param[param_name_idx]
+                                param_map[param_name] = param[param_name_idx]
 
                             query_map = {}
                             for query_name_idx, query_name in enumerate(query_name_list):
                                 query_map[query_name] = query[query_name_idx]
-                            
+
                             json_param = json.dumps(param_map)
                             json_query = json.dumps(query_map)
 
                             # add exp todo
-                            filtered = ExpTodo.objects.filter(project=project, algorithm=algorithm, dataset=dataset, serverlist=serverlist, server=server, parameter=json_param, query=json_query)
+                            filtered = ExpTodo.objects.filter(project=project, algorithm=algorithm, dataset=dataset,
+                                                              serverlist=serverlist, server=server,
+                                                              parameter=json_param, query=json_query)
                             if len(filtered) == 0:
-                                exp = ExpTodo(project=project, algorithm=algorithm, dataset=dataset, serverlist=serverlist, server=server, parameter=json_param, query=json_query)
+                                exp = ExpTodo(project=project, algorithm=algorithm, dataset=dataset,
+                                              serverlist=serverlist, server=server, parameter=json_param,
+                                              query=json_query)
                                 exp.save()
 
         return HttpResponseRedirect(reverse('project:exp', args=(project.id,)))
+
 
 def getExpTodoList(request, project_id):
     # find 
     project = get_object_or_404(Project, pk=project_id)
     server_id = request.POST['server_id']
-    server = get_object_or_404(Server, pk = server_id)
-    
+    server = get_object_or_404(Server, pk=server_id)
+
     exps = []
     exp_list = ExpTodo.objects.filter(project=project, server=server, is_finished=False, is_running=False)
     for exp in exp_list:
-        exps.append( exp )
+        exps.append(exp)
     if server.server_list is not None:
-        exp_list_serverlist = ExpTodo.objects.filter(project=project, serverlist=server.server_list, is_finished = False, is_running = False)
+        exp_list_serverlist = ExpTodo.objects.filter(project=project, serverlist=server.server_list, is_finished=False,
+                                                     is_running=False)
         if len(exp_list_serverlist) != 0:
             for exp in exp_list_serverlist:
-                exps.append( exp )
-            #exp_list = exp_list + exp_list_serverlist
+                exps.append(exp)
+                # exp_list = exp_list + exp_list_serverlist
     if len(exps) == 0:
         return HttpResponse("Nothing to do")
     else:
-        return HttpResponse( ",".join(str(x.id) for x in exps) )
+        return HttpResponse(",".join(str(x.id) for x in exps))
 
 
 def getExpTodo(request, project_id, todo_id):
@@ -573,8 +579,8 @@ def getExpTodoStat(request, project_id, todo_id):
 
     return HttpResponse(todo.is_running + " " + todo.is_finished)
 
-def modExpTodo(request, project_id, todo_id):
 
+def modExpTodo(request, project_id, todo_id):
     todo = get_object_or_404(ExpTodo, pk=todo_id)
     if request.POST['method'] == 'running':
         todo.is_running = True
@@ -584,4 +590,3 @@ def modExpTodo(request, project_id, todo_id):
         todo.delete()
         return HttpResponse("finished")
     return HttpResponse("method " + request.POST['method'])
-        

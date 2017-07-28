@@ -19,6 +19,7 @@
 <h1>Summary for {{ result_title }} on {% if server %}{{ server.server_name }}{% else %}{{ serverlist.name }}{% endif %} with {{ datalist.name }}</h1>
 
 {% load humanize %}
+{% load my_extras %}
 {% for query, value_query, query_min_list in value_list %}
 {% if summary %}
 <h2>Result for query {{ query }}</h2>
@@ -43,7 +44,7 @@
 		{% else %}
 		<td align="right">
 		{% endif %}
-		{{ min | intcomma }}</td>
+		{{ min | to_int | intcomma }}</td>
 		{% endfor %}
 	{% endif %}
 	</tr>
@@ -75,7 +76,7 @@
 					{% else %}
 					<font color="black">
 					{% endif %}
-					{{ value | intcomma }}</font></td>
+					{{ value | to_int | intcomma }}</font></td>
 				{% endfor %}
 			</tr>
 		{% endfor %}

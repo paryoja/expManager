@@ -46,9 +46,11 @@ urlpatterns = [
     # related with exptodo
     url(r'(?P<project_id>[0-9]+)/(?P<datalist_id>[0-9]+)/addExpTodo/$', exp_views.addExpTodo,
         name='addExpTodoDataList'),
+    url(r'(?P<project_id>[0-9]+)/expTodoListAll/$', exp_views.expTodoListAll, name='expTodoListAll'),
     url(r'(?P<project_id>[0-9]+)/getExpTodoList/$', exp_views.getExpTodoList, name='getExpTodoList'),
     url(r'(?P<project_id>[0-9]+)/(?P<todo_id>[0-9]+)/getExpTodo/$', exp_views.getExpTodo, name='getExpTodo'),
     url(r'(?P<project_id>[0-9]+)/(?P<todo_id>[0-9]+)/modExpTodo/$', exp_views.modExpTodo, name='modExpTodo'),
+    
     # setting to running/finished
 
     # related with datasetlist

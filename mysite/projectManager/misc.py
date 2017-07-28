@@ -31,6 +31,24 @@ class ExpContainer:
         # selected_query = ['True']
         # alg_param_map = { 65:["additional: "] }
         self.alg_id_list = alg_id_list
+
+        if alg_id_list is not None:
+            for alg_id in alg_id_list:
+                # add to self.alg_list
+                algorithm = Algorithm.objects.get(pk = alg_id)
+                self.alg_list.append([algorithm.name, algorithm.version, algorithm.id]) 
+                param_list = []
+
+                if alg_param_map is not None:
+                    # add to self.param_list
+                    if int(alg_id) in alg_param_map.keys(): 
+                        alg_param = alg_param_map[int(alg_id)]
+                        for par in alg_param:
+                            param = [par]
+                            param_list.append(param)
+
+                self.param_list.append(param_list)
+
         self.selected_query = selected_query
         self.alg_param_map = alg_param_map
 
@@ -88,7 +106,10 @@ class ExpContainer:
             value_query = []
             query_min_list = []
 
+            # query_min_list [0][0] -> list of algorithms for the table header
+            # query_min_list [data + 1][1] -> global minimum value for the dataset
             query_min_list.append([['Algorithm'], ""])
+
             # for alg in self.alg_list:
             for alg in alg_sorted:
                 query_min_list[0][0].append(alg[0])
@@ -157,7 +178,10 @@ class ExpContainer:
         return self.query_list, self.param_list, self.alg_list, self.data_list
 
     def getValue(self, query_id, param_id, alg_id, data_id):
-        value_list = self.value_map[(query_id, param_id, alg_id, data_id)]
+        try:
+            value_list = self.value_map[(query_id, param_id, alg_id, data_id)]
+        except:
+            return ("",0,0)
 
         total_count = 0
         if self.method == "avg":
@@ -282,9 +306,11 @@ class ExpContainer:
                                 w.write(str(value) + '\n')
                             except KeyError:
                                 pass
-                            except:
-                                e = sys.exc_info()[0]
+                            except ValueError:
+                                pass
+                            except Exception as e:
                                 print(e)
+                                print(value)
                     w.write("\n\n")
             plot_name = re.sub(r'\.txt', '.plot', file_name)
             graph_name = re.sub(r'\.txt', '.png', file_name)

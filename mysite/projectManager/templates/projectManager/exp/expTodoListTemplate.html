@@ -15,6 +15,9 @@
 		{% for param in project.getParamFilterName %}
 		<td>{{ param }}</td>
 		{% endfor %}
+		<td>is_running</td>
+		<td>assigned_to</td>
+		<td>is_finished</td>
         <td>View details</td>
 		<td>Invalidate</td>
     </tr>
@@ -51,6 +54,9 @@
 		<td>{{ value }}</td>
 		{% endif %}
 		{% endfor %}
+		<td>{{ exp.is_running }}</td>
+		<td>{{ exp.assigned_to }}</td>
+		<td>{{ exp.is_finished }}</td>
 		<td></td>
 		<td></td>
     </tr>

@@ -176,7 +176,13 @@ def addServer(request):
         server = Server(server_name=server_name, server_ip=server_ip)
 
     server.save()
-    return HttpResponseRedirect(reverse('project:index'))
+    try:
+        redirect = request.POST['redirect']
+        if redirect == 'rev':
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+        return HttpResponseRedirect(reverse('project:index'))
+    except:
+        return HttpResponse('added')
 
 
 def addServerList(request):
@@ -198,7 +204,13 @@ def addAlgorithm(request, project_id):
     version = request.POST['version']
     algorithm = Algorithm(project=project, name=name, version=version)
     algorithm.save()
-    return HttpResponseRedirect(reverse('project:exp', args=(project_id,)))
+    try:
+        redirect = request.POST['redirect']
+        if redirect == 'rev':
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+        return HttpResponseRedirect(reverse('project:exp', args=(project_id,)))
+    except:
+        return HttpResponse('added')
 
 
 def addDataset(request, project_id):
@@ -225,9 +237,14 @@ def addDataset(request, project_id):
     dataset = Dataset(project=project, name=name, is_synthetic=is_synthetic, synthetic_parameters=synthetic_parameters,
                       data_info=data_info,
                       size=file_size)
-
     dataset.save()
-    return HttpResponseRedirect(reverse('project:exp', args=(project_id,)))
+    try:
+        redirect = request.POST['redirect']
+        if redirect == 'rev':
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+        return HttpResponseRedirect(reverse('project:exp', args=(project_id,)))
+    except:
+        return HttpResponse('added')
 
 
 # modify items

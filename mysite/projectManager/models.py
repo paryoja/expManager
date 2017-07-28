@@ -258,10 +258,11 @@ class ExpTodo(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     algorithm = models.ForeignKey(Algorithm, on_delete=models.CASCADE)
     dataset = models.ForeignKey(Dataset, on_delete=models.CASCADE)
-    serverlist = models.ForeignKey(ServerList, on_delete=models.CASCADE, null=True)
-    server = models.ForeignKey(Server, on_delete=models.CASCADE, null=True)
+    serverlist = models.ForeignKey(ServerList, on_delete=models.CASCADE, null=True, blank=True)
+    server = models.ForeignKey(Server, on_delete=models.CASCADE, null=True, blank=True)
     parameter = models.TextField()
     query = models.TextField()
+    assigned_to = models.ForeignKey(Server, on_delete=models.CASCADE, null=True, blank=True, related_name="assigned")
     pub_date = models.DateTimeField('date published', auto_now_add=True)
     is_finished = models.BooleanField(default=False)
     is_running = models.BooleanField(default=False)
@@ -281,8 +282,9 @@ class ExpTodo(models.Model):
     def to_json(self):
         dic = {}
         dic['project'] = self.project.id
-        dic['algorithm'] = {'name': self.algorithm.name, 'script': self.algorithm.execute_script}
+        dic['algorithm'] = {'id': self.algorithm.id, 'name': self.algorithm.name, 'script': self.algorithm.execute_script}
         dic['dataset'] = self.dataset.data_info
+        dic['dataset_id'] = self.dataset.id
         dic['parameter'] = self.parameter
         dic['query'] = self.query
 

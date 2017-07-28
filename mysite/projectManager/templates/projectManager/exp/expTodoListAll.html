@@ -1,0 +1,16 @@
+{% extends "projectManager/base.html" %}
+{% block title %} List of all exp todos of {{ project.project_text }}{% endblock %}
+{% block additionalStyle %}
+{% load staticfiles %}
+<link rel="stylesheet" type="text/css" href="{% static 'projectManager/css/style.css' %}"/>
+{% endblock %}
+
+{% block body %}
+
+{% include 'projectManager/exp/expTodoListTemplate.html' %}
+
+<center>
+    <a href="{% url 'project:detail' project.id %}">To project detail</a><br/>
+    <a href="{% url 'project:index' %}">To main menu</a>
+</center>
+{% endblock %}

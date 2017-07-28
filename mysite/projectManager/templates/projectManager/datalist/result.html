@@ -143,7 +143,11 @@
 			<tr>
 				<td>{{ dataset.0 }}</td>
 				{% for value in value_data %}
-				<td align="right">
+					{% if value.1 >= datalist.repeat %}
+					<td align="right" bgcolor="powderblue">
+					{% else %}
+					<td align="right">
+					{% endif %}
 					{% if value.0 == min_value %}
 					<font color="blue">
 					{% elif value.0 == max_value %}
@@ -154,7 +158,7 @@
 					<font color="black">
 					{% endif %}
 					{% if value.0 != "" %}
-					{{ value.0 | to_int | intcomma }}<br/>({{ value.1 }})</font>
+					{{ value.0 | to_int | intcomma }}</font>
 					{% elif server %}
 					<form action="{% url 'project:addExp' project.id %}" method="post">{% csrf_token %}
 						<input type="submit" name="add" value="failed"/>

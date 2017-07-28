@@ -41,6 +41,13 @@ def expListAll(request, pk):
     return render(request, 'projectManager/expListAll.html', {'project': project, 'exp_list': exps})
 
 
+def expTodoListAll(request, project_id):
+    project= get_object_or_404(Project, pk=project_id)
+    expTodo_all = project.exptodo_set.order_by('id')
+
+    return render(request, 'projectManager/exp/expTodoListAll.html', {'project': project, 'exp_todo_list': expTodo_all})
+
+
 def listSameExp(request, project_id, dataset_id, algorithm_id):
     project = get_object_or_404(Project, pk=project_id)
     dataset = get_object_or_404(Dataset, pk=dataset_id)
@@ -240,7 +247,7 @@ def datalistConfigure(request, project_id, datalist_id):
     dataset_id_list = []
     for dataset in dataset_list:
         dataset_id_list.append(dataset.dataset.id)
-    other_dataset = Dataset.objects.filter(project=project).exclude(id__in=dataset_id_list)
+    other_dataset = Dataset.objects.filter(project=project).exclude(id__in=dataset_id_list).order_by('-id')
 
     return render(request, 'projectManager/datalist/configure.html', {
         'project': project, 'datalist': datalist, 'dataset_list': dataset_list, 'other_dataset_list': other_dataset
@@ -453,7 +460,7 @@ def addExpTodo(request, project_id, datalist_id):
 
     if request.method == 'GET':
         server_or_serverlist_id = request.GET.get('server')
-        method = None
+        method = "avg"
     elif request.method == 'POST':
         server_or_serverlist_id = request.POST.get('server')
 
@@ -480,6 +487,7 @@ def addExpTodo(request, project_id, datalist_id):
 
     exp_cont = ExpContainer(dataset_list, query_name_list, param_name_list, result_title, server_list, method)
 
+    repeat = datalist.repeat
     if request.method == 'GET':
         exp_cont.load()
         query_list, param_list, alg_list, data_list = exp_cont.getList()
@@ -488,7 +496,27 @@ def addExpTodo(request, project_id, datalist_id):
         sorted_param = []
 
         for alg_name, alg in list(sorted(zip(alg_list, int_list))):
-            sorted_param.append((alg_name, sorted(param_list[alg])))
+            sorted_alg_param = []
+            param_int_list = list(range(len(param_list[alg])))
+            for param, param_id in list(sorted(zip(param_list[alg], param_int_list))):
+                # TODO do not display finished parameters
+                is_finished = True
+
+                for query_id, query in enumerate(query_list):
+                    for data_id, data in enumerate(data_list):
+                        value, count, total_count = exp_cont.getValue(query_id, param_id, alg, data_id)
+
+                        if value != "failed" and count < repeat:
+                            is_finished = False
+                            break
+                    if not is_finished:
+                        break
+
+                if not is_finished:
+                    sorted_alg_param.append( param )
+
+            sorted_param.append((alg_name, sorted_alg_param))
+
 
         return render(request, 'projectManager/datalist/addExpTodo.html', {
             'project': project, 'datalist': datalist, 'server_id': server_or_serverlist_id,
@@ -507,37 +535,38 @@ def addExpTodo(request, project_id, datalist_id):
         exp_cont.load(alg_id_list=selected_algorithm_list, selected_query=selected_query_list,
                       alg_param_map=selected_param_map)
         query_list, param_list, alg_list, data_list = exp_cont.getList()
-        repeat = datalist.repeat
 
-        for query_id, query in enumerate(query_list):
-            for data_id, data in enumerate(data_list):
-                dataset = get_object_or_404(Dataset, pk=data[1])
-                for alg_id, alg in enumerate(alg_list):
-                    algorithm = get_object_or_404(Algorithm, pk=alg[2])
-                    for param_id, param in enumerate(param_list[alg_id]):
-                        avg, count, total_count = exp_cont.getValue(query_id, param_id, alg_id, data_id)
+        #for query_id, query in enumerate(selected_query_list):
+        query_id = 0
+        query = eval(selected_query_list)
+        for data_id, data in enumerate(data_list):
+            dataset = get_object_or_404(Dataset, pk=data[1])
+            for alg_id, alg in enumerate(selected_algorithm_list):
+                algorithm = get_object_or_404(Algorithm, pk=alg)
+                for param_id, param in enumerate(param_list[alg_id]):
+                    avg, count, total_count = exp_cont.getValue(query_id, param_id, alg_id, data_id)
 
-                        if avg != "failed" and avg != "" and count < repeat:
-                            param_map = {}
-                            for param_name_idx, param_name in enumerate(param_name_list):
-                                param_map[param_name] = param[param_name_idx]
+                    if avg != "failed" and count < repeat:
+                        param_map = {}
+                        for param_name_idx, param_name in enumerate(param_name_list):
+                            param_map[param_name] = param[param_name_idx]
 
-                            query_map = {}
-                            for query_name_idx, query_name in enumerate(query_name_list):
-                                query_map[query_name] = query[query_name_idx]
+                        query_map = {}
+                        for query_name_idx, query_name in enumerate(query_name_list):
+                            query_map[query_name] = query[query_name_idx]
 
-                            json_param = json.dumps(param_map)
-                            json_query = json.dumps(query_map)
+                        json_param = json.dumps(param_map)
+                        json_query = json.dumps(query_map)
 
-                            # add exp todo
-                            filtered = ExpTodo.objects.filter(project=project, algorithm=algorithm, dataset=dataset,
+                        # add exp todo
+                        filtered = ExpTodo.objects.filter(project=project, algorithm=algorithm, dataset=dataset,
                                                               serverlist=serverlist, server=server,
                                                               parameter=json_param, query=json_query)
-                            if len(filtered) == 0:
-                                exp = ExpTodo(project=project, algorithm=algorithm, dataset=dataset,
+                        if len(filtered) == 0:
+                            exp = ExpTodo(project=project, algorithm=algorithm, dataset=dataset,
                                               serverlist=serverlist, server=server, parameter=json_param,
                                               query=json_query)
-                                exp.save()
+                            exp.save()
 
         return HttpResponseRedirect(reverse('project:exp', args=(project.id,)))
 
@@ -594,16 +623,19 @@ def modExpTodo(request, project_id, todo_id):
         if todo.is_running:
             return HttpResponse('skip')
         todo.is_running = True
+        try:
+            server_id = request.POST['server_id']
+            server = Server.objects.get(pk=server_id)
+            todo.assigned_to = server
+        except:
+            pass
         todo.save()
-        return HttpResponse("running")
     elif request.POST['method'] == 'finished':
         todo.delete()
-        return HttpResponse("finished")
     elif request.POST['method'] == 'recover':
         todo.is_running = False
+        todo.assigned_to = None
         todo.save()
     elif request.POST['method'] == 'failed':
-        todo.is_running = False
-        todo.is_finished = True
         todo.delete()
     return HttpResponse(request.POST['method'])

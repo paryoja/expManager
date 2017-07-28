@@ -22,7 +22,8 @@
 
 <h2>List of Waiting Experiments</h2>
 <!-- add exptodo manually -->
-<h3>There are {{ exp_todo_list.count }} experiment todo{{ exp_todo_list.count | pluralize }}: See all</h3>
+<h3>There are {{ exp_todo_list.count }} experiment todo{{ exp_todo_list.count | pluralize }}: 
+	<a href="{% url 'project:expTodoListAll' project.id %}">See all</a></h3>
 
 {% include 'projectManager/exp/expTodoListTemplate.html' %}
 

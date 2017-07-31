@@ -200,10 +200,10 @@ class ExpContainer:
                 total += float(value)
                 count += 1
 
-            if count != 0:
-                return (total / count, count, total_count)
             if is_failed:
                 return ("failed", count, total_count)
+            if count != 0:
+                return (total / count, count, total_count)
             if is_empty:
                 return ("", count, total_count)
 
@@ -380,9 +380,13 @@ class ExpContainer:
                                 value, count, total_count = self.getValue(query_idx, param_idx, alg_idx, data_idx)
                                 if ms_to_s:
                                     value = float(value) / 1000
+                                else:
+                                    value = float(value)
                                 w.write(str(self.getSize(data[0], datalist)) + '\t')
                                 w.write(str(value) + '\n')
                             except KeyError:
+                                pass
+                            except ValueError:
                                 pass
                             except:
                                 e = sys.exc_info()[0]
@@ -439,7 +443,7 @@ class ExpContainer:
         return result_list
 
     def getSize(self, string, datalist):
-        if string.startswith('aol') or string.startswith('SPROT'):
+        if string.startswith('aol') or string.startswith('SPROT') or string.startswith('USPS'):
             m = re.search('[0-9]+', string)
             return m.group(0)
         if string.startswith('usps_s_'):

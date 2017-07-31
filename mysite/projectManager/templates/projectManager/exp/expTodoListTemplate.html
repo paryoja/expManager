@@ -58,7 +58,7 @@
 		<td>{{ exp.assigned_to }}</td>
 		<td>{{ exp.is_finished }}</td>
 		<td></td>
-		<td></td>
+		<td><form action={% url 'project:modExpTodo' project.id exp.id %} method="POST"/>{% csrf_token %}<input type="submit" name="method" value="failed"/></form></td>
     </tr>
     {% endfor %}
 </table>

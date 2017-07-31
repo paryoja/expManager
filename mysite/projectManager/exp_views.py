@@ -43,7 +43,7 @@ def expListAll(request, pk):
 
 def expTodoListAll(request, project_id):
     project= get_object_or_404(Project, pk=project_id)
-    expTodo_all = project.exptodo_set.order_by('id')
+    expTodo_all = project.exptodo_set.order_by('-is_running', 'assigned_to__server_name')
 
     return render(request, 'projectManager/exp/expTodoListAll.html', {'project': project, 'exp_todo_list': expTodo_all})
 
@@ -638,4 +638,10 @@ def modExpTodo(request, project_id, todo_id):
         todo.save()
     elif request.POST['method'] == 'failed':
         todo.delete()
+    
+    try:
+        if request.POST['redirect'] == 'rev':
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+    except:
+        pass
     return HttpResponse(request.POST['method'])

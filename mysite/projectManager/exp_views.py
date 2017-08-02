@@ -28,7 +28,7 @@ def expListAll(request, pk):
     project = get_object_or_404(Project, pk=pk)
     exp_all = project.expitem_set.order_by('-id')
 
-    paginator = Paginator(exp_all, 25)
+    paginator = Paginator(exp_all, 50)
     page = request.GET.get('page')
 
     try:
@@ -485,7 +485,7 @@ def addExpTodo(request, project_id, datalist_id):
 
     # since forloop.counter in template starts with 1 
 
-    exp_cont = ExpContainer(dataset_list, query_name_list, param_name_list, result_title, server_list, method)
+    exp_cont = ExpContainer(dataset_list, query_name_list, param_name_list, result_title, server_list, method, True)
 
     repeat = datalist.repeat
     if request.method == 'GET':

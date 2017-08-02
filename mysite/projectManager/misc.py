@@ -12,7 +12,7 @@ from .models import ExpItem, Graph, Algorithm
 
 
 class ExpContainer:
-    def __init__(self, cont_list, query_name_list, param_name_list, result_title, server_list, method):
+    def __init__(self, cont_list, query_name_list, param_name_list, result_title, server_list, method, skip_old=False):
         self.alg_list = []
         self.query_list = []
         self.query_name_list = query_name_list
@@ -25,6 +25,7 @@ class ExpContainer:
         self.result_title = result_title
         self.server_list = server_list
         self.method = method
+        self.skip_old = skip_old
 
     def load(self, alg_id_list=None, selected_query=None, alg_param_map=None):
         # alg_id_list = [ '65', '66', ... ]
@@ -36,6 +37,9 @@ class ExpContainer:
             for alg_id in alg_id_list:
                 # add to self.alg_list
                 algorithm = Algorithm.objects.get(pk = alg_id)
+                if self.skip_old and not algorithm.isNewest():
+                    continue
+
                 self.alg_list.append([algorithm.name, algorithm.version, algorithm.id]) 
                 param_list = []
 
@@ -68,6 +72,9 @@ class ExpContainer:
                         if str(exp.algorithm.id) not in alg_id_list:
                             # skip this exp item
                             continue
+                    if self.skip_old and not exp.algorithm.isNewest():
+                        # skip old algorithm 
+                        continue
                     alg = [exp.algorithm.name, exp.algorithm.version, exp.algorithm.id]
 
                     param_dict = toDictionary(exp.parameter)

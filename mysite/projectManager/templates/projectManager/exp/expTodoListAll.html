@@ -7,6 +7,9 @@
 
 {% block body %}
 
+{% load humanize %}
+<h1>Exp Todo {{ exp_todo_list.count }} itme{{ exp_todo_list.count | pluralize }}</h1>
+
 {% include 'projectManager/exp/expTodoListTemplate.html' %}
 
 <center>

@@ -397,6 +397,8 @@ def getAlgorithmId(request, project_id, algorithm_name, algorithm_version):
         algorithm = Algorithm.objects.filter(project=project).filter(name=algorithm_name).get(version=algorithm_version)
     except ObjectDoesNotExist:
         return HttpResponse('-1')
+    except:
+        print(algorithn_name)
 
     return HttpResponse(algorithm.id)
 

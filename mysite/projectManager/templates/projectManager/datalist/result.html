@@ -1,5 +1,11 @@
 {% extends "projectManager/base.html" %}
-{% block title %}Experimental results of {{ project.project_text }}{% endblock %}
+{% block title %}
+{% if server %}
+{{ datalist.name }} on {{server.server_name }}
+{% else %}
+{{ datalist.name }} on {{serverlist.name }}
+{% endif %}
+{% endblock %}
 {% block additionalStyle %}
 {% load staticfiles %}
 <link rel="stylesheet" type="text/css" href="{% static 'projectManager/css/style.css' %}"/>

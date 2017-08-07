@@ -187,10 +187,13 @@ def expCompare(request, project_id):
 
 def addExp(request, project_id):
     project = get_object_or_404(Project, pk=project_id)
-    if request.POST['dataset_name'] != "none":
-        dataset = get_object_or_404(Dataset, pk=request.POST['dataset_name'])
-    else:
-        dataset = get_object_or_404(Dataset, pk=request.POST['dataset_id'])
+    try:
+        if request.POST['dataset_name'] != "none":
+            dataset = get_object_or_404(Dataset, pk=request.POST['dataset_name'])
+        else:
+            dataset = get_object_or_404(Dataset, pk=request.POST['dataset_id'])
+    except:
+        print(request.POST)
     algorithm = get_object_or_404(Algorithm, pk=request.POST['algorithm_name'])
     server = get_object_or_404(Server, pk=request.POST['server_name'])
     try:

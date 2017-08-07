@@ -188,7 +188,7 @@ class ExpContainer:
         try:
             value_list = self.value_map[(query_id, param_id, alg_id, data_id)]
         except:
-            return ("", 0, 0)
+            return ("", 0, 0, 0)
 
         total_count = 0
         if self.method == "avg":
@@ -264,7 +264,7 @@ class ExpContainer:
                 return ("failed", count, total_count, 0)
             if is_empty:
                 return ("", count, total_count, 0)
-        return (None, None, None)
+        return (None, None, None, None)
 
     def add_result(self, query, param, alg, result, result_title, data_index, exp):
         # add alg

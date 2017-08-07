@@ -509,7 +509,7 @@ def addExpTodo(request, project_id, datalist_id):
 
                 for query_id, query in enumerate(query_list):
                     for data_id, data in enumerate(data_list):
-                        value, count, total_count = exp_cont.getValue(query_id, param_id, alg, data_id)
+                        value, count, total_count, variance = exp_cont.getValue(query_id, param_id, alg, data_id)
 
                         if value != "failed" and count < repeat:
                             is_finished = False
@@ -548,7 +548,7 @@ def addExpTodo(request, project_id, datalist_id):
             for alg_id, alg in enumerate(selected_algorithm_list):
                 algorithm = get_object_or_404(Algorithm, pk=alg)
                 for param_id, param in enumerate(param_list[alg_id]):
-                    avg, count, total_count = exp_cont.getValue(query_id, param_id, alg_id, data_id)
+                    avg, count, total_count, variance = exp_cont.getValue(query_id, param_id, alg_id, data_id)
 
                     if avg != "failed" and count < repeat:
                         param_map = {}

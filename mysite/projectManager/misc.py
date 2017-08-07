@@ -36,16 +36,16 @@ class ExpContainer:
         if alg_id_list is not None:
             for alg_id in alg_id_list:
                 # add to self.alg_list
-                algorithm = Algorithm.objects.get(pk = alg_id)
+                algorithm = Algorithm.objects.get(pk=alg_id)
                 if self.skip_old and not algorithm.isNewest():
                     continue
 
-                self.alg_list.append([algorithm.name, algorithm.version, algorithm.id]) 
+                self.alg_list.append([algorithm.name, algorithm.version, algorithm.id])
                 param_list = []
 
                 if alg_param_map is not None:
                     # add to self.param_list
-                    if int(alg_id) in alg_param_map.keys(): 
+                    if int(alg_id) in alg_param_map.keys():
                         alg_param = alg_param_map[int(alg_id)]
                         for par in alg_param:
                             param = [par]
@@ -188,7 +188,7 @@ class ExpContainer:
         try:
             value_list = self.value_map[(query_id, param_id, alg_id, data_id)]
         except:
-            return ("",0,0)
+            return ("", 0, 0)
 
         total_count = 0
         if self.method == "avg":

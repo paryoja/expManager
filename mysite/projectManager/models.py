@@ -282,7 +282,8 @@ class ExpTodo(models.Model):
     def to_json(self):
         dic = {}
         dic['project'] = self.project.id
-        dic['algorithm'] = {'id': self.algorithm.id, 'name': self.algorithm.name, 'script': self.algorithm.execute_script}
+        dic['algorithm'] = {'id': self.algorithm.id, 'name': self.algorithm.name,
+                            'script': self.algorithm.execute_script}
         dic['dataset'] = self.dataset.data_info
         dic['dataset_id'] = self.dataset.id
         dic['parameter'] = self.parameter

@@ -42,7 +42,7 @@ def expListAll(request, pk):
 
 
 def expTodoListAll(request, project_id):
-    project= get_object_or_404(Project, pk=project_id)
+    project = get_object_or_404(Project, pk=project_id)
     expTodo_all = project.exptodo_set.order_by('-is_running', 'assigned_to__server_name')
 
     return render(request, 'projectManager/exp/expTodoListAll.html', {'project': project, 'exp_todo_list': expTodo_all})
@@ -516,10 +516,9 @@ def addExpTodo(request, project_id, datalist_id):
                         break
 
                 if not is_finished:
-                    sorted_alg_param.append( param )
+                    sorted_alg_param.append(param)
 
             sorted_param.append((alg_name, sorted_alg_param))
-
 
         return render(request, 'projectManager/datalist/addExpTodo.html', {
             'project': project, 'datalist': datalist, 'server_id': server_or_serverlist_id,
@@ -539,7 +538,7 @@ def addExpTodo(request, project_id, datalist_id):
                       alg_param_map=selected_param_map)
         query_list, param_list, alg_list, data_list = exp_cont.getList()
 
-        #for query_id, query in enumerate(selected_query_list):
+        # for query_id, query in enumerate(selected_query_list):
         query_id = 0
         query = eval(selected_query_list)
         for data_id, data in enumerate(data_list):
@@ -563,12 +562,12 @@ def addExpTodo(request, project_id, datalist_id):
 
                         # add exp todo
                         filtered = ExpTodo.objects.filter(project=project, algorithm=algorithm, dataset=dataset,
-                                                              serverlist=serverlist, server=server,
-                                                              parameter=json_param, query=json_query)
+                                                          serverlist=serverlist, server=server,
+                                                          parameter=json_param, query=json_query)
                         if len(filtered) == 0:
                             exp = ExpTodo(project=project, algorithm=algorithm, dataset=dataset,
-                                              serverlist=serverlist, server=server, parameter=json_param,
-                                              query=json_query)
+                                          serverlist=serverlist, server=server, parameter=json_param,
+                                          query=json_query)
                             exp.save()
 
         return HttpResponseRedirect(reverse('project:exp', args=(project.id,)))
@@ -641,7 +640,7 @@ def modExpTodo(request, project_id, todo_id):
         todo.save()
     elif request.POST['method'] == 'failed':
         todo.delete()
-    
+
     try:
         if request.POST['redirect'] == 'rev':
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))

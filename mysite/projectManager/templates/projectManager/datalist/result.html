@@ -147,7 +147,12 @@
 					<font color="black">
 					{% endif %}
 					{% if value.0 != "" %}
-					{{ value.0 | to_int | intcomma }}</font>
+					{% if not print_variance %}
+					{{ value.0 | to_int | intcomma }}
+					{% else %}
+					{{ value.2 | to_int | intcomma }} ({{ value.1 }})
+					{% endif %}
+					</font>
 					{% elif server %}
 					<form action="{% url 'project:addExp' project.id %}" method="post">{% csrf_token %}
 						<input type="submit" name="add" value="failed"/>

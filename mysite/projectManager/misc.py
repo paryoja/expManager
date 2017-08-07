@@ -142,7 +142,7 @@ class ExpContainer:
                     is_failed = False
                     for param_name, param in param_sorted:
                         try:
-                            value, count, total_count = self.getValue(query, param, alg, data)
+                            value, count, total_count, variance = self.getValue(query, param, alg, data)
                             if value < min_value:
                                 min_value = value
                                 min_index = param
@@ -152,18 +152,18 @@ class ExpContainer:
                             if value < query_min_list[data + 1][1]:
                                 query_min_list[data + 1][1] = value
 
-                            value_data.append((value, count))
+                            value_data.append((value, count, variance))
                         except KeyError:
                             try:
-                                value_data.append(("", count))
+                                value_data.append(("", count, 0))
                             except:
-                                value_data.append(("", 0))
+                                value_data.append(("", 0, 0))
                         except (ValueError, TypeError):
                             if value == "failed":
                                 is_failed = True
-                                value_data.append(("failed", total_count))
+                                value_data.append(("failed", total_count, 0))
                             else:
-                                value_data.append(("", total_count))
+                                value_data.append(("", total_count, 0))
 
                     value_alg.append((self.data_list[data], value_data, min_value, max_value))
                     if min_value is not sys.maxsize:
@@ -194,6 +194,7 @@ class ExpContainer:
         if self.method == "avg":
             count = 0
             total = 0
+            sq_total = 0
             is_failed = False
             is_empty = False
             for exp, value in value_list:
@@ -204,15 +205,17 @@ class ExpContainer:
                     else:
                         is_empty = True
                     continue
-                total += float(value)
+                f_value = float(value)
+                total += f_value
+                sq_total += f_value * f_value
                 count += 1
 
             if is_failed:
-                return ("failed", count, total_count)
+                return ("failed", count, total_count, 0)
             if count != 0:
-                return (total / count, count, total_count)
+                return (total / count, count, total_count, (sq_total / count - (total / count) * (total / count)))
             if is_empty:
-                return ("", count, total_count)
+                return ("", count, total_count, 0)
 
         elif self.method == "latest":
             # TODO implement
@@ -220,7 +223,7 @@ class ExpContainer:
             min_value = None
 
             total_count += 1
-            return (min_value, count, total_count)
+            return (min_value, count, total_count, 0)
 
         elif self.method == "minmax":
             # assume 0 is minimum
@@ -229,6 +232,7 @@ class ExpContainer:
 
             count = 0
             total = 0
+            sq_total = 0
             is_failed = False
             is_empty = False
             for exp, value in value_list:
@@ -246,17 +250,20 @@ class ExpContainer:
                 if max_value < f_value:
                     max_value = f_value
                 total += f_value
+                sq_total += f_value * f_value
                 count += 1
 
             if count != 0:
                 if count > 2:
-                    return ((total - min_value - max_value) / (count - 2), count, total_count)
+                    avg_value = (total - min_value - max_value) / (count - 2)
+                    sq_avg_value = (sq_total - min_value * min_value - max_value * max_value) / (count - 2)
+                    return (avg_value, count, total_count, sq_avg_value - avg_value * avg_value)
                 else:
-                    return (total / count, count, total_count)
+                    return (total / count, count, total_count, (sq_total / count - (total / count) * (total / count)))
             if is_failed:
-                return ("failed", count, total_count)
+                return ("failed", count, total_count, 0)
             if is_empty:
-                return ("", count, total_count)
+                return ("", count, total_count, 0)
         return (None, None, None)
 
     def add_result(self, query, param, alg, result, result_title, data_index, exp):
@@ -306,7 +313,7 @@ class ExpContainer:
                             if data_idx == 0:
                                 w.write("#" + str(param) + '\n')
                             try:
-                                value, count, total_count = self.getValue(query_idx, param_idx, alg_idx, data_idx)
+                                value, count, total_count, variance = self.getValue(query_idx, param_idx, alg_idx, data_idx)
                                 if ms_to_s:
                                     value = float(value) / 1000
                                 w.write(str(self.getSize(data[0], datalist)) + '\t')
@@ -384,7 +391,7 @@ class ExpContainer:
                         w.write("#" + str(param) + '\n')
                         for data_idx, data in enumerate(self.data_list):
                             try:
-                                value, count, total_count = self.getValue(query_idx, param_idx, alg_idx, data_idx)
+                                value, count, total_count, variance = self.getValue(query_idx, param_idx, alg_idx, data_idx)
                                 if ms_to_s:
                                     value = float(value) / 1000
                                 else:

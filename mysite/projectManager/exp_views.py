@@ -337,6 +337,8 @@ def datalistResult(request, project_id, datalist_id):
     summary = int(request.GET.get('summary')) - 1
     result_title = project.getSummaryFilter()[summary]
 
+    print_variance = request.GET.get('print_variance')
+
     exp_cont = ExpContainer(dataset_list, query_name_list, param_name_list, result_title, server_list, method)
     exp_cont.load()
     query_list, param_list, alg_list, value_list = exp_cont.getResult()
@@ -345,7 +347,7 @@ def datalistResult(request, project_id, datalist_id):
         'project': project, 'datalist': datalist, 'dataset_list': dataset_list,
         'value_list': value_list, 'result_title': result_title,
         'serverlist': serverlist, 'server': server, 'aggregation': method,
-        's_sl_id': server_or_serverlist_id, 'summary': summary,
+        's_sl_id': server_or_serverlist_id, 'summary': summary, 'print_variance': print_variance
     })
 
 

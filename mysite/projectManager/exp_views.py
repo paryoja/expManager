@@ -75,6 +75,7 @@ def listSameExp(request, project_id, dataset_id, algorithm_id):
     result_filter = project.getResultFilter()
 
     return render(request, 'projectManager/listSameExp.html', {
+        'project': project,
         'exp_list': exp_list,
         'param_filter': param_filter,
         'result_filter': result_filter})

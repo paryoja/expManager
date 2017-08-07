@@ -7,36 +7,5 @@
 
 
 {% block body %}
-{% load humanize %}
-<table>
-	<tr>
-		<td>Algorithm</td>
-		<td>Server</td>
-		<td>Date</td>
-		{% for param in param_filter %}
-		<td>{{ param }}</td>
-		{% endfor %}
-		{% for result in result_filter %}
-		<td>{{ result }}</td>
-		{% endfor %}
-	</tr>
-	{% for exp in exp_list %}
-	<tr>
-		<td>{{ exp.algorithm.name }}</td>
-		<td>{{ exp.server }}</td>
-		<td>{{ exp.exp_date }}</td>
-		{% for value in exp.toParamValueList %}
-			{% if value.isdigit %}
-			<td>{{ value | floatformat | intcomma }}</td>
-			{% else %}
-			<td>{{ value }}</td>
-			{% endif %}
-		{% endfor %}
-		{% for value in exp.toResultValueList %}
-			<td>{{ value | floatformat | intcomma }}</td>
-		{% endfor %}
-	</tr>
-	{% endfor %}
-</table>
-
+{% include 'projectManager/exp/expListTemplate.html' %}
 {% endblock %}

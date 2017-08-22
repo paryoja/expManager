@@ -168,7 +168,7 @@ class Dataset(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     name = models.TextField(null=True)
     is_synthetic = models.BooleanField(default=False)
-    synthetic_parameters = models.TextField(null=True)
+    synthetic_parameters = models.TextField(null=True, blank=True)
     data_info = models.TextField(null=True)
     size = models.FloatField(null=True)
 

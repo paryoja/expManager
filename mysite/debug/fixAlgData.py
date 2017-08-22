@@ -40,14 +40,19 @@ for exp in ExpItem.objects.filter(project=project):
             exp.algorithm = algorithm_dic[ result['cmd_alg'] ]
             print( algorithm_dic[ result['cmd_alg'] ].name )
             print( exp.algorithm.name )
+            print( exp.server )
             exp.save()
         
         dataset_name = getDatasetName(result['cmd_dataOnePath'], result['cmd_dataTwoPath'], result['cmd_rulePath'])
         if exp.dataset.name != dataset_name:
             print( exp.dataset.name )
             print( dataset_name )
-            exp.dataset = dataset_dic[ dataset_name ]
-            exp.save()
+            print( exp.server )
+            try:
+                exp.dataset = dataset_dic[ dataset_name ]
+                exp.save()
+            except:
+                pass
             
 
 

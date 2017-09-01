@@ -91,7 +91,11 @@ class ExpContainer:
                     query = []
                     if self.query_name_list is not None:
                         for q in self.query_name_list:
-                            query.append(param_dict[q])
+                            # if query_name is not presented
+                            if len(q) == 0:
+                                query.append('None')
+                            else:
+                                query.append(param_dict[q])
                     else:
                         query.append("None")
 

@@ -84,7 +84,12 @@
 	{% endfor %}
 {% endif %}
 {% endfor %}
+<a href="{{ graph.data_file.url }}"/>Data file</a><br/>
+<a href="{{ graph.plot_file.url }}"/>Plot file</a><br/>
+<a href="{{ graph.graph_file.url }}"/>Graph file</a><br/>
+
 <img src="{{ graph.graph_file.url }}"/>
+
 
 <h2>
 <a href="{% url 'project:exp' project.id %}">To experiments</a>

@@ -28,8 +28,8 @@ class Project(models.Model):
     resultFilter = models.TextField(null=True, blank=True)
     summaryFilter = models.TextField(null=True, blank=True)
 
-    project_setting_file = models.FileField(null=True)
-    initialize_code = models.FileField(null=True)
+    project_setting_file = models.FileField(null=True, blank=True)
+    initialize_code = models.FileField(null=True, blank=True)
 
     def getParamFilter(self):
         return self.paramFilter.split(',')

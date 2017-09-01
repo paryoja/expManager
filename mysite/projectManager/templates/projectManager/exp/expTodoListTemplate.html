@@ -4,6 +4,7 @@
 {% if exp_todo_list %}
 <table>
     <tr>
+		<td>Count</td>
         <td>Date</td>
 		<td>Server</td>
 		<td>ServerList</td>
@@ -24,6 +25,7 @@
 
     {% for exp in exp_todo_list %}
     <tr>
+		<td>{{ forloop.counter }}</td>
         <td>{{ exp.pub_date }}</td>
 		{% if not exp.server == None %}
 		<td><a href="{% url 'project:servers' exp.server.id %}">{{ exp.server.server_name }}</a></td>
